@@ -1,0 +1,34 @@
+package com.kerimovscreations.billsplitter.tools;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
+
+public class CommonMethods {
+
+    private static CommonMethods instance = null;
+
+    private Gson mGson;
+    private JsonParser mJsonParser;
+
+
+    private CommonMethods() {
+        mGson = new Gson();
+        mJsonParser = new JsonParser();
+    }
+
+    // static method to create instance of Singleton class
+    public static CommonMethods getInstance() {
+        if (instance == null)
+            instance = new CommonMethods();
+
+        return instance;
+    }
+
+    public Gson getGson() {
+        return mGson;
+    }
+
+    public JsonParser getJsonParser() {
+        return mJsonParser;
+    }
+}

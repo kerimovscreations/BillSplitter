@@ -3,7 +3,18 @@
     <string name="terms_conditions"><![CDATA[Terms & Conditions]]></string>
     <string name="sign_in">Sign in</string>
     <string name="intro_activity_title">Intro Activity title</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="welcome">Welcome!</string>
+    <string name="phone_number">Phone number</string>
+    <string name="password">Password</string>
+    <string name="forgot_password_question">Forgot password?</string>
+    <string name="dont_have_an_account_question">Don\'t have an account?</string>
+    <string name="sign_up">Sign up</string>
+    <string name="or">OR</string>
+    <string name="login_with_facebook_button">Login with Facebook button</string>
+    <string name="login_with_google_button">Login with Google button</string>
+    <string name="drop_down">Drop down</string>
+    <string name="slider_image">Slider image</string>
+    <string name="select_country">Select country</string>
+    <string name="cancel">Cancel</string>
+    <string name="sample_country_code">+36</string>
 </resources>

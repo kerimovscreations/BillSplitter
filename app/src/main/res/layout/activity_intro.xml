@@ -13,7 +13,7 @@
         android:layout_margin="@dimen/normal_margin"
         android:text="@string/intro_activity_title"
         android:textColor="@color/colorPrimary"
-        android:textSize="24sp" />
+        android:textSize="28sp" />
 
     <TextView
         android:id="@+id/terms_conditions_text"
