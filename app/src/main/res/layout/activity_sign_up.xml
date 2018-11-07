@@ -12,7 +12,7 @@
         android:padding="@dimen/normal_margin">
 
         <TextView
-            android:id="@+id/login_title"
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/normal_margin"
@@ -21,7 +21,7 @@
             android:textSize="28sp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/sign_up_avatar"
+            android:id="@+id/avatar"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
@@ -45,7 +45,7 @@
                     android:layout_height="wrap_content">
 
                     <android.support.design.widget.TextInputEditText
-                        android:id="@+id/sign_up_name_input"
+                        android:id="@+id/name_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/full_name"
@@ -61,7 +61,7 @@
                 android:orientation="horizontal">
 
                 <RelativeLayout
-                    android:id="@+id/sign_up_phone_code_layout"
+                    android:id="@+id/phone_code_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -70,7 +70,7 @@
                     android:padding="@dimen/medium_margin">
 
                     <TextView
-                        android:id="@+id/sign_up_phone_code"
+                        android:id="@+id/phone_code"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/sample_country_code"
@@ -82,7 +82,7 @@
                         android:layout_height="10dp"
                         android:layout_centerVertical="true"
                         android:layout_marginStart="@dimen/medium_margin"
-                        android:layout_toEndOf="@id/sign_up_phone_code"
+                        android:layout_toEndOf="@id/phone_code"
                         android:contentDescription="@string/drop_down"
                         android:src="@drawable/ic_drop_down" />
                 </RelativeLayout>
@@ -96,12 +96,12 @@
                     android:background="@drawable/bg_divider_gray" />
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/sign_up_phone_layout"
+                    android:id="@+id/phone_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <android.support.design.widget.TextInputEditText
-                        android:id="@+id/sign_up_phone_input"
+                        android:id="@+id/phone_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/phone_number"
@@ -121,7 +121,7 @@
                     android:layout_height="wrap_content">
 
                     <android.support.design.widget.TextInputEditText
-                        android:id="@+id/sign_up_password_input"
+                        android:id="@+id/password_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/password"
@@ -142,7 +142,7 @@
                     android:layout_height="wrap_content">
 
                     <android.support.design.widget.TextInputEditText
-                        android:id="@+id/sign_up_password_confirm_input"
+                        android:id="@+id/password_confirm_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/confirm_password"
@@ -153,7 +153,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/sign_up_btn"
+            android:id="@+id/btn"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="@dimen/normal_margin"

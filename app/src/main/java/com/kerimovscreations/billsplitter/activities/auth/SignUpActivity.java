@@ -26,10 +26,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SignUpActivity extends BaseActivity {
 
-    @BindView(R.id.sign_up_avatar)
+    @BindView(R.id.avatar)
     CircleImageView mAvatar;
 
-    @BindView(R.id.sign_up_phone_code)
+    @BindView(R.id.phone_code)
     TextView mPhoneCode;
 
     Uri mSelectedAvatarUri;
@@ -50,7 +50,7 @@ public class SignUpActivity extends BaseActivity {
      * Click handlers
      */
 
-    @OnClick(R.id.sign_up_avatar)
+    @OnClick(R.id.avatar)
     void onAvatar(View view) {
         CropImage.activity()
                 .setGuidelines(CropImageView.Guidelines.ON)
@@ -58,7 +58,7 @@ public class SignUpActivity extends BaseActivity {
                 .start(getActivity());
     }
 
-    @OnClick(R.id.sign_up_btn)
+    @OnClick(R.id.btn)
     void onSignUp(View view) {
         // TODO: API integration
         //File uploadPhoto = new File(mPhotoResultUri.getPath());
@@ -69,7 +69,7 @@ public class SignUpActivity extends BaseActivity {
         finish();
     }
 
-    @OnClick(R.id.sign_up_phone_code_layout)
+    @OnClick(R.id.phone_code_layout)
     void onPhoneCode(View view) {
         promptPhoneCodeDialog();
     }

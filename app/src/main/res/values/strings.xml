@@ -21,4 +21,7 @@
     <string name="full_name">Full name</string>
     <string name="have_an_account_question">Have an account?</string>
     <string name="confirm_password">Confirm password</string>
+    <string name="forgot_pass_title">Opps!</string>
+    <string name="forgot_pass_desc">It seems like you forgot your password. Don\'t worry, by verifying your phone you can reset it!</string>
+    <string name="reset_password">Reset password</string>
 </resources>

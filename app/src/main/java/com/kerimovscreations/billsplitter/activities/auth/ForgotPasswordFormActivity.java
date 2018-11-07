@@ -1,14 +1,11 @@
 package com.kerimovscreations.billsplitter.activities.auth;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.kerimovscreations.billsplitter.MainActivity;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.models.CountryCode;
 import com.kerimovscreations.billsplitter.tools.BaseActivity;
@@ -18,61 +15,30 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class LoginActivity extends BaseActivity {
+public class ForgotPasswordFormActivity extends BaseActivity {
 
     @BindView(R.id.phone_code)
     TextView mPhoneCode;
 
-    @BindView(R.id.phone_input)
-    TextInputEditText mPhoneInput;
-
-    @BindView(R.id.password_input)
-    TextInputEditText mPasswordInput;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        super.onCreateSetContentView(R.layout.activity_login);
+        super.onCreateSetContentView(R.layout.activity_forgot_password_form);
     }
 
     @Override
     public void initVars() {
         super.initVars();
-
     }
 
-    /**
-     * Click handlers
-     */
+    @OnClick(R.id.reset_pass_btn)
+    void onForgotPass(View view) {
+        finish();
+    }
 
     @OnClick(R.id.phone_code_layout)
     void onPhoneCode(View view) {
         promptPhoneCodeDialog();
-    }
-
-    @OnClick(R.id.forgot_pass_text)
-    void onForgetPass(View view) {
-        toForgetPass();
-    }
-
-    @OnClick(R.id.sign_in_btn)
-    void onSignIn(View view) {
-        // TODO: Check auth
-    }
-
-    @OnClick(R.id.facebook_btn)
-    void onFacebookLogin(View view) {
-        // TODO: Facebook login
-    }
-
-    @OnClick(R.id.google_btn)
-    void onGoogleLogin(View view) {
-        // TODO: Google login
-    }
-
-    @OnClick(R.id.sign_up_text)
-    void onSignUp(View view) {
-        toSignUp();
     }
 
     /**
@@ -96,24 +62,5 @@ public class LoginActivity extends BaseActivity {
                 mPhoneCode.setText(String.format("+%s", code.getDialCode()));
         });
         builderSingle.show();
-    }
-
-    /**
-     * Navigation
-     */
-
-    void toMain() {
-        Intent intent = new Intent(getContext(), MainActivity.class);
-        startActivity(intent);
-    }
-
-    void toSignUp() {
-        Intent intent = new Intent(getContext(), SignUpActivity.class);
-        startActivity(intent);
-    }
-
-    void toForgetPass() {
-        Intent intent = new Intent(getContext(), ForgotPasswordFormActivity.class);
-        startActivity(intent);
     }
 }
