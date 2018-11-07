@@ -17,4 +17,8 @@
     <string name="select_country">Select country</string>
     <string name="cancel">Cancel</string>
     <string name="sample_country_code">+36</string>
+    <string name="create_account">Create Account</string>
+    <string name="full_name">Full name</string>
+    <string name="have_an_account_question">Have an account?</string>
+    <string name="confirm_password">Confirm password</string>
 </resources>
