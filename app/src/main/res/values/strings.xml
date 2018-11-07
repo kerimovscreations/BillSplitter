@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Bill Splitter</string>
+    <string name="terms_conditions"><![CDATA[Terms & Conditions]]></string>
+    <string name="sign_in">Sign in</string>
+    <string name="intro_activity_title">Intro Activity title</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
