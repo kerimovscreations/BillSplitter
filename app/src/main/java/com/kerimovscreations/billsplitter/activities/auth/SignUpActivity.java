@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +32,18 @@ public class SignUpActivity extends BaseActivity {
 
     @BindView(R.id.phone_code)
     TextView mPhoneCode;
+
+    @BindView(R.id.name_input)
+    TextInputEditText mNameInput;
+
+    @BindView(R.id.phone_input)
+    TextInputEditText mPhoneInput;
+
+    @BindView(R.id.password_input)
+    TextInputEditText mPasswordInput;
+
+    @BindView(R.id.password_confirm_input)
+    TextInputEditText mPasswordConfirmInput;
 
     Uri mSelectedAvatarUri;
 

@@ -1,6 +1,8 @@
 package com.kerimovscreations.billsplitter.activities.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -20,6 +22,9 @@ public class ForgotPasswordFormActivity extends BaseActivity {
     @BindView(R.id.phone_code)
     TextView mPhoneCode;
 
+    @BindView(R.id.phone_input)
+    TextInputEditText mPhoneInput;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +38,7 @@ public class ForgotPasswordFormActivity extends BaseActivity {
 
     @OnClick(R.id.reset_pass_btn)
     void onForgotPass(View view) {
-        finish();
+        toForgotPasswordConfirm("TEST_CODE");
     }
 
     @OnClick(R.id.phone_code_layout)
@@ -62,5 +67,15 @@ public class ForgotPasswordFormActivity extends BaseActivity {
                 mPhoneCode.setText(String.format("+%s", code.getDialCode()));
         });
         builderSingle.show();
+    }
+
+    /**
+     * Navigation
+     */
+
+    void toForgotPasswordConfirm(String code) {
+        Intent intent = new Intent(getContext(), ForgotPasswordConfirmActivity.class);
+        intent.putExtra(ForgotPasswordConfirmActivity.INTENT_REFERENCE_CODE, code);
+        startActivity(intent);
     }
 }

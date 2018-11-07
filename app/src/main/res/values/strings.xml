@@ -24,4 +24,6 @@
     <string name="forgot_pass_title">Opps!</string>
     <string name="forgot_pass_desc">It seems like you forgot your password. Don\'t worry, by verifying your phone you can reset it!</string>
     <string name="reset_password">Reset password</string>
+    <string name="done">Done</string>
+    <string name="reference_code">Reference code</string>
 </resources>
