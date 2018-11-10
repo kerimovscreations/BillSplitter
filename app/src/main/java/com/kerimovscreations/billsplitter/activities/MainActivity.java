@@ -16,7 +16,9 @@ import com.anychart.charts.Pie;
 import com.anychart.enums.Align;
 import com.anychart.enums.LegendLayout;
 import com.kerimovscreations.billsplitter.R;
+import com.kerimovscreations.billsplitter.adapters.ShoppingListRVAdapter;
 import com.kerimovscreations.billsplitter.adapters.TimelineRVAdapter;
+import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.models.Timeline;
 import com.kerimovscreations.billsplitter.tools.BaseActivity;
 
@@ -32,10 +34,14 @@ public class MainActivity extends BaseActivity {
     RecyclerView mRVTimeline;
     @BindView(R.id.any_chart_view)
     AnyChartView mAnyChartView;
+    @BindView(R.id.rvActiveList)
+    RecyclerView mRVActiveList;
 
     private TimelineRVAdapter mTimelineAdapter;
+    private ShoppingListRVAdapter mActiveShoppingListAdapter;
 
     private ArrayList<Timeline> mTimeline;
+    private ArrayList<ShoppingItem> mActiveShoppingList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +79,8 @@ public class MainActivity extends BaseActivity {
         mRVTimeline.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         setupPieChart();
+
+        setupActiveList();
     }
 
     void setupPieChart() {
@@ -108,7 +116,7 @@ public class MainActivity extends BaseActivity {
                 .itemsLayout(LegendLayout.HORIZONTAL)
                 .align(Align.CENTER);
 
-        pie.background().fill("#eeeeee 1.0");
+//        pie.background().fill("#eeeeee 1.0");
 
         String[] colors = new String[7];
         colors[0] = "#FF7675 1.0";
@@ -122,5 +130,31 @@ public class MainActivity extends BaseActivity {
         pie.palette(colors);
 
         mAnyChartView.setChart(pie);
+    }
+
+    void setupActiveList() {
+        mActiveShoppingList = new ArrayList<>();
+
+        mActiveShoppingList.add(new ShoppingItem("Item 1", "13 November 2018", false, true));
+        mActiveShoppingList.add(new ShoppingItem("Item 2", "13 November 2018", false, false));
+        mActiveShoppingList.add(new ShoppingItem("Item 3", "13 November 2018", false, false));
+        mActiveShoppingList.add(new ShoppingItem("Item 4", "13 November 2018", false, false));
+        mActiveShoppingList.add(new ShoppingItem("Item 5", "13 November 2018", false, false));
+
+        mActiveShoppingListAdapter = new ShoppingListRVAdapter(getContext(), mActiveShoppingList);
+        mActiveShoppingListAdapter.setOnItemClickListener(new ShoppingListRVAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+
+            }
+
+            @Override
+            public void onCheckClick(int position) {
+
+            }
+        });
+
+        mRVActiveList.setAdapter(mActiveShoppingListAdapter);
+        mRVActiveList.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 }
