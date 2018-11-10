@@ -65,6 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="@dimen/medium_margin">
@@ -74,7 +75,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/sample_country_code"
-                        android:textColor="#A5B1C2"
+                        android:textColor="@color/colorAccent"
                         android:textSize="18sp" />
 
                     <ImageView
@@ -84,7 +85,8 @@
                         android:layout_marginStart="@dimen/medium_margin"
                         android:layout_toEndOf="@id/phone_code"
                         android:contentDescription="@string/drop_down"
-                        android:src="@drawable/ic_drop_down" />
+                        android:src="@drawable/ic_drop_down"
+                        android:tint="@color/colorAccent" />
                 </RelativeLayout>
 
                 <View
@@ -156,8 +158,8 @@
             android:id="@+id/btn"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="@dimen/normal_margin"
             android:layout_marginStart="@dimen/normal_margin"
+            android:layout_marginTop="@dimen/normal_margin"
             android:layout_marginEnd="@dimen/normal_margin"
             android:background="@drawable/bg_primary_btn"
             android:text="@string/create_account"

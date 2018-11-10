@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.kerimovscreations.billsplitter.MainActivity;
+import com.kerimovscreations.billsplitter.activities.MainActivity;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.models.CountryCode;
 import com.kerimovscreations.billsplitter.tools.BaseActivity;
@@ -58,6 +58,7 @@ public class LoginActivity extends BaseActivity {
     @OnClick(R.id.sign_in_btn)
     void onSignIn(View view) {
         // TODO: Check auth
+        toMain();
     }
 
     @OnClick(R.id.facebook_btn)
@@ -104,6 +105,7 @@ public class LoginActivity extends BaseActivity {
 
     void toMain() {
         Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 

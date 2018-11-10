@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Bill Splitter</string>
+    <string name="base_url" translatable="false">https://example.com/</string>
+    <string name="local_preference" translatable="false">LocalPreferenceBillSplitter</string>
+    <string name="local_preference_token" translatable="false">LocalPreferenceToken</string>
+
     <string name="terms_conditions"><![CDATA[Terms & Conditions]]></string>
     <string name="sign_in">Sign in</string>
     <string name="intro_activity_title">Intro Activity title</string>
@@ -26,4 +30,5 @@
     <string name="reset_password">Reset password</string>
     <string name="done">Done</string>
     <string name="reference_code">Reference code</string>
+    <string name="purchase_history">Purchase history</string>
 </resources>
