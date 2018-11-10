@@ -16,7 +16,7 @@
             android:layout_margin="@dimen/normal_margin"
             android:text="@string/purchase_history"
             android:textColor="#778CA3"
-            android:textSize="26sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <android.support.v7.widget.RecyclerView
@@ -26,7 +26,8 @@
             android:clipToPadding="false"
             android:nestedScrollingEnabled="false"
             android:paddingStart="@dimen/medium_margin"
-            android:paddingEnd="@dimen/medium_margin" />
+            android:paddingEnd="@dimen/medium_margin"
+            android:visibility="visible" />
 
         <com.anychart.AnyChartView
             android:id="@+id/any_chart_view"
@@ -36,6 +37,13 @@
             android:layout_marginTop="@dimen/medium_margin"
             android:background="#eeeeee" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin" />
+
+        <include layout="@layout/item_divider" />
+
         <TextView
             android:id="@+id/shopping_list_title"
             android:layout_width="wrap_content"
@@ -43,11 +51,52 @@
             android:layout_margin="@dimen/normal_margin"
             android:text="@string/shopping_list"
             android:textColor="#778CA3"
-            android:textSize="26sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvActiveList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin" />
+
+        <include layout="@layout/item_divider" />
+
+        <RelativeLayout
+            android:id="@+id/completed_list_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:id="@+id/completed_list_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/normal_margin"
+                android:text="@string/completed"
+                android:textColor="#778CA3"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/completed_list_drop_down_ic"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/normal_margin"
+                android:src="@drawable/ic_drop_down" />
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvCompletedList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false" />

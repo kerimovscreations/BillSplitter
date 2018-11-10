@@ -76,8 +76,10 @@ public class ShoppingListRVAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 ViewHolderItem viewHolder2 = (ViewHolderItem) viewHolder;
                 viewHolder2.title.setText(bItem.getTitle());
 
-                if(bItem.isDone()){
+                if (bItem.isDone()) {
                     viewHolder2.title.setPaintFlags(viewHolder2.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                } else {
+                    viewHolder2.title.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
                 }
 
                 viewHolder2.checkbox.setImageDrawable(ResourcesCompat.getDrawable(getContext().getResources(),

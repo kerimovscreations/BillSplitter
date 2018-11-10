@@ -1,10 +1,11 @@
 package com.kerimovscreations.billsplitter.activities;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.anychart.AnyChart;
 import com.anychart.AnyChartView;
@@ -27,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 public class MainActivity extends BaseActivity {
 
@@ -36,12 +38,20 @@ public class MainActivity extends BaseActivity {
     AnyChartView mAnyChartView;
     @BindView(R.id.rvActiveList)
     RecyclerView mRVActiveList;
+    @BindView(R.id.rvCompletedList)
+    RecyclerView mRVCompletedList;
+    @BindView(R.id.completed_list_drop_down_ic)
+    ImageView mCompletedListDropDownIc;
 
     private TimelineRVAdapter mTimelineAdapter;
     private ShoppingListRVAdapter mActiveShoppingListAdapter;
+    private ShoppingListRVAdapter mCompletedShoppingListAdapter;
 
     private ArrayList<Timeline> mTimeline;
     private ArrayList<ShoppingItem> mActiveShoppingList;
+    private ArrayList<ShoppingItem> mCompletedShoppingList;
+
+    private boolean mIsCompletedListOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +91,12 @@ public class MainActivity extends BaseActivity {
         setupPieChart();
 
         setupActiveList();
+        setupCompletedList();
     }
+
+    /**
+     * UI
+     */
 
     void setupPieChart() {
         Pie pie = AnyChart.pie();
@@ -156,5 +171,53 @@ public class MainActivity extends BaseActivity {
 
         mRVActiveList.setAdapter(mActiveShoppingListAdapter);
         mRVActiveList.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    void setupCompletedList() {
+        mCompletedShoppingList = new ArrayList<>();
+
+        mCompletedShoppingList.add(new ShoppingItem("Item 1", "13 November 2018", true, true));
+        mCompletedShoppingList.add(new ShoppingItem("Item 2", "13 November 2018", true, false));
+        mCompletedShoppingList.add(new ShoppingItem("Item 3", "13 November 2018", true, false));
+        mCompletedShoppingList.add(new ShoppingItem("Item 4", "13 November 2018", true, false));
+        mCompletedShoppingList.add(new ShoppingItem("Item 5", "13 November 2018", true, false));
+
+        mCompletedShoppingListAdapter = new ShoppingListRVAdapter(getContext(), mCompletedShoppingList);
+        mCompletedShoppingListAdapter.setOnItemClickListener(new ShoppingListRVAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+
+            }
+
+            @Override
+            public void onCheckClick(int position) {
+
+            }
+        });
+
+        mRVCompletedList.setAdapter(mCompletedShoppingListAdapter);
+        mRVCompletedList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        updateCompletedListVisibility();
+    }
+
+    void updateCompletedListVisibility() {
+        if (mIsCompletedListOpen) {
+            mCompletedListDropDownIc.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_drop_down, null));
+            mRVCompletedList.setVisibility(View.VISIBLE);
+        } else {
+            mCompletedListDropDownIc.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_drop_up, null));
+            mRVCompletedList.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Click handlers
+     */
+
+    @OnClick(R.id.completed_list_layout)
+    void onCompletedLayout(View view) {
+        mIsCompletedListOpen = !mIsCompletedListOpen;
+        updateCompletedListVisibility();
     }
 }
