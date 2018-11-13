@@ -1,6 +1,8 @@
 package com.kerimovscreations.billsplitter.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +21,7 @@ import com.anychart.enums.LegendLayout;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.ShoppingListRVAdapter;
 import com.kerimovscreations.billsplitter.adapters.TimelineRVAdapter;
+import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.models.Timeline;
 import com.kerimovscreations.billsplitter.tools.BaseActivity;
@@ -31,6 +34,8 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 public class MainActivity extends BaseActivity {
+
+    private static final int SHOPPING_ITEM_EDIT_REQUEST = 1;
 
     @BindView(R.id.rvTimeline)
     RecyclerView mRVTimeline;
@@ -150,17 +155,23 @@ public class MainActivity extends BaseActivity {
     void setupActiveList() {
         mActiveShoppingList = new ArrayList<>();
 
-        mActiveShoppingList.add(new ShoppingItem("Item 1", "13 November 2018", false, true));
-        mActiveShoppingList.add(new ShoppingItem("Item 2", "13 November 2018", false, false));
-        mActiveShoppingList.add(new ShoppingItem("Item 3", "13 November 2018", false, false));
-        mActiveShoppingList.add(new ShoppingItem("Item 4", "13 November 2018", false, false));
-        mActiveShoppingList.add(new ShoppingItem("Item 5", "13 November 2018", false, false));
+        ArrayList<Person> sharedPeople = new ArrayList<>();
+
+        sharedPeople.add(new Person(1, "Karim Karimov"));
+        sharedPeople.add(new Person(1, "Shamil Omarov"));
+        sharedPeople.add(new Person(1, "Parvana Isgandarova"));
+
+        mActiveShoppingList.add(new ShoppingItem("Item 1", "13 November 2018", false, sharedPeople, true));
+        mActiveShoppingList.add(new ShoppingItem("Item 2", "13 November 2018", false, sharedPeople, false));
+        mActiveShoppingList.add(new ShoppingItem("Item 3", "13 November 2018", false, sharedPeople, false));
+        mActiveShoppingList.add(new ShoppingItem("Item 4", "13 November 2018", false, sharedPeople, false));
+        mActiveShoppingList.add(new ShoppingItem("Item 5", "13 November 2018", false, sharedPeople, false));
 
         mActiveShoppingListAdapter = new ShoppingListRVAdapter(getContext(), mActiveShoppingList);
         mActiveShoppingListAdapter.setOnItemClickListener(new ShoppingListRVAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-
+                toShoppingItemDetails(mActiveShoppingList.get(position));
             }
 
             @Override
@@ -176,17 +187,19 @@ public class MainActivity extends BaseActivity {
     void setupCompletedList() {
         mCompletedShoppingList = new ArrayList<>();
 
-        mCompletedShoppingList.add(new ShoppingItem("Item 1", "13 November 2018", true, true));
-        mCompletedShoppingList.add(new ShoppingItem("Item 2", "13 November 2018", true, false));
-        mCompletedShoppingList.add(new ShoppingItem("Item 3", "13 November 2018", true, false));
-        mCompletedShoppingList.add(new ShoppingItem("Item 4", "13 November 2018", true, false));
-        mCompletedShoppingList.add(new ShoppingItem("Item 5", "13 November 2018", true, false));
+        ArrayList<Person> sharedPeople = new ArrayList<>();
+
+        mCompletedShoppingList.add(new ShoppingItem("Item 1", "13 November 2018", true, sharedPeople, true));
+        mCompletedShoppingList.add(new ShoppingItem("Item 2", "13 November 2018", true, sharedPeople, false));
+        mCompletedShoppingList.add(new ShoppingItem("Item 3", "13 November 2018", true, sharedPeople, false));
+        mCompletedShoppingList.add(new ShoppingItem("Item 4", "13 November 2018", true, sharedPeople, false));
+        mCompletedShoppingList.add(new ShoppingItem("Item 5", "13 November 2018", true, sharedPeople, false));
 
         mCompletedShoppingListAdapter = new ShoppingListRVAdapter(getContext(), mCompletedShoppingList);
         mCompletedShoppingListAdapter.setOnItemClickListener(new ShoppingListRVAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-
+                toShoppingItemDetails(mCompletedShoppingList.get(position));
             }
 
             @Override
@@ -219,5 +232,27 @@ public class MainActivity extends BaseActivity {
     void onCompletedLayout(View view) {
         mIsCompletedListOpen = !mIsCompletedListOpen;
         updateCompletedListVisibility();
+    }
+
+    /**
+     * Navigation
+     */
+
+    void toShoppingItemDetails(ShoppingItem item) {
+        Intent intent = new Intent(getContext(), ShoppingItemDetailsActivity.class);
+        intent.putExtra(ShoppingItemDetailsActivity.INTENT_ITEM, item);
+        startActivityForResult(intent, SHOPPING_ITEM_EDIT_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case SHOPPING_ITEM_EDIT_REQUEST:
+                break;
+            default:
+                break;
+        }
     }
 }

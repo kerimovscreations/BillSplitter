@@ -33,4 +33,6 @@
     <string name="purchase_history">Purchase history</string>
     <string name="shopping_list">Shopping list</string>
     <string name="completed">Completed</string>
+    <string name="enter_person">Enter person</string>
+    <string name="plus_icon">Plus icon</string>
 </resources>

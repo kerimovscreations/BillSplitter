@@ -1,16 +1,22 @@
 package com.kerimovscreations.billsplitter.models;
 
-public class ShoppingItem {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ShoppingItem implements Serializable {
 
     private String title, date;
     private boolean isDone = false;
     private boolean isHeader = false;
+    private List<Person> sharedPeople;
 
-    public ShoppingItem(String title, String date, boolean isDone, boolean isHeader) {
+    public ShoppingItem(String title, String date, boolean isDone, List<Person> sharedPeople, boolean isHeader) {
         this.title = title;
         this.date = "13 November 2018";
         this.isDone = isDone;
         this.isHeader = isHeader;
+        this.sharedPeople = sharedPeople;
     }
 
     public String getTitle() {
@@ -47,5 +53,13 @@ public class ShoppingItem {
 
     public void toggleDone() {
         this.isDone = !this.isDone;
+    }
+
+    public List<Person> getSharedPeople() {
+        return sharedPeople;
+    }
+
+    public void setSharedPeople(List<Person> sharedPeople) {
+        this.sharedPeople = sharedPeople;
     }
 }
