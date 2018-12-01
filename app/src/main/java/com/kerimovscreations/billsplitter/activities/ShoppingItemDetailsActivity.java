@@ -104,6 +104,17 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         // Shared people list
 
         mAdapter = new SharedPeopleListRVAdapter(getContext(), mShoppingItem.getSharedPeople());
+        mAdapter.setOnItemClickListener(new SharedPeopleListRVAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                // TODO: open bottom sheet
+            }
+
+            @Override
+            public void onSelect(int position) {
+                // TODO: open bottom sheet
+            }
+        });
 
         mRVSharedPeople.setAdapter(mAdapter);
         mRVSharedPeople.setLayoutManager(new LinearLayoutManager(getContext()));

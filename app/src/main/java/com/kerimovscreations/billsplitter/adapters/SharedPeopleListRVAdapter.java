@@ -3,6 +3,8 @@ package com.kerimovscreations.billsplitter.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,12 +85,12 @@ public class SharedPeopleListRVAdapter extends RecyclerView.Adapter<RecyclerView
     public interface OnItemClickListener {
         void onItemClick(int position);
 
-        void onAdd(int position);
+        void onSelect(int position);
     }
 
     public class ViewHolderEmpty extends RecyclerView.ViewHolder {
         @BindView(R.id.input)
-        EditText input;
+        TextView input;
         @BindView(R.id.layout)
         View layout;
 
@@ -96,6 +98,14 @@ public class SharedPeopleListRVAdapter extends RecyclerView.Adapter<RecyclerView
             super(itemView);
             ButterKnife.bind(this, itemView);
 
+            layout.setOnClickListener(v -> {
+                if (mListener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        mListener.onSelect(position);
+                    }
+                }
+            });
         }
     }
 

@@ -21,6 +21,8 @@ import com.anychart.enums.LegendLayout;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.ShoppingListRVAdapter;
 import com.kerimovscreations.billsplitter.adapters.TimelineRVAdapter;
+import com.kerimovscreations.billsplitter.fragments.dialogs.MenuBottomSheetDialogFragment;
+import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.models.Timeline;
@@ -216,10 +218,10 @@ public class MainActivity extends BaseActivity {
 
     void updateCompletedListVisibility() {
         if (mIsCompletedListOpen) {
-            mCompletedListDropDownIc.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_drop_down, null));
+            mCompletedListDropDownIc.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_drop_up, null));
             mRVCompletedList.setVisibility(View.VISIBLE);
         } else {
-            mCompletedListDropDownIc.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_drop_up, null));
+            mCompletedListDropDownIc.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_drop_down, null));
             mRVCompletedList.setVisibility(View.GONE);
         }
     }
@@ -232,6 +234,26 @@ public class MainActivity extends BaseActivity {
     void onCompletedLayout(View view) {
         mIsCompletedListOpen = !mIsCompletedListOpen;
         updateCompletedListVisibility();
+    }
+
+    @OnClick(R.id.bottom_tab_menu_ic)
+    void onTabMenu(View view) {
+        MenuBottomSheetDialogFragment fragment = MenuBottomSheetDialogFragment.getInstance();
+        fragment.setClickListener(group -> {
+
+        });
+
+        fragment.show(getSupportFragmentManager(), "MENU_TAG");
+    }
+
+    @OnClick(R.id.bottom_tab_menu_ic)
+    void onTabMore(View view) {
+        // TODO: Complete method
+    }
+
+    @OnClick(R.id.add_item_btn)
+    void onAddItem(View view) {
+        // TODO: Complete method
     }
 
     /**

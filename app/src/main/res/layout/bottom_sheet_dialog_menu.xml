@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="0dp"
+    android:orientation="vertical"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="0dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+    <View
+        android:id="@+id/top_pointer_view"
+        android:layout_width="50dp"
+        android:layout_height="6dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_menu_top_pointer" />
+
+    <RelativeLayout
+        android:id="@+id/profile_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/medium_margin"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="@dimen/normal_margin">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/avatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_sample_avatar" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginTop="@dimen/small_margin"
+            android:layout_toEndOf="@id/avatar"
+            android:text="John Doe"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/user_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user_name"
+            android:layout_alignStart="@id/user_name"
+            android:text="email@example.com"
+            android:textColor="@color/colorLightGray"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/user_toggle_ic"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_drop_down" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/logout_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:visibility="visible"
+        android:paddingBottom="@dimen/normal_margin">
+
+        <LinearLayout
+            android:id="@+id/logout_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginStart="@dimen/xnormal_margin"
+            android:background="@drawable/bg_logout_btn"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_logout"
+                android:tint="@color/colorDarkGray" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:gravity="center"
+                android:text="@string/logout"
+                android:textColor="@color/colorDarkGray"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <include layout="@layout/item_divider" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/normal_margin"
+        android:layout_marginBottom="@dimen/medium_margin" />
+
+    <include layout="@layout/item_divider" />
+
+    <RelativeLayout
+        android:id="@+id/create_group_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="@dimen/normal_margin">
+
+        <ImageView
+            android:id="@+id/plus_ic"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_margin="@dimen/medium_margin"
+            android:src="@drawable/ic_plus"
+            android:tint="@color/colorGray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_toEndOf="@id/plus_ic"
+            android:text="@string/create_a_group"
+            android:textColor="@color/colorGray"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <include layout="@layout/item_divider" />
+
+    <LinearLayout
+        android:id="@+id/privacy_policy_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:padding="@dimen/normal_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/privacy_policy"
+            android:textColor="@color/colorDarkGray"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <include layout="@layout/item_divider" />
+</LinearLayout>

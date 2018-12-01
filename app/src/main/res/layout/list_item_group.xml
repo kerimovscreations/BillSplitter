@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:layout_marginStart="@dimen/normal_margin"
+    android:background="@drawable/bg_selected_group"
+    android:padding="@dimen/normal_margin">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/medium_margin"
+        android:text="My list"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/people_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:text="12"
+        android:textColor="@color/colorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/people_ic"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/small_margin"
+        android:layout_toStartOf="@id/people_count"
+        android:src="@drawable/ic_people" />
+</RelativeLayout>
