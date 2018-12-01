@@ -13,6 +13,10 @@ import android.widget.TextView;
 
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.SharedPeopleListRVAdapter;
+import com.kerimovscreations.billsplitter.adapters.spinner.CategorySpinnerAdapter;
+import com.kerimovscreations.billsplitter.models.Category;
+import com.kerimovscreations.billsplitter.models.Group;
+import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.tools.BaseActivity;
 
@@ -87,22 +91,29 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
         mGroupSpinner.setAdapter(dataAdapter);
 
-        // Shopping group
+        // Category spinner
 
-        List<String> categories = new ArrayList<>();
-        categories.add("Drinks");
-        categories.add("Soups");
-        categories.add("Dairy");
-        categories.add("Electronic");
+        List<Category> categories = new ArrayList<>();
 
-        ArrayAdapter<String> categoryDataAdapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()), R.layout.spinner_category_text, categories);
+        categories.add(new Category("Color 1", "#FF7675"));
+        categories.add(new Category("Color 2", "#5E77FF"));
+        categories.add(new Category("Color 3", "#74B9FF"));
+        categories.add(new Category("Color 4", "#A29BFE"));
+        categories.add(new Category("Color 5", "#3AD29F"));
+        categories.add(new Category("Color 6", "#81ECEC"));
+        categories.add(new Category("Color 7", "#FFCA75"));
 
-        dataAdapter.setDropDownViewResource(R.layout.spinner_shopping_group_text);
+        CategorySpinnerAdapter categoryDataAdapter = new CategorySpinnerAdapter(getActivity(),
+                R.layout.spinner_category_text,
+                R.id.title,
+                categories);
 
         mCategorySpinner.setAdapter(categoryDataAdapter);
 
         // Shared people list
 
+        // fake user
+        mShoppingItem.getSharedPeople().add(new Person(-1, "Placeholder"));
         mAdapter = new SharedPeopleListRVAdapter(getContext(), mShoppingItem.getSharedPeople());
         mAdapter.setOnItemClickListener(new SharedPeopleListRVAdapter.OnItemClickListener() {
             @Override

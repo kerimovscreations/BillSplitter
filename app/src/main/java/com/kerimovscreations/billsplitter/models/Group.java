@@ -1,8 +1,9 @@
 package com.kerimovscreations.billsplitter.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Group {
+public class Group implements Serializable {
 
     private String title;
     private ArrayList<Person> members;

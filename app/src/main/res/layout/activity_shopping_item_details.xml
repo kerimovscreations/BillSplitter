@@ -9,7 +9,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+        android:layout_height="?attr/actionBarSize"
+        android:elevation="2dp">
 
         <ImageView
             android:id="@+id/back_ic"
@@ -77,14 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/medium_margin"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/medium_margin">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:layout_gravity="center"
-                        android:src="@color/colorBlue" />
+                    android:orientation="horizontal">
 
                     <Spinner
                         android:id="@+id/category_spinner"

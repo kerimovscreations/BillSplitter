@@ -38,6 +38,7 @@ import butterknife.OnClick;
 public class MainActivity extends BaseActivity {
 
     private static final int SHOPPING_ITEM_EDIT_REQUEST = 1;
+    private static final int GROUP_CREATE_REQUEST = 2;
 
     @BindView(R.id.rvTimeline)
     RecyclerView mRVTimeline;
@@ -239,8 +240,15 @@ public class MainActivity extends BaseActivity {
     @OnClick(R.id.bottom_tab_menu_ic)
     void onTabMenu(View view) {
         MenuBottomSheetDialogFragment fragment = MenuBottomSheetDialogFragment.getInstance();
-        fragment.setClickListener(group -> {
+        fragment.setClickListener(new MenuBottomSheetDialogFragment.OnClickListener() {
+            @Override
+            public void onGroup(Group group) {
+            }
 
+            @Override
+            public void onCreateGroup() {
+                toGroupForm(null);
+            }
         });
 
         fragment.show(getSupportFragmentManager(), "MENU_TAG");
@@ -265,6 +273,16 @@ public class MainActivity extends BaseActivity {
         intent.putExtra(ShoppingItemDetailsActivity.INTENT_ITEM, item);
         startActivityForResult(intent, SHOPPING_ITEM_EDIT_REQUEST);
     }
+
+    void toGroupForm(Group group) {
+        Intent intent = new Intent(getContext(), GroupFormActivity.class);
+        intent.putExtra(GroupFormActivity.INTENT_ITEM, group);
+        startActivityForResult(intent, GROUP_CREATE_REQUEST);
+    }
+
+    /**
+     * Permission and results
+     */
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

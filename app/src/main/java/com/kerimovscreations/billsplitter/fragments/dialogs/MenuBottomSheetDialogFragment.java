@@ -50,13 +50,15 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
     boolean mLogoutBtnVisible = false;
 
-    private ClickListener mListener;
+    private OnClickListener mListener;
 
-    public interface ClickListener {
+    public interface OnClickListener {
         void onGroup(Group group);
+
+        void onCreateGroup();
     }
 
-    public void setClickListener(ClickListener listener) {
+    public void setClickListener(OnClickListener listener) {
         mListener = listener;
     }
 
@@ -132,7 +134,10 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
     @OnClick(R.id.create_group_layout)
     void onCreateGroup() {
-
+        if(mListener != null){
+            mListener.onCreateGroup();
+            dismiss();
+        }
     }
 
     @OnClick(R.id.privacy_policy_layout)

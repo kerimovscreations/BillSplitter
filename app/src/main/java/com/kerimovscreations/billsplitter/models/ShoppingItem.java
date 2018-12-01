@@ -10,6 +10,7 @@ public class ShoppingItem implements Serializable {
     private boolean isDone = false;
     private boolean isHeader = false;
     private List<Person> sharedPeople;
+    private Category category;
 
     public ShoppingItem(String title, String date, boolean isDone, List<Person> sharedPeople, boolean isHeader) {
         this.title = title;
@@ -61,5 +62,13 @@ public class ShoppingItem implements Serializable {
 
     public void setSharedPeople(List<Person> sharedPeople) {
         this.sharedPeople = sharedPeople;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }

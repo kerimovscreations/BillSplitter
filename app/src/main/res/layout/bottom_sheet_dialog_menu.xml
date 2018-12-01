@@ -12,7 +12,7 @@
     <View
         android:id="@+id/top_pointer_view"
         android:layout_width="50dp"
-        android:layout_height="6dp"
+        android:layout_height="4dp"
         android:layout_gravity="center"
         android:background="@drawable/bg_menu_top_pointer" />
 
@@ -66,23 +66,20 @@
         android:id="@+id/logout_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:visibility="visible"
-        android:paddingBottom="@dimen/normal_margin">
+        android:visibility="visible">
 
         <LinearLayout
             android:id="@+id/logout_btn"
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
+            style="?borderlessButtonStyle"
             android:layout_marginStart="@dimen/xnormal_margin"
-            android:background="@drawable/bg_logout_btn"
             android:gravity="center">
 
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/ic_logout"
-                android:tint="@color/colorDarkGray" />
+                android:src="@drawable/ic_logout" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -90,9 +87,8 @@
                 android:layout_marginStart="@dimen/medium_margin"
                 android:gravity="center"
                 android:text="@string/logout"
-                android:textColor="@color/colorDarkGray"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textColor="@color/colorLightGray"
+                android:textSize="16sp" />
         </LinearLayout>
     </RelativeLayout>
 
