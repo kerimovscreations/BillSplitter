@@ -80,9 +80,9 @@ public class SharedPeopleListRVAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     public interface OnItemClickListener {
-        void onItemClick(int position);
-
         void onSelect(int position);
+
+        void onAdd(int position);
     }
 
     public class ViewHolderEmpty extends RecyclerView.ViewHolder {
@@ -99,7 +99,7 @@ public class SharedPeopleListRVAdapter extends RecyclerView.Adapter<RecyclerView
                 if (mListener != null) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
-                        mListener.onSelect(position);
+                        mListener.onAdd(position);
                     }
                 }
             });
@@ -120,7 +120,7 @@ public class SharedPeopleListRVAdapter extends RecyclerView.Adapter<RecyclerView
                 if (mListener != null) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
-                        mListener.onItemClick(position);
+                        mListener.onSelect(position);
                     }
                 }
             });

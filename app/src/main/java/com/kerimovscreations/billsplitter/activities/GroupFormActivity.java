@@ -68,7 +68,7 @@ public class GroupFormActivity extends BaseActivity {
         mAdapter = new SharedPeopleListRVAdapter(getContext(), mGroup.getMembers());
         mAdapter.setOnItemClickListener(new SharedPeopleListRVAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
+            public void onAdd(int position) {
                 // TODO: open bottom sheet
             }
 

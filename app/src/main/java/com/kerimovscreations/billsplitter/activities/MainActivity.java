@@ -54,6 +54,7 @@ public class MainActivity extends BaseActivity {
     private TimelineRVAdapter mTimelineAdapter;
     private ShoppingListRVAdapter mActiveShoppingListAdapter;
     private ShoppingListRVAdapter mCompletedShoppingListAdapter;
+    private MenuBottomSheetDialogFragment mMenuBottomDialogFragment;
 
     private ArrayList<Timeline> mTimeline;
     private ArrayList<ShoppingItem> mActiveShoppingList;
@@ -100,6 +101,7 @@ public class MainActivity extends BaseActivity {
 
         setupActiveList();
         setupCompletedList();
+        setupMenuBottomDialog();
     }
 
     /**
@@ -160,9 +162,9 @@ public class MainActivity extends BaseActivity {
 
         ArrayList<Person> sharedPeople = new ArrayList<>();
 
-        sharedPeople.add(new Person(1, "Karim Karimov"));
-        sharedPeople.add(new Person(1, "Shamil Omarov"));
-        sharedPeople.add(new Person(1, "Parvana Isgandarova"));
+        sharedPeople.add(new Person(1, "Karim Karimov", "user@gmail.com"));
+        sharedPeople.add(new Person(1, "Shamil Omarov", "user@gmail.com"));
+        sharedPeople.add(new Person(1, "Parvana Isgandarova", "user@gmail.com"));
 
         mActiveShoppingList.add(new ShoppingItem("Item 1", "13 November 2018", false, sharedPeople, true));
         mActiveShoppingList.add(new ShoppingItem("Item 2", "13 November 2018", false, sharedPeople, false));
@@ -217,6 +219,10 @@ public class MainActivity extends BaseActivity {
         updateCompletedListVisibility();
     }
 
+    void setupMenuBottomDialog() {
+
+    }
+
     void updateCompletedListVisibility() {
         if (mIsCompletedListOpen) {
             mCompletedListDropDownIc.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_drop_up, null));
@@ -239,8 +245,8 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.bottom_tab_menu_ic)
     void onTabMenu(View view) {
-        MenuBottomSheetDialogFragment fragment = MenuBottomSheetDialogFragment.getInstance();
-        fragment.setClickListener(new MenuBottomSheetDialogFragment.OnClickListener() {
+        mMenuBottomDialogFragment = MenuBottomSheetDialogFragment.getInstance();
+        mMenuBottomDialogFragment.setClickListener(new MenuBottomSheetDialogFragment.OnClickListener() {
             @Override
             public void onGroup(Group group) {
             }
@@ -251,7 +257,7 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        fragment.show(getSupportFragmentManager(), "MENU_TAG");
+        mMenuBottomDialogFragment.show(getSupportFragmentManager(), "MENU_TAG");
     }
 
     @OnClick(R.id.bottom_tab_menu_ic)

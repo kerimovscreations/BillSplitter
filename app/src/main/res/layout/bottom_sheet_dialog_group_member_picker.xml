@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="0dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="0dp"
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/top_pointer_view"
+            android:layout_width="50dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_menu_top_pointer" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/normal_margin" />
+
+        <include layout="@layout/item_divider" />
+
+        <RelativeLayout
+            android:id="@+id/remove_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="@dimen/normal_margin">
+
+            <ImageView
+                android:id="@+id/delete_ic"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="@dimen/medium_margin"
+                android:src="@drawable/ic_delete"
+                android:tint="@color/colorRed" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/medium_margin"
+                android:layout_toEndOf="@id/delete_ic"
+                android:text="Remove"
+                android:textColor="@color/colorRed"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <include layout="@layout/item_divider" />
+
+        <LinearLayout
+            android:id="@+id/cancel_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/cancel_btn"
+                style="?borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                android:textColor="@color/colorLightGray" />
+        </LinearLayout>
+
+        <include layout="@layout/item_divider" />
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

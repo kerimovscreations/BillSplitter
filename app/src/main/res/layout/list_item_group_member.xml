@@ -1,0 +1,45 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <include layout="@layout/item_divider" />
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="@dimen/normal_margin">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/avatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_sample_avatar" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/medium_margin"
+            android:layout_marginTop="@dimen/small_margin"
+            android:layout_toEndOf="@id/avatar"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            tools:text="John Doe" />
+
+        <TextView
+            android:id="@+id/user_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user_name"
+            android:layout_alignStart="@id/user_name"
+            android:textColor="@color/colorLightGray"
+            android:textSize="12sp"
+            tools:text="email@example.com" />
+    </RelativeLayout>
+</LinearLayout>

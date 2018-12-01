@@ -85,20 +85,20 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
         ArrayList<Person> mPeople = new ArrayList<>();
 
-        mPeople.add(new Person(1, "User 1"));
-        mPeople.add(new Person(2, "User 2"));
-        mPeople.add(new Person(3, "User 3"));
-        mPeople.add(new Person(4, "User 4"));
+        mPeople.add(new Person(1, "User 1", "user@gmail.com"));
+        mPeople.add(new Person(2, "User 2", "user@gmail.com"));
+        mPeople.add(new Person(3, "User 3", "user@gmail.com"));
+        mPeople.add(new Person(4, "User 4", "user@gmail.com"));
         mList.add(new Group("My List", mPeople));
 
         ArrayList<Person> mPeople1 = new ArrayList<>();
-        mPeople1.add(new Person(5, "User 5"));
+        mPeople1.add(new Person(5, "User 5", "user@gmail.com"));
         mList.add(new Group("Kocsis dorm", mPeople1));
 
         ArrayList<Person> mPeople2 = new ArrayList<>();
-        mPeople2.add(new Person(6, "User 6"));
-        mPeople2.add(new Person(7, "User 7"));
-        mPeople2.add(new Person(8, "User 8"));
+        mPeople2.add(new Person(6, "User 6", "user@gmail.com"));
+        mPeople2.add(new Person(7, "User 7", "user@gmail.com"));
+        mPeople2.add(new Person(8, "User 8", "user@gmail.com"));
         mList.add(new Group("Vodafone work", mPeople2));
 
         mAdapter = new GroupListRVAdapter(getContext(), mList);

@@ -14,6 +14,8 @@ import android.widget.TextView;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.SharedPeopleListRVAdapter;
 import com.kerimovscreations.billsplitter.adapters.spinner.CategorySpinnerAdapter;
+import com.kerimovscreations.billsplitter.fragments.dialogs.GroupMemberPickerBottomSheetDialogFragment;
+import com.kerimovscreations.billsplitter.fragments.dialogs.MenuBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.models.Category;
 import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.Person;
@@ -117,13 +119,40 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         mAdapter = new SharedPeopleListRVAdapter(getContext(), mShoppingItem.getSharedPeople());
         mAdapter.setOnItemClickListener(new SharedPeopleListRVAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
-                // TODO: open bottom sheet
+            public void onAdd(int position) {
+                GroupMemberPickerBottomSheetDialogFragment fragment = GroupMemberPickerBottomSheetDialogFragment.getInstance();
+                fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
+                    @Override
+                    public void onSelect(Person person) {
+
+                    }
+
+                    @Override
+                    public void onRemove() {
+                        // not used
+                    }
+                });
+
+                fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
             }
 
             @Override
             public void onSelect(int position) {
-                // TODO: open bottom sheet
+                GroupMemberPickerBottomSheetDialogFragment fragment = GroupMemberPickerBottomSheetDialogFragment.getInstance();
+                fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
+                    @Override
+                    public void onSelect(Person person) {
+
+                    }
+
+                    @Override
+                    public void onRemove() {
+                        mShoppingItem.getSharedPeople().remove(position);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+
+                fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
             }
         });
 
@@ -156,7 +185,19 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     @OnClick(R.id.buyer_layout)
     void onBuyer(View view) {
-        // TODO: complete method
+        GroupMemberPickerBottomSheetDialogFragment fragment = GroupMemberPickerBottomSheetDialogFragment.getInstance();
+        fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
+            @Override
+            public void onSelect(Person person) {
+
+            }
+
+            @Override
+            public void onRemove() {
+            }
+        });
+
+        fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
     }
 
     /**

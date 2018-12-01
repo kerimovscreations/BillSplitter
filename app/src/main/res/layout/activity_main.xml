@@ -48,9 +48,9 @@
         android:layout_above="@id/bottom_tab_card"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="-25dp"
-        app:cardElevation="3dp"
         app:cardBackgroundColor="@color/colorPrimary"
-        app:cardCornerRadius="25dp">
+        app:cardCornerRadius="25dp"
+        app:cardElevation="3dp">
 
         <LinearLayout
             android:id="@+id/add_item_btn"
