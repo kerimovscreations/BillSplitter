@@ -23,10 +23,16 @@ public class SharedPeopleListRVAdapter extends RecyclerView.Adapter<RecyclerView
     private SharedPeopleListRVAdapter.OnItemClickListener mListener;
     private List<Person> mList;
     private Context mContext;
+    private boolean mIsEditMode;
 
-    public SharedPeopleListRVAdapter(Context context, List<Person> list) {
+    public SharedPeopleListRVAdapter(Context context, List<Person> list, boolean isEditMode) {
         mList = list;
         mContext = context;
+        mIsEditMode = isEditMode;
+    }
+
+    public boolean isEditMode() {
+        return mIsEditMode;
     }
 
     public Context getContext() {
@@ -83,6 +89,8 @@ public class SharedPeopleListRVAdapter extends RecyclerView.Adapter<RecyclerView
         void onSelect(int position);
 
         void onAdd(int position);
+
+        void onDelete(int position);
     }
 
     public class ViewHolderEmpty extends RecyclerView.ViewHolder {
@@ -109,6 +117,8 @@ public class SharedPeopleListRVAdapter extends RecyclerView.Adapter<RecyclerView
     public class ViewHolderFull extends RecyclerView.ViewHolder {
         @BindView(R.id.title)
         TextView title;
+        @BindView(R.id.delete_btn)
+        View deleteBtn;
         @BindView(R.id.layout)
         View layout;
 
@@ -121,6 +131,16 @@ public class SharedPeopleListRVAdapter extends RecyclerView.Adapter<RecyclerView
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         mListener.onSelect(position);
+                    }
+                }
+            });
+
+            deleteBtn.setVisibility(isEditMode() ? View.VISIBLE : View.GONE);
+            deleteBtn.setOnClickListener(view -> {
+                if (mListener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        mListener.onDelete(position);
                     }
                 }
             });

@@ -66,20 +66,31 @@ public class GroupFormActivity extends BaseActivity {
 
         // fake last item
         mGroup.getMembers().add(new Person(-1, "Placeholder"));
-        mAdapter = new SharedPeopleListRVAdapter(getContext(), mGroup.getMembers());
+        mAdapter = new SharedPeopleListRVAdapter(getContext(), mGroup.getMembers(), true);
         mAdapter.setOnItemClickListener(new SharedPeopleListRVAdapter.OnItemClickListener() {
             @Override
             public void onAdd(int position) {
-                // TODO: open bottom sheet
-                InviteMemberBottomSheetDialogFragment fragment = InviteMemberBottomSheetDialogFragment.getInstance();
-                fragment.setClickListener(new InviteMemberBottomSheetDialogFragment.OnClickListener() {
-                    @Override
-                    public void onSend(String email) {
-                        // TODO: Send invitation
-                    }
-                });
+                if(mGroup.getMembers().get(position).getId() > 0) {
 
-                fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
+                } else {
+                    InviteMemberBottomSheetDialogFragment fragment = InviteMemberBottomSheetDialogFragment.getInstance();
+                    fragment.setClickListener(new InviteMemberBottomSheetDialogFragment.OnClickListener() {
+                        @Override
+                        public void onSend(String email) {
+                            // TODO: Send invitation
+                            mGroup.getMembers().add(mGroup.getMembers().size() - 1, new Person(1, email, email));
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
+
+                    fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
+                }
+            }
+
+            @Override
+            public void onDelete(int position) {
+                mGroup.getMembers().remove(position);
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override

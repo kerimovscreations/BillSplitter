@@ -97,13 +97,12 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
         List<Category> categories = new ArrayList<>();
 
-        categories.add(new Category("Color 1", "#FF7675"));
-        categories.add(new Category("Color 2", "#5E77FF"));
-        categories.add(new Category("Color 3", "#74B9FF"));
-        categories.add(new Category("Color 4", "#A29BFE"));
-        categories.add(new Category("Color 5", "#3AD29F"));
-        categories.add(new Category("Color 6", "#81ECEC"));
-        categories.add(new Category("Color 7", "#FFCA75"));
+        categories.add(new Category("Grocery", "#FF7675"));
+        categories.add(new Category("Meat", "#5E77FF"));
+        categories.add(new Category("Cereals", "#74B9FF"));
+        categories.add(new Category("Electronics", "#A29BFE"));
+        categories.add(new Category("Home items", "#3AD29F"));
+        categories.add(new Category("Pastry", "#81ECEC"));
 
         CategorySpinnerAdapter categoryDataAdapter = new CategorySpinnerAdapter(getActivity(),
                 R.layout.spinner_category_text,
@@ -116,7 +115,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
         // fake user
         mShoppingItem.getSharedPeople().add(new Person(-1, "Placeholder"));
-        mAdapter = new SharedPeopleListRVAdapter(getContext(), mShoppingItem.getSharedPeople());
+        mAdapter = new SharedPeopleListRVAdapter(getContext(), mShoppingItem.getSharedPeople(), true);
         mAdapter.setOnItemClickListener(new SharedPeopleListRVAdapter.OnItemClickListener() {
             @Override
             public void onAdd(int position) {
@@ -134,6 +133,12 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                 });
 
                 fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
+            }
+
+            @Override
+            public void onDelete(int position) {
+                mShoppingItem.getSharedPeople().remove(position);
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override
