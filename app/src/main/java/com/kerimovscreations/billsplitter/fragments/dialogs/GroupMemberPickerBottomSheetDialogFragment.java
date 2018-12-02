@@ -74,6 +74,7 @@ public class GroupMemberPickerBottomSheetDialogFragment extends BottomSheetDialo
         mAdapter.setOnItemClickListener(position -> {
             if (mListener != null) {
                 mListener.onSelect(mList.get(position));
+                dismiss();
             }
         });
 

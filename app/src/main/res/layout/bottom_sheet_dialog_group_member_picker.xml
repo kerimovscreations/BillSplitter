@@ -39,8 +39,8 @@
 
             <ImageView
                 android:id="@+id/delete_ic"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_centerVertical="true"
                 android:layout_margin="@dimen/medium_margin"
                 android:src="@drawable/ic_delete"
@@ -52,6 +52,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/medium_margin"
                 android:layout_toEndOf="@id/delete_ic"
+                android:fontFamily="@font/noto_sans"
                 android:text="Remove"
                 android:textColor="@color/colorRed"
                 android:textSize="16sp" />
@@ -73,6 +74,7 @@
                 style="?borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/noto_sans_bold"
                 android:text="@string/cancel"
                 android:textColor="@color/colorLightGray" />
         </LinearLayout>

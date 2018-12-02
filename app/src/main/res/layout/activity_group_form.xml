@@ -34,7 +34,7 @@
         <!--android:textStyle="bold" />-->
 
         <ImageView
-            android:id="@+id/delete_ic"
+            android:id="@+id/action_btn"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:layout_alignParentEnd="true"
@@ -42,7 +42,8 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="@dimen/normal_margin"
-            android:src="@drawable/ic_delete" />
+            android:tint="@color/colorGreen"
+            android:src="@drawable/ic_check_black_24dp" />
     </RelativeLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -72,7 +73,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
-                        android:hint="Task name"
+                        android:fontFamily="@font/noto_sans_bold"
+                        android:hint="Group name"
                         android:textColor="@color/colorDarkGray"
                         android:textSize="24sp"
                         android:textStyle="bold" />

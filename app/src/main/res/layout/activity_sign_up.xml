@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -16,6 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/normal_margin"
+            android:fontFamily="@font/noto_sans_bold"
             android:text="@string/sign_up"
             android:textColor="@color/colorPrimary"
             android:textSize="28sp" />
@@ -48,6 +50,7 @@
                         android:id="@+id/name_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/noto_sans"
                         android:hint="@string/full_name"
                         android:inputType="textPassword"
                         android:textSize="18sp" />
@@ -74,6 +77,7 @@
                         android:id="@+id/phone_code"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/noto_sans"
                         android:text="@string/sample_country_code"
                         android:textColor="@color/colorAccent"
                         android:textSize="18sp" />
@@ -106,6 +110,7 @@
                         android:id="@+id/phone_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/noto_sans"
                         android:hint="@string/phone_number"
                         android:inputType="phone"
                         android:textSize="18sp" />
@@ -126,6 +131,7 @@
                         android:id="@+id/password_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/noto_sans"
                         android:hint="@string/password"
                         android:inputType="textPassword"
                         android:textSize="18sp" />
@@ -147,6 +153,7 @@
                         android:id="@+id/password_confirm_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/noto_sans"
                         android:hint="@string/confirm_password"
                         android:inputType="textPassword"
                         android:textSize="18sp" />
@@ -162,6 +169,7 @@
             android:layout_marginTop="@dimen/normal_margin"
             android:layout_marginEnd="@dimen/normal_margin"
             android:background="@drawable/bg_primary_btn"
+            android:fontFamily="@font/noto_sans_bold"
             android:text="@string/create_account"
             android:textColor="@color/colorWhite" />
 
@@ -175,6 +183,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_toStartOf="@id/sign_in_text"
                 android:ellipsize="end"
+                android:fontFamily="@font/noto_sans"
                 android:maxLines="1"
                 android:padding="@dimen/normal_margin"
                 android:text="@string/have_an_account_question"
@@ -189,6 +198,7 @@
                 android:layout_alignParentEnd="true"
                 android:clickable="true"
                 android:focusable="true"
+                android:fontFamily="@font/noto_sans_bold"
                 android:padding="@dimen/normal_margin"
                 android:text="@string/sign_in"
                 android:textColor="@color/colorPrimary"

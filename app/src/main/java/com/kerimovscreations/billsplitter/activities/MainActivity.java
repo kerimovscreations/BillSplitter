@@ -267,7 +267,7 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.add_item_btn)
     void onAddItem(View view) {
-        // TODO: Complete method
+        toShoppingItemDetails(null);
     }
 
     /**

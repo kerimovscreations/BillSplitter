@@ -44,6 +44,7 @@
                 android:layout_marginStart="@dimen/medium_margin"
                 android:layout_marginTop="@dimen/small_margin"
                 android:layout_toEndOf="@id/avatar"
+                android:fontFamily="@font/noto_sans"
                 android:text="John Doe"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp" />
@@ -54,6 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/user_name"
                 android:layout_alignStart="@id/user_name"
+                android:fontFamily="@font/noto_sans"
                 android:text="email@example.com"
                 android:textColor="@color/colorLightGray"
                 android:textSize="12sp" />
@@ -90,6 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/medium_margin"
+                    android:fontFamily="@font/noto_sans_bold"
                     android:gravity="center"
                     android:text="@string/logout"
                     android:textColor="@color/colorLightGray"
@@ -132,6 +135,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/medium_margin"
                 android:layout_toEndOf="@id/plus_ic"
+                android:fontFamily="@font/noto_sans"
                 android:text="@string/create_a_group"
                 android:textColor="@color/colorGray"
                 android:textSize="16sp" />
@@ -152,6 +156,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/noto_sans_bold"
                 android:text="@string/privacy_policy"
                 android:textColor="@color/colorDarkGray"
                 android:textSize="14sp"

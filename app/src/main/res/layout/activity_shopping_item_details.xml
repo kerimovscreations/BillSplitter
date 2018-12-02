@@ -24,7 +24,7 @@
             android:tint="@color/colorGray" />
 
         <ImageView
-            android:id="@+id/delete_ic"
+            android:id="@+id/action_btn"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:layout_alignParentEnd="true"
@@ -68,6 +68,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@null"
+                        android:fontFamily="@font/noto_sans_bold"
                         android:hint="Task name"
                         android:textColor="@color/colorDarkGray"
                         android:textSize="24sp"
@@ -110,6 +111,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/normal_margin"
+                        android:fontFamily="@font/noto_sans"
                         android:text="18.11.2018"
                         android:textColor="@color/colorDarkGray"
                         android:textSize="18sp" />
@@ -137,6 +139,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/normal_margin"
+                        android:fontFamily="@font/noto_sans"
                         android:text="20 EUR"
                         android:textColor="@color/colorDarkGray"
                         android:textSize="18sp" />
@@ -164,6 +167,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/normal_margin"
+                        android:fontFamily="@font/noto_sans"
                         android:text="Parvana Isgandarova"
                         android:textColor="@color/colorDarkGray"
                         android:textSize="18sp" />

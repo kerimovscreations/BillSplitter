@@ -19,10 +19,11 @@
 
     <TextView
         android:id="@+id/input"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginStart="@dimen/medium_margin"
+        android:fontFamily="@font/noto_sans"
         android:text="@string/select_person"
         android:textColor="@color/colorLightGray"
         android:textSize="16sp" />

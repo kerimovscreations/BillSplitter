@@ -19,6 +19,7 @@
             android:layout_marginStart="@dimen/normal_margin"
             android:layout_marginEnd="@dimen/normal_margin"
             android:layout_marginBottom="@dimen/normal_margin"
+            android:fontFamily="@font/noto_sans_bold"
             android:text="@string/invite_member"
             android:textColor="@color/colorDarkText"
             android:textSize="23sp"
@@ -35,6 +36,7 @@
                 android:id="@+id/email_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/noto_sans"
                 android:hint="@string/email"
                 android:textSize="18sp" />
         </android.support.design.widget.TextInputLayout>
@@ -54,13 +56,14 @@
 
             <ImageView
                 android:layout_width="28dp"
-                android:layout_height="20dp"
+                android:layout_height="18dp"
                 android:src="@drawable/ic_send_invitation" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/medium_margin"
+                android:fontFamily="@font/noto_sans"
                 android:text="@string/invite"
                 android:textColor="@color/colorGreen"
                 android:textSize="18sp" />
@@ -82,6 +85,7 @@
                 style="?borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/noto_sans_bold"
                 android:text="@string/cancel"
                 android:textColor="@color/colorLightGray" />
         </LinearLayout>

@@ -1,6 +1,8 @@
 package com.kerimovscreations.billsplitter.activities;
 
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,9 +17,7 @@ import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.SharedPeopleListRVAdapter;
 import com.kerimovscreations.billsplitter.adapters.spinner.CategorySpinnerAdapter;
 import com.kerimovscreations.billsplitter.fragments.dialogs.GroupMemberPickerBottomSheetDialogFragment;
-import com.kerimovscreations.billsplitter.fragments.dialogs.MenuBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.models.Category;
-import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.tools.BaseActivity;
@@ -41,8 +41,8 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
     Spinner mGroupSpinner;
     @BindView(R.id.title)
     EditText mTitle;
-    @BindView(R.id.delete_ic)
-    ImageView mDeleteIc;
+    @BindView(R.id.action_btn)
+    ImageView mActionBtn;
     @BindView(R.id.category_spinner)
     Spinner mCategorySpinner;
     @BindView(R.id.date)
@@ -75,10 +75,11 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     void setupData() {
         if (mShoppingItem == null) {
-            mDeleteIc.setVisibility(View.GONE);
+            mActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_check_black_24dp, null));
+            mActionBtn.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorGreen), android.graphics.PorterDuff.Mode.SRC_IN);
             mShoppingItem = new ShoppingItem("", "", false, new ArrayList<>(), false);
         } else {
-            mDeleteIc.setVisibility(View.VISIBLE);
+            mActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_delete, null));
         }
 
         // Shopping group
@@ -123,7 +124,8 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                 fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
                     @Override
                     public void onSelect(Person person) {
-
+                        mShoppingItem.getSharedPeople().add(mShoppingItem.getSharedPeople().size() - 1, person);
+                        mAdapter.notifyDataSetChanged();
                     }
 
                     @Override
@@ -147,7 +149,9 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                 fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
                     @Override
                     public void onSelect(Person person) {
-
+                        mShoppingItem.getSharedPeople().remove(position);
+                        mShoppingItem.getSharedPeople().add(position, person);
+                        mAdapter.notifyDataSetChanged();
                     }
 
                     @Override
@@ -173,9 +177,13 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         finish();
     }
 
-    @OnClick(R.id.delete_ic)
+    @OnClick(R.id.action_btn)
     void onDelete(View view) {
-        promptDeleteDialog();
+        if (mShoppingItem == null) {
+            // TODO: save content
+        } else {
+            promptDeleteDialog();
+        }
     }
 
     @OnClick(R.id.date_layout)

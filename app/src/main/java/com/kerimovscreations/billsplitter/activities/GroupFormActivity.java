@@ -1,6 +1,8 @@
 package com.kerimovscreations.billsplitter.activities;
 
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,8 +32,8 @@ public class GroupFormActivity extends BaseActivity {
     RecyclerView mRVSharedPeople;
     @BindView(R.id.title)
     EditText mTitle;
-    @BindView(R.id.delete_ic)
-    ImageView mDeleteIc;
+    @BindView(R.id.action_btn)
+    ImageView mActionBtn;
 
     Group mGroup;
 
@@ -56,10 +58,12 @@ public class GroupFormActivity extends BaseActivity {
 
     void setupData() {
         if (mGroup == null) {
-            mDeleteIc.setVisibility(View.GONE);
+            mActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_check_black_24dp, null));
+            mActionBtn.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorGreen), android.graphics.PorterDuff.Mode.SRC_IN);
             mGroup = new Group("", new ArrayList<>());
         } else {
-            mDeleteIc.setVisibility(View.VISIBLE);
+            mActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_delete, null));
+//            mActionBtn.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorGray), android.graphics.PorterDuff.Mode.MULTIPLY);
         }
 
         // Shared people list
@@ -70,7 +74,7 @@ public class GroupFormActivity extends BaseActivity {
         mAdapter.setOnItemClickListener(new SharedPeopleListRVAdapter.OnItemClickListener() {
             @Override
             public void onAdd(int position) {
-                if(mGroup.getMembers().get(position).getId() > 0) {
+                if (mGroup.getMembers().get(position).getId() > 0) {
 
                 } else {
                     InviteMemberBottomSheetDialogFragment fragment = InviteMemberBottomSheetDialogFragment.getInstance();
@@ -112,9 +116,13 @@ public class GroupFormActivity extends BaseActivity {
         finish();
     }
 
-    @OnClick(R.id.delete_ic)
-    void onDelete(View view) {
-        promptDeleteDialog();
+    @OnClick(R.id.action_btn)
+    void onAction(View view) {
+        if (mGroup == null) {
+            // TODO: save content
+        } else {
+            promptDeleteDialog();
+        }
     }
 
     /**
