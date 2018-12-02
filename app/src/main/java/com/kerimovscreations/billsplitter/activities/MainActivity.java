@@ -3,21 +3,18 @@ package com.kerimovscreations.billsplitter.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.anychart.AnyChart;
-import com.anychart.AnyChartView;
-import com.anychart.chart.common.dataentry.DataEntry;
-import com.anychart.chart.common.dataentry.ValueDataEntry;
-import com.anychart.chart.common.listener.Event;
-import com.anychart.chart.common.listener.ListenersInterface;
-import com.anychart.charts.Pie;
-import com.anychart.enums.Align;
-import com.anychart.enums.LegendLayout;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.ShoppingListRVAdapter;
 import com.kerimovscreations.billsplitter.adapters.TimelineRVAdapter;
@@ -42,8 +39,10 @@ public class MainActivity extends BaseActivity {
 
     @BindView(R.id.rvTimeline)
     RecyclerView mRVTimeline;
-    @BindView(R.id.any_chart_view)
-    AnyChartView mAnyChartView;
+    //    @BindView(R.id.any_chart_view)
+//    AnyChartView mAnyChartView;
+    @BindView(R.id.pie_chart)
+    PieChart mPieChart;
     @BindView(R.id.rvActiveList)
     RecyclerView mRVActiveList;
     @BindView(R.id.rvCompletedList)
@@ -97,7 +96,7 @@ public class MainActivity extends BaseActivity {
         mRVTimeline.setAdapter(mTimelineAdapter);
         mRVTimeline.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
-        setupPieChart();
+        setupPieChart1();
 
         setupActiveList();
         setupCompletedList();
@@ -108,53 +107,34 @@ public class MainActivity extends BaseActivity {
      * UI
      */
 
-    void setupPieChart() {
-        Pie pie = AnyChart.pie();
+    void setupPieChart1() {
 
-        pie.setOnClickListener(new ListenersInterface.OnClickListener(new String[]{"x", "value"}) {
-            @Override
-            public void onClick(Event event) {
-//                Toast.makeText(getContext(), event.getData().get("x") + ":" + event.getData().get("value"), Toast.LENGTH_SHORT).show();
-            }
-        });
+        List<PieEntry> data = new ArrayList<>();
+        data.add(new PieEntry(100, "Apple"));
+        data.add(new PieEntry(200, "Pears"));
+        data.add(new PieEntry(120, "Grapes"));
+        data.add(new PieEntry(210, "Banana"));
+        data.add(new PieEntry(300, "Oranges"));
 
-        List<DataEntry> data = new ArrayList<>();
-        data.add(new ValueDataEntry("Apples", 100));
-        data.add(new ValueDataEntry("Pears", 200));
-        data.add(new ValueDataEntry("Bananas", 120));
-        data.add(new ValueDataEntry("Grapes", 210));
-        data.add(new ValueDataEntry("Oranges", 230));
+        PieDataSet dataSet = new PieDataSet(data, "");
+        dataSet.setColors(new int[]{
+                R.color.colorRed,
+                R.color.colorBlue,
+                R.color.colorAccent,
+                R.color.colorPink,
+                R.color.colorGreen
+        }, getContext());
+        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
 
-        pie.data(data);
+        PieData pieData = new PieData();
+        pieData.setDataSet(dataSet);
 
-        pie.title().enabled(false);
+        mPieChart.setData(pieData);
+        Description description = new Description();
+        description.setText("Cost statistics by categories");
+        description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorLightGray));
+        mPieChart.setDescription(description);
 
-        pie.labels().position("outside");
-
-        pie.legend().enabled(true);
-        pie.legend().title()
-                .text("Categories")
-                .padding(0d, 0d, 10d, 0d);
-
-        pie.legend()
-                .position("center-bottom")
-                .itemsLayout(LegendLayout.HORIZONTAL)
-                .align(Align.CENTER);
-
-//        pie.background().fill("#eeeeee 1.0");
-
-        String[] colors = new String[7];
-        colors[0] = "#FF7675 1.0";
-        colors[1] = "#5E77FF 1.0";
-        colors[2] = "#74B9FF 1.0";
-        colors[3] = "#A29BFE 1.0";
-        colors[4] = "#3AD29F 1.0";
-        colors[5] = "#81ECEC 1.0";
-        colors[6] = "#FFCA75 1.0";
-
-        pie.palette(colors);
-
-        mAnyChartView.setChart(pie);
     }
 
     void setupActiveList() {

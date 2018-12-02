@@ -115,13 +115,12 @@
                 android:paddingEnd="@dimen/medium_margin"
                 android:visibility="visible" />
 
-            <com.anychart.AnyChartView
-                android:id="@+id/any_chart_view"
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/pie_chart"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="@dimen/medium_margin"
-                android:background="#eeeeee" />
+                android:layout_marginTop="@dimen/medium_margin" />
 
             <View
                 android:layout_width="match_parent"
