@@ -1,7 +1,7 @@
 package com.kerimovscreations.billsplitter.activities;
 
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.SharedPeopleListRVAdapter;
+import com.kerimovscreations.billsplitter.fragments.dialogs.InviteMemberBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.tools.BaseActivity;
@@ -70,6 +71,15 @@ public class GroupFormActivity extends BaseActivity {
             @Override
             public void onAdd(int position) {
                 // TODO: open bottom sheet
+                InviteMemberBottomSheetDialogFragment fragment = InviteMemberBottomSheetDialogFragment.getInstance();
+                fragment.setClickListener(new InviteMemberBottomSheetDialogFragment.OnClickListener() {
+                    @Override
+                    public void onSend(String email) {
+                        // TODO: Send invitation
+                    }
+                });
+
+                fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
             }
 
             @Override
@@ -85,6 +95,7 @@ public class GroupFormActivity extends BaseActivity {
     /**
      * Click handlers
      */
+
     @OnClick(R.id.back_ic)
     void onBack(View view) {
         finish();
@@ -98,6 +109,7 @@ public class GroupFormActivity extends BaseActivity {
     /**
      * UI
      */
+
     void promptDeleteDialog() {
         // TODO: Complete method
     }
