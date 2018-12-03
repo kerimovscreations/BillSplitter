@@ -26,6 +26,7 @@ import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.SharedPeopleListRVAdapter;
 import com.kerimovscreations.billsplitter.adapters.spinner.CategorySpinnerAdapter;
 import com.kerimovscreations.billsplitter.fragments.dialogs.GroupMemberPickerBottomSheetDialogFragment;
+import com.kerimovscreations.billsplitter.fragments.dialogs.PricePickerBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.models.Category;
 import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
@@ -247,7 +248,15 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     @OnClick(R.id.price_layout)
     void onPrice(View view) {
-        // TODO: complete method
+        PricePickerBottomSheetDialogFragment fragment = PricePickerBottomSheetDialogFragment.getInstance();
+        fragment.setClickListener(new PricePickerBottomSheetDialogFragment.OnClickListener() {
+            @Override
+            public void onSubmit(Float price) {
+                mPrice.setText(String.format(Locale.getDefault(), "%.2f", price));
+            }
+        });
+
+        fragment.show(getSupportFragmentManager(), "PRICE_TAG");
     }
 
     @OnClick(R.id.qr_scan_btn)

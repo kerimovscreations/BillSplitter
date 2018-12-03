@@ -47,4 +47,6 @@
     <string name="delete_all_done_items">Delete all done items</string>
     <string name="delete_group">Delete group</string>
     <string name="edit_group">Edit group</string>
+    <string name="price">Price</string>
+    <string name="okay">Okay</string>
 </resources>
