@@ -42,6 +42,9 @@
     <string name="invite_member">Invite member</string>
     <string name="email">Email</string>
     <string name="invite">Invite</string>
-    <string name="server_client_id">129995393139-0or4578c7apclop4glqrlnttitf4mhpm.apps.googleusercontent.com</string>
+    <string name="server_client_id" translatable="false">129995393139-0or4578c7apclop4glqrlnttitf4mhpm.apps.googleusercontent.com</string>
     <string name="select_currency">Select currency</string>
+    <string name="delete_all_done_items">Delete all done items</string>
+    <string name="delete_group">Delete group</string>
+    <string name="edit_group">Edit group</string>
 </resources>

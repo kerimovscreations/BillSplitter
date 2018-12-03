@@ -18,6 +18,7 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.ShoppingListRVAdapter;
 import com.kerimovscreations.billsplitter.adapters.TimelineRVAdapter;
+import com.kerimovscreations.billsplitter.fragments.dialogs.GroupEditBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.fragments.dialogs.MenuBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.Person;
@@ -240,9 +241,29 @@ public class MainActivity extends BaseActivity {
         mMenuBottomDialogFragment.show(getSupportFragmentManager(), "MENU_TAG");
     }
 
-    @OnClick(R.id.bottom_tab_menu_ic)
+    @OnClick(R.id.bottom_tab_more_ic)
     void onTabMore(View view) {
-        // TODO: Complete method
+
+        GroupEditBottomSheetDialogFragment fragment = GroupEditBottomSheetDialogFragment.getInstance();
+        fragment.setClickListener(new GroupEditBottomSheetDialogFragment.OnClickListener() {
+
+            @Override
+            public void onDelete() {
+                // TODO: API Integration
+            }
+
+            @Override
+            public void onEdit() {
+                // TODO: API Integration
+            }
+
+            @Override
+            public void onDeleteItems() {
+                // TODO: API Integration
+            }
+        });
+
+        fragment.show(getSupportFragmentManager(), "MORE_TAG");
     }
 
     @OnClick(R.id.add_item_btn)
@@ -276,6 +297,7 @@ public class MainActivity extends BaseActivity {
 
         switch (requestCode) {
             case SHOPPING_ITEM_EDIT_REQUEST:
+                // TODO: Update UI
                 break;
             default:
                 break;

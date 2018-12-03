@@ -65,12 +65,10 @@ public class GroupFormActivity extends BaseActivity {
 
     void setupData() {
         if (mGroup == null) {
-            mActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_check_black_24dp, null));
-            mActionBtn.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorGreen), android.graphics.PorterDuff.Mode.SRC_IN);
             mGroup = new Group("", new ArrayList<>());
+            mActionBtn.setVisibility(View.VISIBLE);
         } else {
-            mActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_delete, null));
-//            mActionBtn.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorGray), android.graphics.PorterDuff.Mode.MULTIPLY);
+            mActionBtn.setVisibility(View.GONE);
         }
 
         // Shared people list
