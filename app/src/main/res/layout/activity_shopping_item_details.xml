@@ -82,7 +82,7 @@
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:fontFamily="@font/noto_sans_bold"
-                        android:hint="Task name"
+                        android:hint="@string/title"
                         android:textColor="@color/colorDarkGray"
                         android:textSize="24sp"
                         android:layout_marginEnd="@dimen/medium_margin"

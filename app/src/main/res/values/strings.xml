@@ -49,4 +49,7 @@
     <string name="edit_group">Edit group</string>
     <string name="price">Price</string>
     <string name="okay">Okay</string>
+    <string name="ask_delete_item">Are you sure to delete this item?</string>
+    <string name="delete">Delete</string>
+    <string name="title">Title</string>
 </resources>

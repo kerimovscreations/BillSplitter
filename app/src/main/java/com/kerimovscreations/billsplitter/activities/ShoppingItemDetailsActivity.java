@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.SharedPeopleListRVAdapter;
 import com.kerimovscreations.billsplitter.adapters.spinner.CategorySpinnerAdapter;
+import com.kerimovscreations.billsplitter.fragments.dialogs.DeleteItemBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.fragments.dialogs.GroupMemberPickerBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.fragments.dialogs.PricePickerBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.models.Category;
@@ -157,9 +158,6 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
         mCategorySpinner.setAdapter(categoryDataAdapter);
 
-        // Date
-
-
         // Shared people list
 
         // fake user
@@ -236,8 +234,6 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     @OnClick(R.id.date_layout)
     void onDate(View view) {
-
-
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), date,
                 myCalendar.get(Calendar.YEAR),
                 myCalendar.get(Calendar.MONTH),
@@ -290,8 +286,18 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
     /**
      * UI
      */
+
     void promptDeleteDialog() {
-        // TODO: Complete method
+        DeleteItemBottomSheetDialogFragment fragment = DeleteItemBottomSheetDialogFragment.getInstance();
+        fragment.setClickListener(new DeleteItemBottomSheetDialogFragment.OnClickListener() {
+
+            @Override
+            public void onDelete() {
+                // TODO: API Integration
+            }
+        });
+
+        fragment.show(getSupportFragmentManager(), "MORE_TAG");
     }
 
     boolean mShouldOpenScan = false;
