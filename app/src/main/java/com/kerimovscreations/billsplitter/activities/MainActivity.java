@@ -70,7 +70,7 @@ public class MainActivity extends BaseActivity {
 //            initVars();
 //        else {
 //            finish();
-//            startActivity(new Intent(getContext(), AuthActivity.class));
+//            startActivity(new Intent(getContext(), LoginActivity.class));
 //        }
     }
 

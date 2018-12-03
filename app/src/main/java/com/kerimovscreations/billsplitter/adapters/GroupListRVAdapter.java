@@ -14,7 +14,8 @@ import android.widget.TextView;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.models.Group;
 
-import java.util.List;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,11 +23,11 @@ import butterknife.ButterKnife;
 public class GroupListRVAdapter extends RecyclerView.Adapter<GroupListRVAdapter.ViewHolder> {
 
     private OnItemClickListener mListener;
-    private List<Group> mList;
+    private ArrayList<Group> mList;
     private Context mContext;
     private int mSelectedIndex = 0;
 
-    public GroupListRVAdapter(Context context, List<Group> list) {
+    public GroupListRVAdapter(Context context, ArrayList<Group> list) {
         mList = list;
         mContext = context;
     }
@@ -35,7 +36,7 @@ public class GroupListRVAdapter extends RecyclerView.Adapter<GroupListRVAdapter.
         return mContext;
     }
 
-    public int getSelectedIndex() {
+    private int getSelectedIndex() {
         return mSelectedIndex;
     }
 
@@ -43,6 +44,7 @@ public class GroupListRVAdapter extends RecyclerView.Adapter<GroupListRVAdapter.
         mListener = listener;
     }
 
+    @NonNull
     @Override
     public GroupListRVAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
