@@ -4,20 +4,25 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.SharedPeopleListRVAdapter;
 import com.kerimovscreations.billsplitter.fragments.dialogs.InviteMemberBottomSheetDialogFragment;
+import com.kerimovscreations.billsplitter.models.Currency;
 import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.tools.BaseActivity;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -32,6 +37,8 @@ public class GroupFormActivity extends BaseActivity {
     RecyclerView mRVSharedPeople;
     @BindView(R.id.title)
     EditText mTitle;
+    @BindView(R.id.currency)
+    TextView mCurrency;
     @BindView(R.id.action_btn)
     ImageView mActionBtn;
 
@@ -116,6 +123,11 @@ public class GroupFormActivity extends BaseActivity {
         finish();
     }
 
+    @OnClick(R.id.currency_layout)
+    void onCurrency(View view) {
+        promptCurrencyPickerDialog();
+    }
+
     @OnClick(R.id.action_btn)
     void onAction(View view) {
         if (mGroup == null) {
@@ -131,5 +143,24 @@ public class GroupFormActivity extends BaseActivity {
 
     void promptDeleteDialog() {
         // TODO: Complete method
+    }
+
+    void promptCurrencyPickerDialog() {
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(getContext());
+        builderSingle.setIcon(R.drawable.ic_select_currency);
+        builderSingle.setTitle(getString(R.string.select_currency));
+
+        final ArrayAdapter<Currency> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.select_dialog_item);
+        arrayAdapter.addAll(Objects.requireNonNull(Currency.loadArrayFromAsset(getContext(), "currency.json")));
+
+        builderSingle.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss());
+
+        builderSingle.setAdapter(arrayAdapter, (dialog, position) -> {
+            Currency code = arrayAdapter.getItem(position);
+
+            if (code != null)
+                mCurrency.setText(code.toString());
+        });
+        builderSingle.show();
     }
 }

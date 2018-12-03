@@ -1,0 +1,22 @@
+[
+  {
+    "name" : "European Euro",
+    "code" : "EUR"
+  },
+  {
+    "name" : "US Dollar",
+    "code" : "USD"
+  },
+  {
+    "name" : "Russian Rub",
+    "code" : "RUB"
+  },
+  {
+    "name" : "Turkish Lira",
+    "code" : "TRY"
+  },
+  {
+    "name" : "Azerbaijani Manat",
+    "code" : "AZN"
+  }
+]
