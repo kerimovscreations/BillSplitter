@@ -63,6 +63,19 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/medium_margin">
 
+                    <ImageView
+                        android:id="@+id/qr_scan_btn"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="@dimen/small_margin"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:tint="@color/colorPrimary"
+                        android:src="@drawable/ic_qr_code_scan" />
+
                     <EditText
                         android:id="@+id/title"
                         android:layout_width="match_parent"
@@ -72,6 +85,8 @@
                         android:hint="Task name"
                         android:textColor="@color/colorDarkGray"
                         android:textSize="24sp"
+                        android:layout_marginEnd="@dimen/medium_margin"
+                        android:layout_toStartOf="@id/qr_scan_btn"
                         android:textStyle="bold" />
                 </RelativeLayout>
 
@@ -197,7 +212,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/medium_margin"
-                        android:layout_toEndOf="@id/share_ic"/>
+                        android:layout_toEndOf="@id/share_ic" />
                 </RelativeLayout>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>

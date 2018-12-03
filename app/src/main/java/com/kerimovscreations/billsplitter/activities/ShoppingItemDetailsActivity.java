@@ -1,6 +1,13 @@
 package com.kerimovscreations.billsplitter.activities;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.SharedPeopleListRVAdapter;
@@ -32,6 +40,8 @@ import butterknife.OnClick;
 public class ShoppingItemDetailsActivity extends BaseActivity {
 
     public static final String INTENT_ITEM = "ITEM";
+    public static final int REQUEST_BAR_CODE_READ = 4;
+    public static final int PERMISSION_REQUEST_CAMERA = 5;
 
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
@@ -60,6 +70,16 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.onCreateSetContentView(R.layout.activity_shopping_item_details);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mShouldOpenScan) {
+            mShouldOpenScan = false;
+            onQRScan();
+        }
     }
 
     @Override
@@ -196,6 +216,17 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         // TODO: complete method
     }
 
+    @OnClick(R.id.qr_scan_btn)
+    void onQRScan() {
+        if (!hasCameraPermission()) {
+            requestCameraAccess();
+            return;
+        }
+
+        Intent intent = new Intent(getContext(), BarScannerActivity.class);
+        startActivityForResult(intent, REQUEST_BAR_CODE_READ);
+    }
+
     @OnClick(R.id.buyer_layout)
     void onBuyer(View view) {
         GroupMemberPickerBottomSheetDialogFragment fragment = GroupMemberPickerBottomSheetDialogFragment.getInstance();
@@ -218,5 +249,51 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
      */
     void promptDeleteDialog() {
         // TODO: Complete method
+    }
+
+    boolean mShouldOpenScan = false;
+
+    boolean hasCameraPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
+        } else {
+            return true;
+        }
+    }
+
+    void requestCameraAccess() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA},
+                    PERMISSION_REQUEST_CAMERA);
+        }
+    }
+
+    /**
+     * Permission and results
+     */
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+
+            case PERMISSION_REQUEST_CAMERA:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mShouldOpenScan = true;
+                }
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_BAR_CODE_READ) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+//                    Toast.makeText(getContext(), data.getStringExtra(BarScannerActivity.BAR_CODE), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 }
