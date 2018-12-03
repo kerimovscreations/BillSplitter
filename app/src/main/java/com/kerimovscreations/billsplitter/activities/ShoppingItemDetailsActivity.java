@@ -2,6 +2,7 @@ package com.kerimovscreations.billsplitter.activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -15,11 +16,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.SharedPeopleListRVAdapter;
@@ -30,8 +31,11 @@ import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.tools.BaseActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -66,6 +70,24 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     SharedPeopleListRVAdapter mAdapter;
 
+    private String mSelectedDate;
+    private Calendar myCalendar;
+
+    private DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                              int dayOfMonth) {
+            myCalendar.set(Calendar.YEAR, year);
+            myCalendar.set(Calendar.MONTH, monthOfYear);
+            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+
+            mSelectedDate = sdf.format(myCalendar.getTime());
+            mDate.setText(mSelectedDate);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +111,8 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         mShoppingItem = (ShoppingItem) getIntent().getSerializableExtra(INTENT_ITEM);
 
         mSwipeRefreshLayout.setOnRefreshListener(() -> mSwipeRefreshLayout.setRefreshing(false));
+
+        myCalendar = Calendar.getInstance();
 
         setupData();
     }
@@ -131,6 +155,9 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                 categories);
 
         mCategorySpinner.setAdapter(categoryDataAdapter);
+
+        // Date
+
 
         // Shared people list
 
@@ -208,7 +235,14 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     @OnClick(R.id.date_layout)
     void onDate(View view) {
-        // TODO: complete method
+
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), date,
+                myCalendar.get(Calendar.YEAR),
+                myCalendar.get(Calendar.MONTH),
+                myCalendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.getDatePicker().setMinDate(myCalendar.getTimeInMillis());
+        datePickerDialog.show();
     }
 
     @OnClick(R.id.price_layout)
