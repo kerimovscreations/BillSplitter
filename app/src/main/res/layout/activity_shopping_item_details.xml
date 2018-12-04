@@ -197,6 +197,7 @@
                         android:layout_centerVertical="true"
                         android:contentDescription="@string/plus_icon"
                         android:padding="@dimen/small_margin"
+                        android:layout_marginEnd="@dimen/medium_margin"
                         android:src="@drawable/ic_plus"
                         android:tint="@color/colorGreen" />
                 </RelativeLayout>

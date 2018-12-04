@@ -71,12 +71,12 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         super.onCreateSetContentView(R.layout.activity_main);
 
-        if (Auth.getInstance().isLogged(getContext()))
-            initVars();
-        else {
-            finish();
-            startActivity(new Intent(getContext(), LoginActivity.class));
-        }
+//        if (Auth.getInstance().isLogged(getContext()))
+//            initVars();
+//        else {
+//            finish();
+//            startActivity(new Intent(getContext(), LoginActivity.class));
+//        }
     }
 
     @Override
