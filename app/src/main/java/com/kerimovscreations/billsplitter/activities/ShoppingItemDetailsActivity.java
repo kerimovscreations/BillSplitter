@@ -47,7 +47,8 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     public static final String INTENT_ITEM = "ITEM";
     public static final int REQUEST_BAR_CODE_READ = 4;
-    public static final int PERMISSION_REQUEST_CAMERA = 5;
+    public static final int REQUEST_BAR_CODE_SEARCH = 5;
+    public static final int PERMISSION_REQUEST_CAMERA = 6;
 
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
@@ -67,6 +68,14 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
     TextView mPrice;
     @BindView(R.id.buyer)
     TextView mBuyer;
+    @BindView(R.id.qr_code_action_btn)
+    ImageView mQRCodeActionBtn;
+    @BindView(R.id.qr_code)
+    TextView mQRCode;
+    @BindView(R.id.qr_code_layout)
+    View mQRCodeLayout;
+    @BindView(R.id.qr_scan_btn)
+    View mQRSearchBtn;
 
     ShoppingItem mShoppingItem;
 
@@ -74,6 +83,9 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     private String mSelectedDate;
     private Calendar myCalendar;
+
+    boolean mShouldOpenQRSearch = false;
+    boolean mShouldOpenQRRead = false;
 
     private DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
@@ -100,9 +112,12 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        if (mShouldOpenScan) {
-            mShouldOpenScan = false;
+        if (mShouldOpenQRSearch) {
+            mShouldOpenQRSearch = false;
             onQRScan();
+        } else if(mShouldOpenQRRead) {
+            mShouldOpenQRRead = false;
+            onQRCodeLayout();
         }
     }
 
@@ -124,8 +139,12 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
             mActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_check_black_24dp, null));
             mActionBtn.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorGreen), android.graphics.PorterDuff.Mode.SRC_IN);
             mShoppingItem = new ShoppingItem("", "", false, new ArrayList<>(), false);
+            mQRCodeLayout.setVisibility(View.GONE);
+            mQRSearchBtn.setVisibility(View.VISIBLE);
         } else {
             mActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_delete, null));
+            mQRCodeLayout.setVisibility(View.VISIBLE);
+            mQRSearchBtn.setVisibility(View.GONE);
         }
 
         // Shopping group
@@ -258,12 +277,13 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
     @OnClick(R.id.qr_scan_btn)
     void onQRScan() {
         if (!hasCameraPermission()) {
+            mShouldOpenQRSearch = true;
             requestCameraAccess();
             return;
         }
 
         Intent intent = new Intent(getContext(), BarScannerActivity.class);
-        startActivityForResult(intent, REQUEST_BAR_CODE_READ);
+        startActivityForResult(intent, REQUEST_BAR_CODE_SEARCH);
     }
 
     @OnClick(R.id.buyer_layout)
@@ -283,6 +303,18 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
     }
 
+    @OnClick(R.id.qr_code_layout)
+    void onQRCodeLayout() {
+        if (!hasCameraPermission()) {
+            mShouldOpenQRRead = true;
+            requestCameraAccess();
+            return;
+        }
+
+        Intent intent = new Intent(getContext(), BarScannerActivity.class);
+        startActivityForResult(intent, REQUEST_BAR_CODE_READ);
+    }
+
     /**
      * UI
      */
@@ -299,8 +331,6 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
         fragment.show(getSupportFragmentManager(), "MORE_TAG");
     }
-
-    boolean mShouldOpenScan = false;
 
     boolean hasCameraPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -327,7 +357,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
             case PERMISSION_REQUEST_CAMERA:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mShouldOpenScan = true;
+
                 }
                 break;
         }
@@ -338,6 +368,13 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_BAR_CODE_READ) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    mQRCode.setText(data.getStringExtra(BarScannerActivity.BAR_CODE));
+//                    Toast.makeText(getContext(), data.getStringExtra(BarScannerActivity.BAR_CODE), Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else if (requestCode == REQUEST_BAR_CODE_SEARCH) {
             if (resultCode == Activity.RESULT_OK) {
                 if (data != null) {
 //                    Toast.makeText(getContext(), data.getStringExtra(BarScannerActivity.BAR_CODE), Toast.LENGTH_SHORT).show();

@@ -63,7 +63,7 @@
                 android:orientation="vertical"
                 android:paddingStart="@dimen/normal_margin"
                 android:paddingEnd="@dimen/normal_margin"
-                android:paddingBottom="@dimen/medium_margin">
+                android:paddingBottom="@dimen/large_margin">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/avatar"
