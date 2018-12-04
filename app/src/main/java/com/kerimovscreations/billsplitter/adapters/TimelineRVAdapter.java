@@ -1,6 +1,7 @@
 package com.kerimovscreations.billsplitter.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -58,8 +59,10 @@ public class TimelineRVAdapter extends RecyclerView.Adapter<TimelineRVAdapter.Vi
 
         if (position == mSelectedIndex) {
             viewHolder.title.setAlpha(1.0f);
+            viewHolder.title.setTypeface(null, Typeface.BOLD);
         } else {
             viewHolder.title.setAlpha(0.5f);
+            viewHolder.title.setTypeface(null, Typeface.NORMAL);
         }
     }
 

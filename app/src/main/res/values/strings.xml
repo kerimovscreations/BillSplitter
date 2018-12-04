@@ -52,4 +52,9 @@
     <string name="ask_delete_item">Are you sure to delete this item?</string>
     <string name="delete">Delete</string>
     <string name="title">Title</string>
+    <string name="edit_profile_info">Edit profile info</string>
+    <string name="current_password">Current password</string>
+    <string name="password_change">Password change</string>
+    <string name="new_password">New password</string>
+    <string name="confirm_new_password">Confirm new password</string>
 </resources>

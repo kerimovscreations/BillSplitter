@@ -29,11 +29,8 @@ public class LoginActivity extends BaseActivity {
 
     private final int REQUEST_GOOGLE_SIGN_IN = 2;
 
-    @BindView(R.id.phone_code)
-    TextView mPhoneCode;
-
-    @BindView(R.id.phone_input)
-    TextInputEditText mPhoneInput;
+    @BindView(R.id.email_input)
+    TextInputEditText mEmailInput;
 
     @BindView(R.id.password_input)
     TextInputEditText mPasswordInput;
@@ -60,11 +57,6 @@ public class LoginActivity extends BaseActivity {
     /**
      * Click handlers
      */
-
-    @OnClick(R.id.phone_code_layout)
-    void onPhoneCode(View view) {
-        promptPhoneCodeDialog();
-    }
 
     @OnClick(R.id.forgot_pass_text)
     void onForgetPass(View view) {
@@ -109,25 +101,6 @@ public class LoginActivity extends BaseActivity {
     /**
      * UI
      */
-
-    void promptPhoneCodeDialog() {
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(getContext());
-        builderSingle.setIcon(R.drawable.ic_language_select);
-        builderSingle.setTitle(getString(R.string.select_country));
-
-        final ArrayAdapter<CountryCode> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.select_dialog_item);
-        arrayAdapter.addAll(Objects.requireNonNull(CountryCode.loadArrayFromAsset(getContext(), "countryCodes.json")));
-
-        builderSingle.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss());
-
-        builderSingle.setAdapter(arrayAdapter, (dialog, position) -> {
-            CountryCode code = arrayAdapter.getItem(position);
-
-            if (code != null)
-                mPhoneCode.setText(String.format("+%s", code.getDialCode()));
-        });
-        builderSingle.show();
-    }
 
     /**
      * Navigation

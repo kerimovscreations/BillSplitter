@@ -56,6 +56,8 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
         void onGroup(Group group);
 
         void onCreateGroup();
+
+        void editProfile();
     }
 
     public void setClickListener(OnClickListener listener) {
@@ -130,6 +132,14 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
     void onProfile() {
         mLogoutBtnVisible = !mLogoutBtnVisible;
         updateLogoutBtnVisibility();
+    }
+
+    @OnClick(R.id.edit_btn)
+    void onEditProfile() {
+        if(mListener != null){
+            mListener.editProfile();
+            dismiss();
+        }
     }
 
     @OnClick(R.id.create_group_layout)

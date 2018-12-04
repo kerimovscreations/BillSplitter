@@ -19,11 +19,8 @@ import butterknife.OnClick;
 
 public class ForgotPasswordFormActivity extends BaseActivity {
 
-    @BindView(R.id.phone_code)
-    TextView mPhoneCode;
-
-    @BindView(R.id.phone_input)
-    TextInputEditText mPhoneInput;
+    @BindView(R.id.email_input)
+    TextInputEditText mEmailInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,33 +38,9 @@ public class ForgotPasswordFormActivity extends BaseActivity {
         toForgotPasswordConfirm("TEST_CODE");
     }
 
-    @OnClick(R.id.phone_code_layout)
-    void onPhoneCode(View view) {
-        promptPhoneCodeDialog();
-    }
-
     /**
      * UI
      */
-
-    void promptPhoneCodeDialog() {
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(getContext());
-        builderSingle.setIcon(R.drawable.ic_language_select);
-        builderSingle.setTitle(getString(R.string.select_country));
-
-        final ArrayAdapter<CountryCode> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.select_dialog_item);
-        arrayAdapter.addAll(Objects.requireNonNull(CountryCode.loadArrayFromAsset(getContext(), "countryCodes.json")));
-
-        builderSingle.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss());
-
-        builderSingle.setAdapter(arrayAdapter, (dialog, position) -> {
-            CountryCode code = arrayAdapter.getItem(position);
-
-            if (code != null)
-                mPhoneCode.setText(String.format("+%s", code.getDialCode()));
-        });
-        builderSingle.show();
-    }
 
     /**
      * Navigation

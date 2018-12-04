@@ -101,7 +101,7 @@
                 android:layout_marginBottom="@dimen/normal_margin"
                 android:fontFamily="@font/noto_sans_bold"
                 android:text="@string/purchase_history"
-                android:textColor="#778CA3"
+                android:textColor="@color/colorDarkText"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
@@ -138,7 +138,7 @@
                 android:layout_margin="@dimen/normal_margin"
                 android:fontFamily="@font/noto_sans_bold"
                 android:text="@string/shopping_list"
-                android:textColor="#778CA3"
+                android:textColor="@color/colorDarkText"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
@@ -170,7 +170,7 @@
                     android:layout_margin="@dimen/normal_margin"
                     android:fontFamily="@font/noto_sans_bold"
                     android:text="@string/completed"
-                    android:textColor="#778CA3"
+                    android:textColor="@color/colorDarkText"
                     android:textSize="22sp"
                     android:textStyle="bold" />
 

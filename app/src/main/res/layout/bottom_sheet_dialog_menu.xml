@@ -76,11 +76,37 @@
             android:visibility="visible">
 
             <LinearLayout
-                android:id="@+id/logout_btn"
+                android:id="@+id/edit_btn"
                 style="?borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/xnormal_margin"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_edit" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/medium_margin"
+                    android:fontFamily="@font/noto_sans_bold"
+                    android:gravity="center"
+                    android:text="@string/edit_profile_info"
+                    android:textColor="@color/colorLightGray"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/logout_btn"
+                style="?borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/edit_btn"
+                android:layout_marginStart="@dimen/xnormal_margin"
+                android:layout_marginTop="@dimen/medium_margin"
                 android:gravity="center">
 
                 <ImageView

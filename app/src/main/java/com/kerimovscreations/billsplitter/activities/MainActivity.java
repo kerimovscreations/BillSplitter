@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -16,6 +17,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.kerimovscreations.billsplitter.R;
+import com.kerimovscreations.billsplitter.activities.auth.LoginActivity;
 import com.kerimovscreations.billsplitter.adapters.ShoppingListRVAdapter;
 import com.kerimovscreations.billsplitter.adapters.TimelineRVAdapter;
 import com.kerimovscreations.billsplitter.fragments.dialogs.GroupEditBottomSheetDialogFragment;
@@ -24,6 +26,7 @@ import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.models.Timeline;
+import com.kerimovscreations.billsplitter.tools.Auth;
 import com.kerimovscreations.billsplitter.tools.BaseActivity;
 
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ public class MainActivity extends BaseActivity {
 
     private static final int SHOPPING_ITEM_EDIT_REQUEST = 1;
     private static final int GROUP_CREATE_REQUEST = 2;
+    private static final int EDIT_PROFILE_REQUEST = 3;
 
     @BindView(R.id.rvTimeline)
     RecyclerView mRVTimeline;
@@ -67,12 +71,12 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         super.onCreateSetContentView(R.layout.activity_main);
 
-//        if (Auth.getInstance().isLogged(getContext()))
-//            initVars();
-//        else {
-//            finish();
-//            startActivity(new Intent(getContext(), LoginActivity.class));
-//        }
+        if (Auth.getInstance().isLogged(getContext()))
+            initVars();
+        else {
+            finish();
+            startActivity(new Intent(getContext(), LoginActivity.class));
+        }
     }
 
     @Override
@@ -236,6 +240,12 @@ public class MainActivity extends BaseActivity {
             public void onCreateGroup() {
                 toGroupForm(null);
             }
+
+            @Override
+            public void editProfile() {
+                Log.e("TAB", "EDIT PROFILE");
+                toProfileEdit();
+            }
         });
 
         mMenuBottomDialogFragment.show(getSupportFragmentManager(), "MENU_TAG");
@@ -243,7 +253,6 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.bottom_tab_more_ic)
     void onTabMore(View view) {
-
         GroupEditBottomSheetDialogFragment fragment = GroupEditBottomSheetDialogFragment.getInstance();
         fragment.setClickListener(new GroupEditBottomSheetDialogFragment.OnClickListener() {
 
@@ -254,7 +263,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onEdit() {
-                // TODO: API Integration
+                toGroupForm(new Group("Group name", new ArrayList<>()));
             }
 
             @Override
@@ -284,6 +293,11 @@ public class MainActivity extends BaseActivity {
     void toGroupForm(Group group) {
         Intent intent = new Intent(getContext(), GroupFormActivity.class);
         intent.putExtra(GroupFormActivity.INTENT_ITEM, group);
+        startActivityForResult(intent, GROUP_CREATE_REQUEST);
+    }
+
+    void toProfileEdit() {
+        Intent intent = new Intent(getContext(), ProfileEditActivity.class);
         startActivityForResult(intent, GROUP_CREATE_REQUEST);
     }
 
