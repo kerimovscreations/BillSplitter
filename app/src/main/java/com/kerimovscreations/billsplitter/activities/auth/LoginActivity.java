@@ -84,7 +84,6 @@ public class LoginActivity extends BaseActivity {
 
     @OnClick(R.id.google_btn)
     void onGoogleLogin(View view) {
-        // TODO: Google login
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, REQUEST_GOOGLE_SIGN_IN);
     }
