@@ -95,7 +95,7 @@
                     android:fontFamily="@font/noto_sans_bold"
                     android:gravity="center"
                     android:text="@string/edit_profile_info"
-                    android:textColor="@color/colorLightGray"
+                    android:textColor="@color/colorGray"
                     android:textSize="16sp" />
             </LinearLayout>
 

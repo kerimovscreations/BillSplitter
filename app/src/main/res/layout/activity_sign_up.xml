@@ -163,7 +163,6 @@
                 android:focusable="true"
                 android:fontFamily="@font/noto_sans_bold"
                 android:padding="@dimen/medium_margin"
-                android:background="?attr/borderlessButtonStyle"
                 android:text="@string/sign_in"
                 android:textColor="@color/colorPrimary"
                 android:textSize="16sp"

@@ -57,4 +57,7 @@
     <string name="password_change">Password change</string>
     <string name="new_password">New password</string>
     <string name="confirm_new_password">Confirm new password</string>
+    <string name="password_change_optional">Password change (Optional)</string>
+    <string name="prompt_password_length">Password length should be more than 6 characters</string>
+    <string name="prompt_passwords_not_match">New passwords don\'t match</string>
 </resources>

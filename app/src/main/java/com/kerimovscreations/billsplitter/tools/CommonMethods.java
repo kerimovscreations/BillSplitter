@@ -31,4 +31,12 @@ public class CommonMethods {
     public JsonParser getJsonParser() {
         return mJsonParser;
     }
+
+    public static boolean isValidPasswordLength(String password) {
+        return password.length() > 5;
+    }
+
+    public static boolean isMatchingPasswords(String password1, String password2) {
+        return password1.equals(password2);
+    }
 }
