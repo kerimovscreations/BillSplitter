@@ -69,6 +69,11 @@ public class SignUpActivity extends BaseActivity {
      * Click handlers
      */
 
+    @OnClick(R.id.back_ic)
+    void onBack(View view) {
+        finish();
+    }
+
     @OnClick(R.id.avatar_layout)
     void onAvatar(View view) {
         CropImage.activity()

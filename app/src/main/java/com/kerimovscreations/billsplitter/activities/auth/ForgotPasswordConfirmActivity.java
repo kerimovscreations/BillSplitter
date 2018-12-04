@@ -40,6 +40,12 @@ public class ForgotPasswordConfirmActivity extends BaseActivity {
     /**
      * Click handlers
      */
+
+    @OnClick(R.id.back_ic)
+    void onBack(View view) {
+        finish();
+    }
+
     @OnClick(R.id.submit_btn)
     void onSubmit(View view) {
 

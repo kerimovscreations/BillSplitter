@@ -37,6 +37,15 @@ public class ForgotPasswordFormActivity extends BaseActivity {
      */
 
     /**
+     * Click handlers
+     */
+
+    @OnClick(R.id.back_ic)
+    void onBack(View view) {
+        finish();
+    }
+
+    /**
      * Navigation
      */
 
