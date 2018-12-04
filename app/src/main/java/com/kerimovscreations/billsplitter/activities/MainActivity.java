@@ -26,8 +26,8 @@ import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.models.Timeline;
-import com.kerimovscreations.billsplitter.tools.Auth;
-import com.kerimovscreations.billsplitter.tools.BaseActivity;
+import com.kerimovscreations.billsplitter.utils.Auth;
+import com.kerimovscreations.billsplitter.utils.BaseActivity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,12 +71,12 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         super.onCreateSetContentView(R.layout.activity_main);
 
-//        if (Auth.getInstance().isLogged(getContext()))
-//            initVars();
-//        else {
-//            finish();
-//            startActivity(new Intent(getContext(), LoginActivity.class));
-//        }
+        if (Auth.getInstance().isLogged(getContext()))
+            initVars();
+        else {
+            finish();
+            startActivity(new Intent(getContext(), LoginActivity.class));
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.kerimovscreations.billsplitter.tools;
+package com.kerimovscreations.billsplitter.utils;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

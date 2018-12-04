@@ -6,11 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -19,13 +16,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.kerimovscreations.billsplitter.R;
-import com.kerimovscreations.billsplitter.models.CountryCode;
-import com.kerimovscreations.billsplitter.tools.BaseActivity;
+import com.kerimovscreations.billsplitter.utils.BaseActivity;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -74,7 +69,7 @@ public class SignUpActivity extends BaseActivity {
      * Click handlers
      */
 
-    @OnClick(R.id.avatar)
+    @OnClick(R.id.avatar_layout)
     void onAvatar(View view) {
         CropImage.activity()
                 .setGuidelines(CropImageView.Guidelines.ON)

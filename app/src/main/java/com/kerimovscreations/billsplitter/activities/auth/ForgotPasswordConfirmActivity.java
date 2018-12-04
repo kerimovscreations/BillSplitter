@@ -5,7 +5,7 @@ import android.support.design.widget.TextInputEditText;
 import android.view.View;
 
 import com.kerimovscreations.billsplitter.R;
-import com.kerimovscreations.billsplitter.tools.BaseActivity;
+import com.kerimovscreations.billsplitter.utils.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;

@@ -1,4 +1,4 @@
-package com.kerimovscreations.billsplitter.tools;
+package com.kerimovscreations.billsplitter.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;

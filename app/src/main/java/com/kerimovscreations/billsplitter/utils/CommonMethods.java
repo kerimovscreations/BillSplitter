@@ -1,4 +1,4 @@
-package com.kerimovscreations.billsplitter.tools;
+package com.kerimovscreations.billsplitter.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;

@@ -1,4 +1,4 @@
-package com.kerimovscreations.billsplitter.tools;
+package com.kerimovscreations.billsplitter.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

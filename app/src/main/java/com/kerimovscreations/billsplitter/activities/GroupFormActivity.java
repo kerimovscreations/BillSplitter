@@ -1,8 +1,6 @@
 package com.kerimovscreations.billsplitter.activities;
 
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,7 +17,7 @@ import com.kerimovscreations.billsplitter.fragments.dialogs.InviteMemberBottomSh
 import com.kerimovscreations.billsplitter.models.Currency;
 import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.Person;
-import com.kerimovscreations.billsplitter.tools.BaseActivity;
+import com.kerimovscreations.billsplitter.utils.BaseActivity;
 
 import java.util.ArrayList;
 import java.util.Objects;

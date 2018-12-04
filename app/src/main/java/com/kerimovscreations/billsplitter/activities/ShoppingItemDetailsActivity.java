@@ -31,7 +31,7 @@ import com.kerimovscreations.billsplitter.fragments.dialogs.PricePickerBottomShe
 import com.kerimovscreations.billsplitter.models.Category;
 import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
-import com.kerimovscreations.billsplitter.tools.BaseActivity;
+import com.kerimovscreations.billsplitter.utils.BaseActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

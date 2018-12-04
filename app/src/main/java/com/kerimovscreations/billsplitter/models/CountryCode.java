@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
-import com.kerimovscreations.billsplitter.tools.CommonMethods;
+import com.kerimovscreations.billsplitter.utils.CommonMethods;
 
 import java.io.IOException;
 import java.io.InputStream;

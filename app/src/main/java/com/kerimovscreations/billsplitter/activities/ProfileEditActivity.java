@@ -14,8 +14,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.kerimovscreations.billsplitter.R;
-import com.kerimovscreations.billsplitter.tools.BaseActivity;
-import com.kerimovscreations.billsplitter.tools.CommonMethods;
+import com.kerimovscreations.billsplitter.utils.BaseActivity;
+import com.kerimovscreations.billsplitter.utils.CommonMethods;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -71,7 +71,7 @@ public class ProfileEditActivity extends BaseActivity {
         finish();
     }
 
-    @OnClick(R.id.avatar)
+    @OnClick(R.id.avatar_layout)
     void onAvatar() {
         CropImage.activity()
                 .setGuidelines(CropImageView.Guidelines.ON)

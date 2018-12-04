@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.google.zxing.Result;
 import com.kerimovscreations.billsplitter.R;
-import com.kerimovscreations.billsplitter.tools.BaseActivity;
+import com.kerimovscreations.billsplitter.utils.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;

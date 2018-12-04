@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.kerimovscreations.billsplitter.R;
-import com.kerimovscreations.billsplitter.tools.BaseFragment;
+import com.kerimovscreations.billsplitter.utils.BaseFragment;
 import com.squareup.picasso.Picasso;
 
 public class IntroSliderFragment extends BaseFragment {
