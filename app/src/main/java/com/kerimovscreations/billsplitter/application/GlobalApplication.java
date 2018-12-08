@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.kerimovscreations.billsplitter.R;
 
 import io.fabric.sdk.android.Fabric;
+import io.realm.Realm;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -21,6 +22,7 @@ public class GlobalApplication extends Application {
     private static Gson mGson;
     private static Retrofit retrofit;
     private static SharedPreferences mPrefs;
+    private static Realm mRealm;
 
     public static Retrofit getRetrofit() {
         return retrofit;
@@ -39,6 +41,9 @@ public class GlobalApplication extends Application {
         instance = this;
         mGson = new Gson();
         mPrefs = getContext().getSharedPreferences(getContext().getResources().getString(R.string.local_preference), Context.MODE_PRIVATE);
+
+        Realm.init(this);
+        mRealm = Realm.getDefaultInstance();
 
         Fabric.with(this, new Crashlytics());
 
@@ -76,5 +81,9 @@ public class GlobalApplication extends Application {
                 mPrefs = getContext().getSharedPreferences(Resources.getSystem().getString( R.string.local_preference), Context.MODE_PRIVATE);
 
         return mPrefs;
+    }
+
+    public static Realm getRealm() {
+        return mRealm;
     }
 }

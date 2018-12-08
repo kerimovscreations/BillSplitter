@@ -2,8 +2,14 @@ package com.kerimovscreations.billsplitter.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
 import com.kerimovscreations.billsplitter.R;
+import com.kerimovscreations.billsplitter.application.GlobalApplication;
+import com.kerimovscreations.billsplitter.models.LocalProfile;
+import com.kerimovscreations.billsplitter.models.Person;
+
+import io.realm.Realm;
 
 public class Auth {
     private static Auth mInstance = null;
@@ -30,6 +36,13 @@ public class Auth {
         return mPrefs.getString(context.getString(R.string.local_preference_token), "");
     }
 
+    public void saveProfile(Context context, Person person) {
+        GlobalApplication.getRealm().executeTransactionAsync(realm -> {
+            LocalProfile profile = realm.createObject(LocalProfile.class);
+            profile.setData(person);
+        }, () -> saveToken(context, person.getApiToken()));
+    }
+
     public void saveToken(Context context, String token) {
         SharedPreferences mPrefs = context.getSharedPreferences(context.getResources().getString(R.string.local_preference), Context.MODE_PRIVATE);
         SharedPreferences.Editor prefsEditor = mPrefs.edit();
@@ -46,6 +59,7 @@ public class Auth {
     }
 
     public void logout(Context context) {
+        GlobalApplication.getRealm().deleteAll();
         removeToken(context);
     }
 }

@@ -245,7 +245,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onLogout() {
-                Auth.getInstance().removeToken(getContext());
+                Auth.getInstance().logout(getContext());
                 toLogin();
             }
         });

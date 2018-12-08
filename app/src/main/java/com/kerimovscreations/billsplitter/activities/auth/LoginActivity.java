@@ -145,11 +145,12 @@ public class LoginActivity extends BaseActivity {
      */
 
     private void login() {
+        showProgress(true);
+
         HashMap<String, String> data = new HashMap<>();
 
         data.put("email", mEmailInput.getText().toString().trim());
         data.put("password", mPasswordInput.getText().toString().trim());
-
 
         Call<UserDataWrapper> call = mApiService.login(data);
 
@@ -160,7 +161,7 @@ public class LoginActivity extends BaseActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
-                        Auth.getInstance().saveToken(getContext(), response.body().getPerson().getApiToken());
+                        Auth.getInstance().saveProfile(getContext(), response.body().getPerson());
                         Toast.makeText(getContext(), R.string.successful_login, Toast.LENGTH_SHORT).show();
                         toMain();
                     });
@@ -199,6 +200,8 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void googleLogin(String token) {
+        showProgress(true);
+
         Call<UserDataWrapper> call = mApiService.googleRegister(token);
 
         call.enqueue(new retrofit2.Callback<UserDataWrapper>() {
@@ -208,7 +211,7 @@ public class LoginActivity extends BaseActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
-                        Auth.getInstance().saveToken(getContext(), response.body().getPerson().getApiToken());
+                        Auth.getInstance().saveProfile(getContext(), response.body().getPerson());
                         Toast.makeText(getContext(), R.string.successful_login, Toast.LENGTH_SHORT).show();
                         toMain();
                     });

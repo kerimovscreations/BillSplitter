@@ -14,8 +14,11 @@ import android.widget.TextView;
 
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.GroupListRVAdapter;
+import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.models.Group;
+import com.kerimovscreations.billsplitter.models.LocalProfile;
 import com.kerimovscreations.billsplitter.models.Person;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -23,6 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.realm.Realm;
 
 public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
@@ -47,6 +51,8 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
     GroupListRVAdapter mAdapter;
     ArrayList<Group> mList = new ArrayList<>();
+    LocalProfile mLocalProfile;
+    Realm mRealm;
 
     boolean mLogoutBtnVisible = false;
 
@@ -86,6 +92,11 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
     }
 
     void initVars() {
+        mRealm = GlobalApplication.getRealm();
+
+        mLocalProfile = mRealm.where(LocalProfile.class).findFirst();
+
+        setupProfileData();
 
         ArrayList<Person> mPeople = new ArrayList<>();
 
@@ -118,9 +129,20 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
         updateLogoutBtnVisibility();
     }
 
+    private void setupProfileData() {
+        Picasso.get().load(mLocalProfile.getPicture())
+                .resize(200, 200)
+                .centerCrop()
+                .into(mAvatar);
+
+        mUserName.setText(mLocalProfile.getFullName());
+        mUserEmail.setText(mLocalProfile.getEmail());
+    }
+
     /**
      * UI
      */
+
     void updateLogoutBtnVisibility() {
         mLogoutLayout.setVisibility(mLogoutBtnVisible ? View.VISIBLE : View.GONE);
         mUserToggleIc.setImageDrawable(ResourcesCompat.getDrawable(getResources(), mLogoutBtnVisible ? R.drawable.ic_drop_up : R.drawable.ic_drop_down, null));
@@ -138,7 +160,7 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
     @OnClick(R.id.edit_btn)
     void onEditProfile() {
-        if(mListener != null){
+        if (mListener != null) {
             mListener.editProfile();
             dismiss();
         }
@@ -146,7 +168,7 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
     @OnClick(R.id.create_group_layout)
     void onCreateGroup() {
-        if(mListener != null){
+        if (mListener != null) {
             mListener.onCreateGroup();
             dismiss();
         }
@@ -159,7 +181,7 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
     @OnClick(R.id.logout_btn)
     void onLogout() {
-        if(mListener != null){
+        if (mListener != null) {
             mListener.onLogout();
             dismiss();
         }

@@ -216,7 +216,7 @@ public class SignUpActivity extends BaseActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
-                        Auth.getInstance().saveToken(getContext(), response.body().getPerson().getApiToken());
+                        Auth.getInstance().saveProfile(getContext(), response.body().getPerson());
                         Toast.makeText(getContext(), R.string.successful_register, Toast.LENGTH_SHORT).show();
                         toMain();
                     });
@@ -264,7 +264,7 @@ public class SignUpActivity extends BaseActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
-                        Auth.getInstance().saveToken(getContext(), response.body().getPerson().getApiToken());
+                        Auth.getInstance().saveProfile(getContext(), response.body().getPerson());
                         Toast.makeText(getContext(), R.string.successful_register, Toast.LENGTH_SHORT).show();
                         toMain();
                     });
