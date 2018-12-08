@@ -3,6 +3,8 @@ package com.kerimovscreations.billsplitter.activities.auth;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.util.Log;
 import android.view.View;
@@ -22,11 +24,17 @@ import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
 import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends BaseActivity {
@@ -34,6 +42,9 @@ public class LoginActivity extends BaseActivity {
     private final String TAG = "LOGIN";
 
     private final int REQUEST_GOOGLE_SIGN_IN = 2;
+
+    @BindView(R.id.coordinator_layout)
+    CoordinatorLayout mCoordinatorLayout;
 
     @BindView(R.id.email_input)
     TextInputEditText mEmailInput;
@@ -74,8 +85,11 @@ public class LoginActivity extends BaseActivity {
 
     @OnClick(R.id.sign_in_btn)
     void onSignIn(View view) {
-        // TODO: Check auth
-        toMain();
+        if (!isFormInputsValid()) {
+            return;
+        }
+
+        login();
     }
 
 //    @OnClick(R.id.facebook_btn)
@@ -114,9 +128,75 @@ public class LoginActivity extends BaseActivity {
         // TODO: Implement UI
     }
 
+    private boolean isFormInputsValid() {
+        if (mEmailInput.getText().length() == 0 ||
+                mPasswordInput.getText().length() == 0) {
+            Snackbar snackbar = Snackbar.make(mCoordinatorLayout, R.string.prompt_fill_inputs, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.okay, view -> snackbar.dismiss());
+            snackbar.show();
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * HTTP
      */
+
+    private void login() {
+        HashMap<String, String> data = new HashMap<>();
+
+        data.put("email", mEmailInput.getText().toString().trim());
+        data.put("password", mPasswordInput.getText().toString().trim());
+
+
+        Call<UserDataWrapper> call = mApiService.login(data);
+
+        call.enqueue(new Callback<UserDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        Auth.getInstance().saveToken(getContext(), response.body().getPerson().getApiToken());
+                        Toast.makeText(getContext(), R.string.successful_login, Toast.LENGTH_SHORT).show();
+                        toMain();
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UserDataWrapper> call, @NonNull Throwable t) {
+                runOnUiThread(() -> {
+                    showProgress(false);
+                    Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                });
+
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    Log.e(TAG, "onFailure: Request Failed");
+                }
+            }
+        });
+    }
 
     private void googleLogin(String token) {
         Call<UserDataWrapper> call = mApiService.googleRegister(token);

@@ -25,14 +25,14 @@ import retrofit2.http.Query;
 public interface AppApiService {
 
     @Headers({"Accept: application/json"})
-    @POST("User/register")
+    @POST("user/register")
     @Multipart
     Call<UserDataWrapper> register(@Part MultipartBody.Part file, @PartMap Map<String, RequestBody> params);
 
     @Headers({"Accept: application/json"})
-    @POST("login")
+    @POST("user/login")
     @FormUrlEncoded
-    Call<SimpleDataWrapper> login(@FieldMap HashMap<String, String> params);
+    Call<UserDataWrapper> login(@FieldMap HashMap<String, String> params);
 
     @Headers({"Accept: application/json"})
     @POST("user/google")
