@@ -59,7 +59,7 @@ public class Auth {
     }
 
     public void logout(Context context) {
-        GlobalApplication.getRealm().deleteAll();
+        GlobalApplication.getRealm().executeTransaction(realm -> realm.deleteAll());
         removeToken(context);
     }
 }

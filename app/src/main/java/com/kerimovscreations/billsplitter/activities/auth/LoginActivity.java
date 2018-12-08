@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -46,6 +47,9 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
 
+    @BindView(R.id.layout_progress)
+    View mProgressLayout;
+
     @BindView(R.id.email_input)
     TextInputEditText mEmailInput;
 
@@ -54,6 +58,9 @@ public class LoginActivity extends BaseActivity {
 
     GoogleSignInClient mGoogleSignInClient;
     AppApiService mApiService;
+
+    Call<UserDataWrapper> mLoginCall;
+    Call<UserDataWrapper> mGoogleLoginCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +79,34 @@ public class LoginActivity extends BaseActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         mApiService = GlobalApplication.getRetrofit().create(AppApiService.class);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mLoginCall != null && !mLoginCall.isExecuted()) {
+            showProgress(false);
+            mLoginCall.cancel();
+            return;
+        }
+
+        if (mGoogleLoginCall != null && !mGoogleLoginCall.isExecuted()) {
+            showProgress(false);
+            mGoogleLoginCall.cancel();
+            return;
+        }
+
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mLoginCall != null && !mLoginCall.isExecuted())
+            mLoginCall.cancel();
+
+        if (mGoogleLoginCall != null && !mGoogleLoginCall.isExecuted())
+            mGoogleLoginCall.cancel();
     }
 
     /**
@@ -125,7 +160,14 @@ public class LoginActivity extends BaseActivity {
      */
 
     private void showProgress(boolean show) {
-        // TODO: Implement UI
+        mProgressLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+
+        if (show) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
     }
 
     private boolean isFormInputsValid() {
@@ -152,9 +194,9 @@ public class LoginActivity extends BaseActivity {
         data.put("email", mEmailInput.getText().toString().trim());
         data.put("password", mPasswordInput.getText().toString().trim());
 
-        Call<UserDataWrapper> call = mApiService.login(data);
+        mLoginCall = mApiService.login(data);
 
-        call.enqueue(new Callback<UserDataWrapper>() {
+        mLoginCall.enqueue(new Callback<UserDataWrapper>() {
             @Override
             public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
                 runOnUiThread(() -> showProgress(false));
@@ -202,9 +244,9 @@ public class LoginActivity extends BaseActivity {
     private void googleLogin(String token) {
         showProgress(true);
 
-        Call<UserDataWrapper> call = mApiService.googleRegister(token);
+        mGoogleLoginCall = mApiService.googleRegister(token);
 
-        call.enqueue(new retrofit2.Callback<UserDataWrapper>() {
+        mGoogleLoginCall.enqueue(new retrofit2.Callback<UserDataWrapper>() {
             @Override
             public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
                 runOnUiThread(() -> showProgress(false));

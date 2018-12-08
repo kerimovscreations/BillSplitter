@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -56,6 +57,9 @@ public class SignUpActivity extends BaseActivity {
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
 
+    @BindView(R.id.layout_progress)
+    View mProgressLayout;
+
     @BindView(R.id.avatar)
     CircleImageView mAvatar;
 
@@ -75,6 +79,9 @@ public class SignUpActivity extends BaseActivity {
     GoogleSignInClient mGoogleSignInClient;
     AppApiService mApiService;
 
+    Call<UserDataWrapper> mRegisterCall;
+    Call<UserDataWrapper> mGoogleLoginCall;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +99,34 @@ public class SignUpActivity extends BaseActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         mApiService = GlobalApplication.getRetrofit().create(AppApiService.class);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mRegisterCall != null && !mRegisterCall.isExecuted()) {
+            showProgress(false);
+            mRegisterCall.cancel();
+            return;
+        }
+
+        if (mGoogleLoginCall != null && !mGoogleLoginCall.isExecuted()) {
+            showProgress(false);
+            mGoogleLoginCall.cancel();
+            return;
+        }
+
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mRegisterCall != null && !mRegisterCall.isExecuted())
+            mRegisterCall.cancel();
+
+        if (mGoogleLoginCall != null && !mGoogleLoginCall.isExecuted())
+            mGoogleLoginCall.cancel();
     }
 
     /**
@@ -136,7 +171,14 @@ public class SignUpActivity extends BaseActivity {
      */
 
     void showProgress(boolean show) {
-        // TODO: Implement UI
+        mProgressLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+
+        if (show) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
     }
 
     private boolean isPasswordsValid() {
@@ -190,6 +232,8 @@ public class SignUpActivity extends BaseActivity {
      */
 
     private void register() {
+        showProgress(true);
+
         RequestBody fullName = RequestBody.create(MediaType.parse("text/plain"), mNameInput.getText().toString().trim());
         RequestBody email = RequestBody.create(MediaType.parse("text/plain"), mEmailInput.getText().toString().trim());
         RequestBody password = RequestBody.create(MediaType.parse("text/plain"), mPasswordInput.getText().toString().trim());
@@ -207,9 +251,9 @@ public class SignUpActivity extends BaseActivity {
             fileToUpload = MultipartBody.Part.createFormData("photo", mEmailInput.getText().toString(), file);
         }
 
-        Call<UserDataWrapper> call = mApiService.register(fileToUpload, data);
+        mRegisterCall = mApiService.register(fileToUpload, data);
 
-        call.enqueue(new Callback<UserDataWrapper>() {
+        mRegisterCall.enqueue(new Callback<UserDataWrapper>() {
             @Override
             public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
                 runOnUiThread(() -> showProgress(false));
@@ -255,9 +299,11 @@ public class SignUpActivity extends BaseActivity {
     }
 
     private void googleLogin(String token) {
-        Call<UserDataWrapper> call = mApiService.googleRegister(token);
+        showProgress(true);
 
-        call.enqueue(new retrofit2.Callback<UserDataWrapper>() {
+        mGoogleLoginCall = mApiService.googleRegister(token);
+
+        mGoogleLoginCall.enqueue(new retrofit2.Callback<UserDataWrapper>() {
             @Override
             public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
                 runOnUiThread(() -> showProgress(false));

@@ -274,4 +274,5 @@
 
     </LinearLayout>
 
+    <include layout="@layout/layout_progress"/>
 </android.support.design.widget.CoordinatorLayout>

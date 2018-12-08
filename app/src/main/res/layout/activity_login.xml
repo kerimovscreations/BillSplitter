@@ -194,4 +194,6 @@
         </LinearLayout>
     </ScrollView>
 
+    <include layout="@layout/layout_progress"/>
+
 </android.support.design.widget.CoordinatorLayout>
