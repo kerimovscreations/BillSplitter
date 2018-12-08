@@ -2,9 +2,11 @@ package com.kerimovscreations.billsplitter.activities.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -14,12 +16,22 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.kerimovscreations.billsplitter.activities.MainActivity;
 import com.kerimovscreations.billsplitter.R;
+import com.kerimovscreations.billsplitter.application.GlobalApplication;
+import com.kerimovscreations.billsplitter.interfaces.AppApiService;
+import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
+import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
+
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class LoginActivity extends BaseActivity {
+
+    private final String TAG = "LOGIN";
 
     private final int REQUEST_GOOGLE_SIGN_IN = 2;
 
@@ -30,6 +42,7 @@ public class LoginActivity extends BaseActivity {
     TextInputEditText mPasswordInput;
 
     GoogleSignInClient mGoogleSignInClient;
+    AppApiService mApiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +59,8 @@ public class LoginActivity extends BaseActivity {
                 .requestIdToken(getString(R.string.server_client_id))
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        mApiService = GlobalApplication.getRetrofit().create(AppApiService.class);
     }
 
     /**
@@ -65,7 +80,6 @@ public class LoginActivity extends BaseActivity {
 
 //    @OnClick(R.id.facebook_btn)
 //    void onFacebookLogin(View view) {
-//        // TODO: Facebook login
 //    }
 
     @OnClick(R.id.google_btn)
@@ -89,12 +103,68 @@ public class LoginActivity extends BaseActivity {
         Log.e("GOOGLE", account.getId());
         Log.e("GOOGLE", account.getIdToken());
 
-        // TODO: Send to backend
+        googleLogin(account.getIdToken());
     }
 
     /**
      * UI
      */
+
+    private void showProgress(boolean show) {
+        // TODO: Implement UI
+    }
+
+    /**
+     * HTTP
+     */
+
+    private void googleLogin(String token) {
+        Call<UserDataWrapper> call = mApiService.googleRegister(token);
+
+        call.enqueue(new retrofit2.Callback<UserDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        Auth.getInstance().saveToken(getContext(), response.body().getPerson().getApiToken());
+                        Toast.makeText(getContext(), R.string.successful_register, Toast.LENGTH_SHORT).show();
+                        toMain();
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UserDataWrapper> call, @NonNull Throwable t) {
+                runOnUiThread(() -> {
+                    showProgress(false);
+                    Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                });
+
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    Log.e(TAG, "onFailure: Request Failed");
+                }
+            }
+        });
+    }
 
     /**
      * Navigation

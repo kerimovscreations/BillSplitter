@@ -71,12 +71,11 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         super.onCreateSetContentView(R.layout.activity_main);
 
-//        if (Auth.getInstance().isLogged(getContext()))
-//            initVars();
-//        else {
-//            finish();
-//            startActivity(new Intent(getContext(), LoginActivity.class));
-//        }
+        if (Auth.getInstance().isLogged(getContext()))
+            initVars();
+        else {
+            toLogin();
+        }
     }
 
     @Override
@@ -92,11 +91,8 @@ public class MainActivity extends BaseActivity {
         mTimeline.add(new Timeline(new Date(), new Date(), "Year"));
 
         mTimelineAdapter = new TimelineRVAdapter(getContext(), mTimeline);
-        mTimelineAdapter.setOnItemClickListener(new TimelineRVAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
+        mTimelineAdapter.setOnItemClickListener(position -> {
 
-            }
         });
         mRVTimeline.setAdapter(mTimelineAdapter);
         mRVTimeline.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -246,6 +242,12 @@ public class MainActivity extends BaseActivity {
                 Log.e("TAB", "EDIT PROFILE");
                 toProfileEdit();
             }
+
+            @Override
+            public void onLogout() {
+                Auth.getInstance().removeToken(getContext());
+                toLogin();
+            }
         });
 
         mMenuBottomDialogFragment.show(getSupportFragmentManager(), "MENU_TAG");
@@ -299,6 +301,11 @@ public class MainActivity extends BaseActivity {
     void toProfileEdit() {
         Intent intent = new Intent(getContext(), ProfileEditActivity.class);
         startActivityForResult(intent, GROUP_CREATE_REQUEST);
+    }
+
+    void toLogin() {
+        finish();
+        startActivity(new Intent(getContext(), LoginActivity.class));
     }
 
     /**

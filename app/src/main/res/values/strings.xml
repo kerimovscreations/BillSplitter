@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Bill Splitter</string>
-    <string name="base_url" translatable="false">https://billsplitter.org/</string>
+    <string name="base_url" translatable="false">https://billsplitter.org/api/</string>
     <string name="local_preference" translatable="false">LocalPreferenceBillSplitter</string>
     <string name="local_preference_token" translatable="false">LocalPreferenceToken</string>
 
@@ -60,4 +60,6 @@
     <string name="password_change_optional">Password change (Optional)</string>
     <string name="prompt_password_length">Password length should be more than 6 characters</string>
     <string name="prompt_passwords_not_match">New passwords don\'t match</string>
+    <string name="successful_register">You have registered successfully</string>
+    <string name="error_occurred">Error occurred</string>
 </resources>

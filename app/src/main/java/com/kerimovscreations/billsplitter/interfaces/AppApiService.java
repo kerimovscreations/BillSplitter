@@ -1,6 +1,7 @@
 package com.kerimovscreations.billsplitter.interfaces;
 
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Map;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -33,9 +35,9 @@ public interface AppApiService {
     Call<SimpleDataWrapper> login(@FieldMap HashMap<String, String> params);
 
     @Headers({"Accept: application/json"})
-    @POST("social_login")
+    @POST("user/google")
     @FormUrlEncoded
-    Call<SimpleDataWrapper> socialLogin(@FieldMap HashMap<String, String> params);
+    Call<UserDataWrapper> googleRegister(@Field("token") String token);
 
     @Headers({"Accept: application/json"})
     @GET("logout")

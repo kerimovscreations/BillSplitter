@@ -1,13 +1,35 @@
 package com.kerimovscreations.billsplitter.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 public class Person implements Serializable {
 
+    @SerializedName("Id")
+    @Expose
     private int id;
+
+    @SerializedName("FullName")
+    @Expose
     private String fullName;
+
+    @SerializedName("Photo")
+    @Expose
     private String picture;
+
+    @SerializedName("Email")
+    @Expose
     private String email;
+
+    @SerializedName("ApiToken")
+    @Expose
+    private String apiToken;
+
+    @SerializedName("EmailVerificationCode")
+    @Expose
+    private String emailVerificationCode;
 
     public Person(int id, String fullName) {
         this.id = id;
@@ -50,5 +72,21 @@ public class Person implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getApiToken() {
+        return apiToken;
+    }
+
+    public void setApiToken(String apiToken) {
+        this.apiToken = apiToken;
+    }
+
+    public String getEmailVerificationCode() {
+        return emailVerificationCode;
+    }
+
+    public void setEmailVerificationCode(String emailVerificationCode) {
+        this.emailVerificationCode = emailVerificationCode;
     }
 }
