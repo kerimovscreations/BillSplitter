@@ -25,9 +25,9 @@ import retrofit2.http.Query;
 public interface AppApiService {
 
     @Headers({"Accept: application/json"})
-    @POST("register")
+    @POST("User/register")
     @Multipart
-    Call<SimpleDataWrapper> register(@Part MultipartBody.Part file, @PartMap Map<String, RequestBody> params);
+    Call<UserDataWrapper> register(@Part MultipartBody.Part file, @PartMap Map<String, RequestBody> params);
 
     @Headers({"Accept: application/json"})
     @POST("login")

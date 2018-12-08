@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.util.Log;
 import android.view.View;
@@ -17,23 +19,32 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.activities.MainActivity;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
+import com.kerimovscreations.billsplitter.utils.CommonMethods;
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SignUpActivity extends BaseActivity {
@@ -41,6 +52,9 @@ public class SignUpActivity extends BaseActivity {
     private final String TAG = "SIGN_UP";
 
     private final int REQUEST_GOOGLE_SIGN_IN = 12;
+
+    @BindView(R.id.coordinator_layout)
+    CoordinatorLayout mCoordinatorLayout;
 
     @BindView(R.id.avatar)
     CircleImageView mAvatar;
@@ -99,8 +113,11 @@ public class SignUpActivity extends BaseActivity {
 
     @OnClick(R.id.btn)
     void onSignUp(View view) {
-        // TODO: API integration
-        //File uploadPhoto = new File(mPhotoResultUri.getPath());
+        if (!isFormInputsValid() || !isPasswordsValid()) {
+            return;
+        }
+
+        register();
     }
 
     @OnClick(R.id.sign_in_text)
@@ -122,6 +139,39 @@ public class SignUpActivity extends BaseActivity {
         // TODO: Implement UI
     }
 
+    private boolean isPasswordsValid() {
+        if (!CommonMethods.isValidPasswordLength(mPasswordInput.getText().toString()) ||
+                !CommonMethods.isValidPasswordLength(mPasswordConfirmInput.getText().toString())) {
+            Snackbar snackbar = Snackbar.make(mCoordinatorLayout, R.string.prompt_password_length, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.okay, view -> snackbar.dismiss());
+            snackbar.show();
+            return false;
+        }
+
+        if (!CommonMethods.isMatchingPasswords(mPasswordInput.getText().toString(), mPasswordConfirmInput.getText().toString())) {
+            Snackbar snackbar = Snackbar.make(mCoordinatorLayout, R.string.prompt_passwords_not_match, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.okay, view -> snackbar.dismiss());
+            snackbar.show();
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isFormInputsValid() {
+        if (mNameInput.getText().length() == 0 ||
+                mEmailInput.getText().length() == 0 ||
+                mPasswordInput.getText().length() == 0 ||
+                mPasswordConfirmInput.getText().length() == 0) {
+            Snackbar snackbar = Snackbar.make(mCoordinatorLayout, R.string.prompt_fill_inputs, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.okay, view -> snackbar.dismiss());
+            snackbar.show();
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Actions
      */
@@ -138,6 +188,71 @@ public class SignUpActivity extends BaseActivity {
     /**
      * HTTP
      */
+
+    private void register() {
+        RequestBody fullName = RequestBody.create(MediaType.parse("text/plain"), mNameInput.getText().toString().trim());
+        RequestBody email = RequestBody.create(MediaType.parse("text/plain"), mEmailInput.getText().toString().trim());
+        RequestBody password = RequestBody.create(MediaType.parse("text/plain"), mPasswordInput.getText().toString().trim());
+
+        HashMap<String, RequestBody> data = new HashMap<>();
+
+        data.put("FullName", fullName);
+        data.put("email", email);
+        data.put("password", password);
+
+        MultipartBody.Part fileToUpload = null;
+
+        if (mSelectedAvatarUri != null) {
+            RequestBody file = RequestBody.create(MediaType.parse("image/*"), new File(mSelectedAvatarUri.getPath()));
+            fileToUpload = MultipartBody.Part.createFormData("photo", mEmailInput.getText().toString(), file);
+        }
+
+        Call<UserDataWrapper> call = mApiService.register(fileToUpload, data);
+
+        call.enqueue(new Callback<UserDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        Auth.getInstance().saveToken(getContext(), response.body().getPerson().getApiToken());
+                        Toast.makeText(getContext(), R.string.successful_register, Toast.LENGTH_SHORT).show();
+                        toMain();
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UserDataWrapper> call, @NonNull Throwable t) {
+                runOnUiThread(() -> {
+                    showProgress(false);
+                    Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                });
+
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    Log.e(TAG, "onFailure: Request Failed");
+                }
+            }
+        });
+    }
 
     private void googleLogin(String token) {
         Call<UserDataWrapper> call = mApiService.googleRegister(token);

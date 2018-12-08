@@ -129,7 +129,7 @@ public class LoginActivity extends BaseActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
                         Auth.getInstance().saveToken(getContext(), response.body().getPerson().getApiToken());
-                        Toast.makeText(getContext(), R.string.successful_register, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.successful_login, Toast.LENGTH_SHORT).show();
                         toMain();
                     });
                 } else {
