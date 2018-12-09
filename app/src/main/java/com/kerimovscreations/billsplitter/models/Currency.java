@@ -1,49 +1,26 @@
 package com.kerimovscreations.billsplitter.models;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.google.gson.reflect.TypeToken;
-import com.kerimovscreations.billsplitter.utils.CommonMethods;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import io.realm.RealmObject;
 
-public class Currency {
-    private String name, code;
+public class Currency extends RealmObject {
 
-    public static List<Currency> loadArrayFromAsset(Context context, String fileName) {
-        ArrayList<Currency> list = new ArrayList<>();
+    @SerializedName("Id")
+    @Expose
+    private int id;
 
-        try {
-            InputStream is = context.getAssets().open(fileName);
-
-            int size = is.available();
-
-            byte[] buffer = new byte[size];
-
-            is.read(buffer);
-
-            is.close();
-
-            String jsonFile = new String(buffer, "UTF-8");
-
-            list.addAll(CommonMethods.getInstance().getGson().fromJson(jsonFile, new TypeToken<List<Currency>>() {
-            }.getType()));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-
-        return list;
-    }
+    @SerializedName("Name")
+    @Expose
+    private String name;
 
     @NonNull
     @Override
     public String toString() {
-        return String.format("%s - %s", code, name);
+        return name;
     }
 
     public String getName() {
@@ -54,11 +31,11 @@ public class Currency {
         this.name = name;
     }
 
-    public String getCode() {
-        return code;
+    public int getId() {
+        return id;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setId(int id) {
+        this.id = id;
     }
 }

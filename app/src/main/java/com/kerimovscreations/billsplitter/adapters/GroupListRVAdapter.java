@@ -60,7 +60,7 @@ public class GroupListRVAdapter extends RecyclerView.Adapter<GroupListRVAdapter.
         Group bItem = mList.get(position);
 
         viewHolder.title.setText(bItem.getTitle());
-        viewHolder.peopleCount.setText(String.valueOf(bItem.getMembers().size()));
+        viewHolder.peopleCount.setText(String.valueOf(bItem.getGroupUsers().size()));
 
         if (getSelectedIndex() == position) {
             viewHolder.layout.setBackground(ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.bg_selected_group, null));

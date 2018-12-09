@@ -138,7 +138,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         if (mShoppingItem == null) {
             mActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_check_black_24dp, null));
             mActionBtn.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorGreen), android.graphics.PorterDuff.Mode.SRC_IN);
-            mShoppingItem = new ShoppingItem("", "", false, new ArrayList<>(), false);
+            mShoppingItem = new ShoppingItem();
             mQRCodeLayout.setVisibility(View.GONE);
             mQRSearchBtn.setVisibility(View.VISIBLE);
         } else {
@@ -180,8 +180,8 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         // Shared people list
 
         // fake user
-        mShoppingItem.getSharedPeople().add(new Person(-1, "Placeholder"));
-        mAdapter = new SharedPeopleListRVAdapter(getContext(), mShoppingItem.getSharedPeople(), true);
+        mShoppingItem.getSharedMembers().add(new Person(-1, "Placeholder"));
+        mAdapter = new SharedPeopleListRVAdapter(getContext(), mShoppingItem.getSharedMembers(), true);
         mAdapter.setOnItemClickListener(new SharedPeopleListRVAdapter.OnItemClickListener() {
             @Override
             public void onAdd(int position) {
@@ -189,7 +189,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                 fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
                     @Override
                     public void onSelect(Person person) {
-                        mShoppingItem.getSharedPeople().add(mShoppingItem.getSharedPeople().size() - 1, person);
+                        mShoppingItem.getSharedMembers().add(mShoppingItem.getSharedMembers().size() - 1, person);
                         mAdapter.notifyDataSetChanged();
                     }
 
@@ -204,7 +204,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
             @Override
             public void onDelete(int position) {
-                mShoppingItem.getSharedPeople().remove(position);
+                mShoppingItem.getSharedMembers().remove(position);
                 mAdapter.notifyDataSetChanged();
             }
 
@@ -214,14 +214,14 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                 fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
                     @Override
                     public void onSelect(Person person) {
-                        mShoppingItem.getSharedPeople().remove(position);
-                        mShoppingItem.getSharedPeople().add(position, person);
+                        mShoppingItem.getSharedMembers().remove(position);
+                        mShoppingItem.getSharedMembers().add(position, person);
                         mAdapter.notifyDataSetChanged();
                     }
 
                     @Override
                     public void onRemove() {
-                        mShoppingItem.getSharedPeople().remove(position);
+                        mShoppingItem.getSharedMembers().remove(position);
                         mAdapter.notifyDataSetChanged();
                     }
                 });

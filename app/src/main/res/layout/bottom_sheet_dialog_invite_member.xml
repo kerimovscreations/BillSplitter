@@ -38,6 +38,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/noto_sans"
                 android:hint="@string/email"
+                android:inputType="textEmailAddress"
                 android:textSize="18sp" />
         </android.support.design.widget.TextInputLayout>
 

@@ -74,16 +74,16 @@ public class ShoppingListRVAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 break;
             case TYPE_ITEM:
                 ViewHolderItem viewHolder2 = (ViewHolderItem) viewHolder;
-                viewHolder2.title.setText(bItem.getTitle());
+                viewHolder2.title.setText(bItem.getProduct().getName());
 
-                if (bItem.isDone()) {
+                if (bItem.isComplete()) {
                     viewHolder2.title.setPaintFlags(viewHolder2.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 } else {
                     viewHolder2.title.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
                 }
 
                 viewHolder2.checkbox.setImageDrawable(ResourcesCompat.getDrawable(getContext().getResources(),
-                        bItem.isDone() ? R.drawable.ic_check_on : R.drawable.ic_check_off,
+                        bItem.isComplete() ? R.drawable.ic_check_on : R.drawable.ic_check_off,
                         null));
                 break;
         }
@@ -126,7 +126,7 @@ public class ShoppingListRVAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         mListener.onCheckClick(position);
-                        mList.get(position).toggleDone();
+                        mList.get(position).toggleComplete();
                         notifyDataSetChanged();
                     }
                 }

@@ -65,4 +65,6 @@
     <string name="successful_login">Successful login</string>
     <string name="prompt_fill_inputs">Please, fill all input fields</string>
     <string name="loading">Loading...</string>
+    <string name="no_group">First, you need create a group or wait for invitations</string>
+    <string name="successful_create_group">Group is created successfully</string>
 </resources>

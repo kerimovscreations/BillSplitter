@@ -1,5 +1,8 @@
 package com.kerimovscreations.billsplitter.interfaces;
 
+import com.kerimovscreations.billsplitter.wrappers.CurrencyListDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.GroupListDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.ShoppingItemListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
 
@@ -40,13 +43,23 @@ public interface AppApiService {
     Call<UserDataWrapper> googleRegister(@Field("token") String token);
 
     @Headers({"Accept: application/json"})
-    @GET("logout")
-    Call<SimpleDataWrapper> logout(@Header("Authorization") String api_token);
+    @GET("currency")
+    Call<CurrencyListDataWrapper> getCurrencies(@Header("Authorization") String token, @Query("q") String search, @Query("page") int pageNumber);
 
     @Headers({"Accept: application/json"})
-    @GET("business_categories")
-    Call<SimpleDataWrapper> getCategories(@Header("Authorization") String api_token, @Query("language") String language);
+    @POST("group")
+    @FormUrlEncoded
+    Call<SimpleDataWrapper> createGroup(@Header("Authorization") String token, @FieldMap HashMap<String, String> params);
 
+    @Headers({"Accept: application/json"})
+    @GET("group")
+    Call<GroupListDataWrapper> getGroups(@Header("Authorization") String token, @Query("q") String search, @Query("page") int pageNumber);
+
+    @Headers({"Accept: application/json"})
+    @GET("purchase/{group_id}")
+    Call<ShoppingItemListDataWrapper> getShoppingItems(@Header("Authorization") String token, @Path("group_id") int groupId, @Query("page") int pageNumber);
+
+    // ---------------- not done
     @Headers({"Accept: application/json"})
     @GET("branches")
     Call<SimpleDataWrapper> getBranches(

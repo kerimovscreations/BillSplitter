@@ -106,12 +106,14 @@ public class SignUpActivity extends BaseActivity {
         if (mRegisterCall != null && !mRegisterCall.isExecuted()) {
             showProgress(false);
             mRegisterCall.cancel();
+            mRegisterCall = null;
             return;
         }
 
         if (mGoogleLoginCall != null && !mGoogleLoginCall.isExecuted()) {
             showProgress(false);
             mGoogleLoginCall.cancel();
+            mGoogleLoginCall = null;
             return;
         }
 
@@ -284,15 +286,15 @@ public class SignUpActivity extends BaseActivity {
 
             @Override
             public void onFailure(@NonNull Call<UserDataWrapper> call, @NonNull Throwable t) {
-                runOnUiThread(() -> {
-                    showProgress(false);
-                    Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
-                });
-
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {
                     Log.e(TAG, "onFailure: Request Failed");
+
+                    runOnUiThread(() -> {
+                        showProgress(false);
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    });
                 }
             }
         });
@@ -334,15 +336,15 @@ public class SignUpActivity extends BaseActivity {
 
             @Override
             public void onFailure(@NonNull Call<UserDataWrapper> call, @NonNull Throwable t) {
-                runOnUiThread(() -> {
-                    showProgress(false);
-                    Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
-                });
-
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {
                     Log.e(TAG, "onFailure: Request Failed");
+
+                    runOnUiThread(() -> {
+                        showProgress(false);
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    });
                 }
             }
         });

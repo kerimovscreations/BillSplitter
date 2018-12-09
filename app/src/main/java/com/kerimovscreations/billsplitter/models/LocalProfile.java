@@ -1,5 +1,8 @@
 package com.kerimovscreations.billsplitter.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.realm.RealmObject;
 
 public class LocalProfile extends RealmObject {
@@ -8,6 +11,7 @@ public class LocalProfile extends RealmObject {
     private String fullName;
     private String email;
     private String picture;
+    private int lastSelectedGroupId = -1;
 
     public int getId() {
         return id;
@@ -46,5 +50,13 @@ public class LocalProfile extends RealmObject {
         this.fullName = person.getFullName();
         this.email = person.getEmail();
         this.picture = person.getPicture();
+    }
+
+    public int getLastSelectedGroupId() {
+        return lastSelectedGroupId;
+    }
+
+    public void setLastSelectedGroupId(int lastSelectedGroupId) {
+        this.lastSelectedGroupId = lastSelectedGroupId;
     }
 }

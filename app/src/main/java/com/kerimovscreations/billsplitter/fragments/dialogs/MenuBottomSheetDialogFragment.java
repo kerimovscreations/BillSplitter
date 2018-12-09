@@ -16,6 +16,8 @@ import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.GroupListRVAdapter;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.models.Group;
+import com.kerimovscreations.billsplitter.models.LocalGroup;
+import com.kerimovscreations.billsplitter.models.LocalGroupMember;
 import com.kerimovscreations.billsplitter.models.LocalProfile;
 import com.kerimovscreations.billsplitter.models.Person;
 import com.squareup.picasso.Picasso;
@@ -27,6 +29,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
@@ -98,23 +101,20 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
         setupProfileData();
 
-        ArrayList<Person> mPeople = new ArrayList<>();
+        RealmResults<LocalGroup> groups = mRealm.where(LocalGroup.class).findAll();
+        RealmResults<LocalGroupMember> members;
+        Group tempGroup;
 
-        mPeople.add(new Person(1, "User 1", "user@gmail.com"));
-        mPeople.add(new Person(2, "User 2", "user@gmail.com"));
-        mPeople.add(new Person(3, "User 3", "user@gmail.com"));
-        mPeople.add(new Person(4, "User 4", "user@gmail.com"));
-        mList.add(new Group("My List", mPeople));
+        for (LocalGroup localGroup : groups) {
+            tempGroup = new Group(localGroup);
 
-        ArrayList<Person> mPeople1 = new ArrayList<>();
-        mPeople1.add(new Person(5, "User 5", "user@gmail.com"));
-        mList.add(new Group("Kocsis dorm", mPeople1));
+            members = mRealm.where(LocalGroupMember.class).equalTo("groupId", localGroup.getId()).findAll();
+            for (LocalGroupMember localGroupMember : members) {
+                tempGroup.getGroupUsers().add(localGroupMember.getPerson());
+            }
 
-        ArrayList<Person> mPeople2 = new ArrayList<>();
-        mPeople2.add(new Person(6, "User 6", "user@gmail.com"));
-        mPeople2.add(new Person(7, "User 7", "user@gmail.com"));
-        mPeople2.add(new Person(8, "User 8", "user@gmail.com"));
-        mList.add(new Group("Vodafone work", mPeople2));
+            mList.add(tempGroup);
+        }
 
         mAdapter = new GroupListRVAdapter(getContext(), mList);
         mAdapter.setOnItemClickListener(position -> {

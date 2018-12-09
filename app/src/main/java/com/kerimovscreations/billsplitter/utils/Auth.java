@@ -33,7 +33,7 @@ public class Auth {
     public String getToken(Context context) {
         SharedPreferences mPrefs = context.getSharedPreferences(context.getResources().getString(R.string.local_preference), Context.MODE_PRIVATE);
 
-        return mPrefs.getString(context.getString(R.string.local_preference_token), "");
+        return "Bearer " + mPrefs.getString(context.getString(R.string.local_preference_token), "");
     }
 
     public void saveProfile(Context context, Person person) {

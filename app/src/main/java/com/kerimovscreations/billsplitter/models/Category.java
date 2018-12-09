@@ -1,8 +1,26 @@
 package com.kerimovscreations.billsplitter.models;
 
-public class Category {
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import io.realm.RealmObject;
+
+public class Category extends RealmObject {
+
+    @SerializedName("Id")
+    @Expose
+    private int id;
+
+    @SerializedName("Name")
+    @Expose
     private String title;
+
+    @SerializedName("Color")
+    @Expose
     private String hexColor;
+
+    public Category() {
+    }
 
     public Category(String title, String hexColor) {
         this.title = title;

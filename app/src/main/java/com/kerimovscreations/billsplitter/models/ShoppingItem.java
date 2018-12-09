@@ -1,39 +1,81 @@
 package com.kerimovscreations.billsplitter.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShoppingItem implements Serializable {
+import io.realm.RealmList;
+import io.realm.RealmObject;
 
-    private String title, date;
-    private boolean isDone = false;
+public class ShoppingItem extends RealmObject implements Serializable {
+
+    @SerializedName("Id")
+    @Expose
+    private int id;
+
+    @SerializedName("IsComplete")
+    @Expose
+    private boolean isComplete;
+
+    @SerializedName("Price")
+    @Expose
+    private float price;
+
+    @SerializedName("Product")
+    @Expose
+    private Product product;
+
+    @SerializedName("CreatedAt")
+    @Expose
+    private String date;
+
+    @SerializedName("PurchaseMembers")
+    @Expose
+    private RealmList<Person> sharedMembers;
+
     private boolean isHeader = false;
-    private List<Person> sharedPeople;
-    private Category category;
 
-    public ShoppingItem(String title, String date, boolean isDone, List<Person> sharedPeople, boolean isHeader) {
-        this.title = title;
-        this.date = "13 November 2018";
-        this.isDone = isDone;
-        this.isHeader = isHeader;
-        this.sharedPeople = sharedPeople;
+    public int getId() {
+        return id;
     }
 
-    public String getTitle() {
-        return title;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public boolean isComplete() {
+        return isComplete;
     }
 
-    public boolean isDone() {
-        return isDone;
+    public void setComplete(boolean complete) {
+        isComplete = complete;
     }
 
-    public void setDone(boolean done) {
-        isDone = done;
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public RealmList<Person> getSharedMembers() {
+        return sharedMembers;
+    }
+
+    public void setSharedMembers(RealmList<Person> sharedMembers) {
+        this.sharedMembers = sharedMembers;
     }
 
     public boolean isHeader() {
@@ -52,23 +94,7 @@ public class ShoppingItem implements Serializable {
         this.date = date;
     }
 
-    public void toggleDone() {
-        this.isDone = !this.isDone;
-    }
-
-    public List<Person> getSharedPeople() {
-        return sharedPeople;
-    }
-
-    public void setSharedPeople(List<Person> sharedPeople) {
-        this.sharedPeople = sharedPeople;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
+    public void toggleComplete() {
+        this.isComplete = !this.isComplete;
     }
 }

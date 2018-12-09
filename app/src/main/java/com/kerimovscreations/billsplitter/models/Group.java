@@ -1,16 +1,37 @@
 package com.kerimovscreations.billsplitter.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Group implements Serializable {
 
-    private String title;
-    private ArrayList<Person> members;
+    @SerializedName("Id")
+    @Expose
+    private int id = 0;
 
-    public Group(String title, ArrayList<Person> members) {
-        this.title = title;
-        this.members = members;
+    @SerializedName("Name")
+    @Expose
+    private String title;
+
+    @SerializedName("Currency")
+    @Expose
+    private Currency currency;
+
+    @SerializedName("GroupsUsers")
+    @Expose
+    private ArrayList<Person> groupUsers = new ArrayList<>();
+
+    public Group() {
+    }
+
+    public Group(LocalGroup localGroup) {
+        this.id = localGroup.getId();
+        this.title = localGroup.getTitle();
+        this.currency = localGroup.getCurrency();
+        this.groupUsers = new ArrayList<>();
     }
 
     public String getTitle() {
@@ -21,11 +42,27 @@ public class Group implements Serializable {
         this.title = title;
     }
 
-    public ArrayList<Person> getMembers() {
-        return members;
+    public int getId() {
+        return id;
     }
 
-    public void setMembers(ArrayList<Person> members) {
-        this.members = members;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+    }
+
+    public ArrayList<Person> getGroupUsers() {
+        return groupUsers;
+    }
+
+    public void setGroupUsers(ArrayList<Person> groupUsers) {
+        this.groupUsers = groupUsers;
     }
 }

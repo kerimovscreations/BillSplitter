@@ -5,8 +5,12 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class Person implements Serializable {
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
+public class Person extends RealmObject implements Serializable {
+
+    @PrimaryKey
     @SerializedName("Id")
     @Expose
     private int id;
@@ -27,9 +31,8 @@ public class Person implements Serializable {
     @Expose
     private String apiToken;
 
-    @SerializedName("EmailVerificationCode")
-    @Expose
-    private String emailVerificationCode;
+    public Person() {
+    }
 
     public Person(int id, String fullName) {
         this.id = id;
@@ -80,13 +83,5 @@ public class Person implements Serializable {
 
     public void setApiToken(String apiToken) {
         this.apiToken = apiToken;
-    }
-
-    public String getEmailVerificationCode() {
-        return emailVerificationCode;
-    }
-
-    public void setEmailVerificationCode(String emailVerificationCode) {
-        this.emailVerificationCode = emailVerificationCode;
     }
 }

@@ -86,12 +86,14 @@ public class LoginActivity extends BaseActivity {
         if (mLoginCall != null && !mLoginCall.isExecuted()) {
             showProgress(false);
             mLoginCall.cancel();
+            mLoginCall = null;
             return;
         }
 
         if (mGoogleLoginCall != null && !mGoogleLoginCall.isExecuted()) {
             showProgress(false);
             mGoogleLoginCall.cancel();
+            mGoogleLoginCall = null;
             return;
         }
 
@@ -227,15 +229,15 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void onFailure(@NonNull Call<UserDataWrapper> call, @NonNull Throwable t) {
-                runOnUiThread(() -> {
-                    showProgress(false);
-                    Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
-                });
-
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {
                     Log.e(TAG, "onFailure: Request Failed");
+
+                    runOnUiThread(() -> {
+                        showProgress(false);
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    });
                 }
             }
         });
@@ -277,15 +279,15 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void onFailure(@NonNull Call<UserDataWrapper> call, @NonNull Throwable t) {
-                runOnUiThread(() -> {
-                    showProgress(false);
-                    Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
-                });
-
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {
                     Log.e(TAG, "onFailure: Request Failed");
+
+                    runOnUiThread(() -> {
+                        showProgress(false);
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    });
                 }
             }
         });
