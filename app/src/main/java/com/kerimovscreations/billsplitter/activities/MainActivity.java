@@ -30,6 +30,7 @@ import com.kerimovscreations.billsplitter.interfaces.AppApiService;
 import com.kerimovscreations.billsplitter.models.Currency;
 import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.LocalGroup;
+import com.kerimovscreations.billsplitter.models.LocalGroupMember;
 import com.kerimovscreations.billsplitter.models.LocalProfile;
 import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
@@ -295,10 +296,13 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.bottom_tab_menu_ic)
     void onTabMenu(View view) {
-        mMenuBottomDialogFragment = MenuBottomSheetDialogFragment.getInstance();
+        mMenuBottomDialogFragment = MenuBottomSheetDialogFragment.getInstance(mSelectedGroup);
         mMenuBottomDialogFragment.setClickListener(new MenuBottomSheetDialogFragment.OnClickListener() {
             @Override
             public void onGroup(Group group) {
+                mSelectedGroup = new LocalGroup(group);
+                getGroupItems();
+                mMenuBottomDialogFragment.dismiss();
             }
 
             @Override
@@ -373,9 +377,13 @@ public class MainActivity extends BaseActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
                         getRealm().executeTransaction(realm -> {
-                            realm.delete(LocalGroup.class);
+//                            realm.delete(LocalGroup.class);
+//                            realm.delete(LocalGroupMember.class);
                             for (Group tempGroup : response.body().getList()) {
-                                realm.copyToRealm(new LocalGroup(tempGroup));
+                                realm.copyToRealmOrUpdate(new LocalGroup(tempGroup));
+                                for (Person member : tempGroup.getGroupUsers()) {
+                                    realm.copyToRealmOrUpdate(new LocalGroupMember(member, tempGroup.getId()));
+                                }
                             }
                             mLocalGroups.clear();
                             mLocalGroups.addAll(getRealm().where(LocalGroup.class).findAll());

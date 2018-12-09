@@ -40,6 +40,11 @@ public class GroupListRVAdapter extends RecyclerView.Adapter<GroupListRVAdapter.
         return mSelectedIndex;
     }
 
+    public void setSelectedIndex(int mSelectedIndex) {
+        this.mSelectedIndex = mSelectedIndex;
+        notifyDataSetChanged();
+    }
+
     public void setOnItemClickListener(GroupListRVAdapter.OnItemClickListener listener) {
         mListener = listener;
     }

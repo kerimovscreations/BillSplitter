@@ -61,6 +61,8 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
     private OnClickListener mListener;
 
+    private LocalGroup mSelectedGroup;
+
     public interface OnClickListener {
         void onGroup(Group group);
 
@@ -75,8 +77,10 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
         mListener = listener;
     }
 
-    public static MenuBottomSheetDialogFragment getInstance() {
-        return new MenuBottomSheetDialogFragment();
+    public static MenuBottomSheetDialogFragment getInstance(LocalGroup group) {
+        MenuBottomSheetDialogFragment fragment = new MenuBottomSheetDialogFragment();
+        fragment.mSelectedGroup = group;
+        return fragment;
     }
 
     @Override
@@ -125,6 +129,15 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
         mRVList.setLayoutManager(new LinearLayoutManager(getContext()));
         mRVList.setAdapter(mAdapter);
+
+        if(mSelectedGroup != null){
+            for (int i = 0; i < mList.size(); i++) {
+                if(mList.get(i).getId() == mSelectedGroup.getId()) {
+                    mAdapter.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
 
         updateLogoutBtnVisibility();
     }
