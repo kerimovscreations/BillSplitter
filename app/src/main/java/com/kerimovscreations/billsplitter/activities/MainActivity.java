@@ -72,8 +72,14 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.rvActiveList)
     RecyclerView mRVActiveList;
 
+    @BindView(R.id.shopping_list_title)
+    View mActiveShoppingListTitle;
+
     @BindView(R.id.rvCompletedList)
     RecyclerView mRVCompletedList;
+
+    @BindView(R.id.completed_list_layout)
+    View mCompletedListLayout;
 
     @BindView(R.id.completed_list_drop_down_ic)
     ImageView mCompletedListDropDownIc;
@@ -86,6 +92,9 @@ public class MainActivity extends BaseActivity {
 
     @BindView(R.id.empty_content_placeholder)
     View mEmptyContentPlaceholder;
+
+    @BindView(R.id.empty_list_placeholder)
+    View mEmptyListPlaceholder;
 
     private TimelineRVAdapter mTimelineAdapter;
     private ShoppingListRVAdapter mActiveShoppingListAdapter;
@@ -160,10 +169,12 @@ public class MainActivity extends BaseActivity {
                 mGroupContent.setVisibility(View.VISIBLE);
                 mAddItemBtn.setVisibility(View.VISIBLE);
                 mEmptyContentPlaceholder.setVisibility(View.GONE);
+                mEmptyListPlaceholder.setVisibility(View.GONE);
             } else {
                 mGroupContent.setVisibility(View.GONE);
                 mAddItemBtn.setVisibility(View.GONE);
                 mEmptyContentPlaceholder.setVisibility(View.VISIBLE);
+                mEmptyListPlaceholder.setVisibility(View.GONE);
             }
         } else {
             for (LocalGroup group : mLocalGroups) {
@@ -175,13 +186,20 @@ public class MainActivity extends BaseActivity {
         }
 
         getGroups();
-        getCurrencies();
+
+        if (GlobalApplication.getRealm().where(Currency.class).count() == 0) {
+            getCurrencies();
+        }
 
         getData();
     }
 
     void getData() {
         if (mSelectedGroup != null) {
+            mGroupContent.setVisibility(View.GONE);
+            mAddItemBtn.setVisibility(View.GONE);
+            mEmptyContentPlaceholder.setVisibility(View.GONE);
+            mEmptyListPlaceholder.setVisibility(View.GONE);
             getGroupItems();
         } else {
             showProgress(false);
@@ -338,7 +356,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onEdit() {
-                toGroupForm(new Group());
+                toGroupForm(new Group(mSelectedGroup));
             }
 
             @Override
@@ -357,7 +375,7 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.create_group_btn)
     void onCreateGroup() {
-        toGroupForm(null);
+        toGroupForm(new Group(mSelectedGroup));
     }
 
     /**
@@ -381,8 +399,11 @@ public class MainActivity extends BaseActivity {
 //                            realm.delete(LocalGroupMember.class);
                             for (Group tempGroup : response.body().getList()) {
                                 realm.copyToRealmOrUpdate(new LocalGroup(tempGroup));
-                                for (Person member : tempGroup.getGroupUsers()) {
-                                    realm.copyToRealmOrUpdate(new LocalGroupMember(member, tempGroup.getId()));
+
+                                realm.where(LocalGroupMember.class).equalTo("groupId", tempGroup.getId()).findAll().deleteAllFromRealm();
+
+                                for (int i = 0; i < tempGroup.getGroupUsers().size(); i++) {
+                                    realm.copyToRealm(new LocalGroupMember(tempGroup.getGroupUsers().get(i), tempGroup.getId()));
                                 }
                             }
                             mLocalGroups.clear();
@@ -400,9 +421,6 @@ public class MainActivity extends BaseActivity {
                             }
 
                             if (mSelectedGroup != null) {
-                                mGroupContent.setVisibility(View.VISIBLE);
-                                mAddItemBtn.setVisibility(View.VISIBLE);
-                                mEmptyContentPlaceholder.setVisibility(View.GONE);
                                 getGroupItems();
                             }
                         }
@@ -449,12 +467,27 @@ public class MainActivity extends BaseActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
-                        for (ShoppingItem shoppingItem : response.body().getList()) {
-                            if (shoppingItem.isComplete()) {
-                                mActiveShoppingList.add(shoppingItem);
-                            } else {
-                                mCompletedShoppingList.add(shoppingItem);
+                        if (response.body().getList().size() == 0) {
+                            mGroupContent.setVisibility(View.GONE);
+                            mAddItemBtn.setVisibility(View.VISIBLE);
+                            mEmptyContentPlaceholder.setVisibility(View.GONE);
+                            mEmptyListPlaceholder.setVisibility(View.VISIBLE);
+                        } else {
+                            for (ShoppingItem shoppingItem : response.body().getList()) {
+                                if (shoppingItem.isComplete()) {
+                                    mActiveShoppingList.add(shoppingItem);
+                                } else {
+                                    mCompletedShoppingList.add(shoppingItem);
+                                }
                             }
+
+                            mGroupContent.setVisibility(View.VISIBLE);
+                            mAddItemBtn.setVisibility(View.VISIBLE);
+                            mEmptyContentPlaceholder.setVisibility(View.GONE);
+                            mEmptyListPlaceholder.setVisibility(View.GONE);
+
+                            mActiveShoppingListTitle.setVisibility(mActiveShoppingList.size() == 0 ? View.GONE : View.VISIBLE);
+                            mCompletedListLayout.setVisibility(mCompletedShoppingList.size() == 0 ? View.GONE : View.VISIBLE);
                         }
                     });
                 } else {
@@ -540,7 +573,8 @@ public class MainActivity extends BaseActivity {
 
     void toGroupForm(Group group) {
         Intent intent = new Intent(getContext(), GroupFormActivity.class);
-        intent.putExtra(GroupFormActivity.INTENT_ITEM, group);
+        if (group != null)
+            intent.putExtra(GroupFormActivity.INTENT_ITEM_ID, group.getId());
         startActivityForResult(intent, GROUP_CREATE_REQUEST);
     }
 

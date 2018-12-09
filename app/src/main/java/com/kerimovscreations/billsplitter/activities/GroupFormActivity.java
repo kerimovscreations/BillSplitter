@@ -24,6 +24,8 @@ import com.kerimovscreations.billsplitter.fragments.dialogs.InviteMemberBottomSh
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;
 import com.kerimovscreations.billsplitter.models.Currency;
 import com.kerimovscreations.billsplitter.models.Group;
+import com.kerimovscreations.billsplitter.models.LocalGroup;
+import com.kerimovscreations.billsplitter.models.LocalGroupMember;
 import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
@@ -37,6 +39,9 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,6 +51,7 @@ public class GroupFormActivity extends BaseActivity {
     private final String TAG = "GROUP_FORM";
 
     public static final String INTENT_ITEM = "ITEM";
+    public static final String INTENT_ITEM_ID = "ITEM_ID";
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
@@ -76,6 +82,7 @@ public class GroupFormActivity extends BaseActivity {
     AppApiService mApiService;
 
     Call<SimpleDataWrapper> mCreateGroupCall;
+    Call<SimpleDataWrapper> mUpdateGroupCall;
 
     private ArrayList<Currency> mCurrencies;
 
@@ -109,7 +116,8 @@ public class GroupFormActivity extends BaseActivity {
     public void initVars() {
         super.initVars();
 
-        mGroup = (Group) getIntent().getSerializableExtra(INTENT_ITEM);
+        int groupId = getIntent().getIntExtra(INTENT_ITEM_ID, 0);
+
         mCurrencies = new ArrayList<>();
 
         mCurrencies.addAll(GlobalApplication.getRealm().where(Currency.class).findAll());
@@ -119,21 +127,34 @@ public class GroupFormActivity extends BaseActivity {
 
         mApiService = GlobalApplication.getRetrofit().create(AppApiService.class);
 
-        setupData();
+        setupData(groupId);
     }
 
-    void setupData() {
-        if (mGroup == null) {
+    void setupData(int groupId) {
+        if (groupId == 0) {
             mGroup = new Group();
-            mActionBtn.setVisibility(View.VISIBLE);
             mSelectedCurrency = mCurrencies.get(0);
             mCurrency.setText(mSelectedCurrency.getName());
         } else {
-            mActionBtn.setVisibility(View.GONE);
+            LocalGroup localGroup = GlobalApplication.getRealm().where(LocalGroup.class).equalTo("id", groupId).findFirst();
+
+            if (localGroup != null)
+                mGroup = new Group(localGroup);
+            else
+                return;
+
+            RealmResults<LocalGroupMember> members = GlobalApplication.getRealm()
+                    .where(LocalGroupMember.class)
+                    .equalTo("groupId", mGroup.getId())
+                    .findAll();
+            for (LocalGroupMember localGroupMember : members) {
+                mGroup.getGroupUsers().add(localGroupMember.getPerson());
+            }
+
+            mTitle.setText(mGroup.getTitle());
             mSelectedCurrency = mGroup.getCurrency();
             mCurrency.setText(mSelectedCurrency.getName());
         }
-
 
         // Shared people list
 
@@ -191,14 +212,14 @@ public class GroupFormActivity extends BaseActivity {
 
     @OnClick(R.id.action_btn)
     void onAction(View view) {
-        if (mGroup.getId() == 0) {
-            if (!isFormValid()) {
-                return;
-            }
+        if (!isFormValid()) {
+            return;
+        }
 
+        if (mGroup.getId() == 0) {
             submitForm();
         } else {
-            promptDeleteDialog();
+            updateGroup();
         }
     }
 
@@ -226,10 +247,6 @@ public class GroupFormActivity extends BaseActivity {
         }
 
         return true;
-    }
-
-    void promptDeleteDialog() {
-        // TODO: Complete method
     }
 
     void promptCurrencyPickerDialog() {
@@ -271,6 +288,9 @@ public class GroupFormActivity extends BaseActivity {
             data.put("members[" + i + "]", mGroup.getGroupUsers().get(i).getEmail());
         }
 
+        mGroup.setTitle(mTitle.getText().toString());
+        mGroup.setCurrency(mSelectedCurrency);
+
         mCreateGroupCall = mApiService.createGroup(Auth.getInstance().getToken(getContext()), data);
 
         mCreateGroupCall.enqueue(new Callback<SimpleDataWrapper>() {
@@ -280,7 +300,89 @@ public class GroupFormActivity extends BaseActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
+                        GlobalApplication.getRealm().executeTransaction(realm -> {
+                            LocalGroup localGroup = new LocalGroup(mGroup);
+                            realm.copyToRealmOrUpdate(localGroup);
+
+                            realm.where(LocalGroupMember.class).equalTo("groupId", localGroup.getId()).findAll().deleteAllFromRealm();
+
+                            for (int i = 0; i < mGroup.getGroupUsers().size() - 1; i++) {
+                                realm.copyToRealm(new LocalGroupMember(mGroup.getGroupUsers().get(i), localGroup.getId()));
+                            }
+                        });
+
                         Toast.makeText(getContext(), R.string.successful_create_group, Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SimpleDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    Log.e(TAG, "onFailure: Request Failed");
+
+                    runOnUiThread(() -> {
+                        showProgress(false);
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        });
+    }
+
+    private void updateGroup() {
+        showProgress(true);
+
+        HashMap<String, String> data = new HashMap<>();
+
+        data.put("CurrencyId", String.valueOf(mSelectedCurrency.getId()));
+        data.put("Name", mTitle.getText().toString());
+
+        for (int i = 0; i < mGroup.getGroupUsers().size() - 1; i++) {
+            data.put("members[" + i + "]", mGroup.getGroupUsers().get(i).getEmail());
+        }
+
+        mGroup.setTitle(mTitle.getText().toString());
+        mGroup.setCurrency(mSelectedCurrency);
+
+        mUpdateGroupCall = mApiService.updateGroup(Auth.getInstance().getToken(getContext()), mGroup.getId(), data);
+
+        mUpdateGroupCall.enqueue(new Callback<SimpleDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<SimpleDataWrapper> call, @NonNull Response<SimpleDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        GlobalApplication.getRealm().executeTransaction(realm -> {
+                            LocalGroup localGroup = new LocalGroup(mGroup);
+                            realm.copyToRealmOrUpdate(localGroup);
+
+                            realm.where(LocalGroupMember.class).equalTo("groupId", localGroup.getId()).findAll().deleteAllFromRealm();
+
+                            for (Person member : mGroup.getGroupUsers()) {
+                                realm.copyToRealmOrUpdate(new LocalGroupMember(member, localGroup.getId()));
+                            }
+                        });
+                        Toast.makeText(getContext(), R.string.successful_update_group, Toast.LENGTH_SHORT).show();
                         finish();
                     });
                 } else {

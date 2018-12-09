@@ -5,10 +5,14 @@ import android.support.annotation.NonNull;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-public class Currency extends RealmObject {
+public class Currency extends RealmObject implements Serializable {
 
+    @PrimaryKey
     @SerializedName("Id")
     @Expose
     private int id;

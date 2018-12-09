@@ -1,12 +1,14 @@
 package com.kerimovscreations.billsplitter.models;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class LocalGroup extends RealmObject {
+public class LocalGroup extends RealmObject implements Serializable {
 
     @PrimaryKey
-    private int id;
+    private int id = 0;
 
     private String title;
     private Currency currency;
