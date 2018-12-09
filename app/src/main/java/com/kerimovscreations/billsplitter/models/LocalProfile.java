@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class LocalProfile extends RealmObject {
 
+    @PrimaryKey
     private int id;
+
     private String fullName;
     private String email;
     private String picture;

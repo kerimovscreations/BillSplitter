@@ -5,30 +5,53 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.kerimovscreations.billsplitter.R;
+import com.kerimovscreations.billsplitter.application.GlobalApplication;
+import com.kerimovscreations.billsplitter.interfaces.AppApiService;
+import com.kerimovscreations.billsplitter.models.LocalProfile;
+import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
 import com.kerimovscreations.billsplitter.utils.CommonMethods;
+import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
+import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.realm.Realm;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileEditActivity extends BaseActivity {
 
+    private final String TAG = "PROFILE_FORM";
+
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.layout_progress)
+    View mProgressLayout;
     @BindView(R.id.avatar)
     CircleImageView mAvatar;
     @BindView(R.id.name_input)
@@ -49,6 +72,12 @@ public class ProfileEditActivity extends BaseActivity {
     Uri mSelectedAvatarUri;
     boolean mIsPasswordChangeLayoutVisible = false;
 
+    LocalProfile mLocalProfile;
+
+    private Call<UserDataWrapper> mUpdateCall;
+
+    AppApiService mApiService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,10 +85,44 @@ public class ProfileEditActivity extends BaseActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (mUpdateCall != null && !mUpdateCall.isExecuted()) {
+            showProgress(false);
+            mUpdateCall.cancel();
+            mUpdateCall = null;
+            return;
+        }
+
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mUpdateCall != null && !mUpdateCall.isExecuted())
+            mUpdateCall.cancel();
+    }
+
+    @Override
     public void initVars() {
         super.initVars();
 
+        mApiService = GlobalApplication.getRetrofit().create(AppApiService.class);
+
         updatePasswordChangeInputsVisibility();
+
+        setupData();
+    }
+
+    void setupData() {
+        mLocalProfile = GlobalApplication.getRealm().where(LocalProfile.class).findFirst();
+
+        Picasso.get().load(mLocalProfile.getPicture())
+                .into(mAvatar);
+
+        mNameInput.setText(mLocalProfile.getFullName());
+        mEmailInput.setText(mLocalProfile.getEmail());
     }
 
     /**
@@ -81,12 +144,11 @@ public class ProfileEditActivity extends BaseActivity {
 
     @OnClick(R.id.action_btn)
     void onAction() {
-
         if (mIsPasswordChangeLayoutVisible && !isPasswordsValid()) {
             return;
         }
 
-        // TODO: API Integration
+        register();
     }
 
     @OnClick(R.id.password_change_layout)
@@ -98,6 +160,17 @@ public class ProfileEditActivity extends BaseActivity {
     /**
      * UI
      */
+
+    void showProgress(boolean show) {
+        mProgressLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+
+        if (show) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
+    }
 
     void updatePasswordChangeInputsVisibility() {
         mPasswordChangeInputsLayout.setVisibility(mIsPasswordChangeLayoutVisible ? View.VISIBLE : View.GONE);
@@ -134,6 +207,83 @@ public class ProfileEditActivity extends BaseActivity {
         }
 
         return true;
+    }
+
+    /**
+     * HTTP
+     */
+
+    private void register() {
+        showProgress(true);
+
+        RequestBody fullName = RequestBody.create(MediaType.parse("text/plain"), mNameInput.getText().toString().trim());
+        RequestBody email = RequestBody.create(MediaType.parse("text/plain"), mEmailInput.getText().toString().trim());
+
+        HashMap<String, RequestBody> data = new HashMap<>();
+
+        data.put("FullName", fullName);
+        data.put("email", email);
+
+        if (mIsPasswordChangeLayoutVisible) {
+            RequestBody oldPassword = RequestBody.create(MediaType.parse("text/plain"), mCurrentPasswordInput.getText().toString().trim());
+            RequestBody password = RequestBody.create(MediaType.parse("text/plain"), mNewPasswordInput.getText().toString().trim());
+
+            data.put("oldPassword", oldPassword);
+            data.put("password", password);
+        }
+
+        MultipartBody.Part fileToUpload = null;
+
+        if (mSelectedAvatarUri != null) {
+            RequestBody file = RequestBody.create(MediaType.parse("image/*"), new File(mSelectedAvatarUri.getPath()));
+            fileToUpload = MultipartBody.Part.createFormData("photo", mEmailInput.getText().toString(), file);
+        }
+
+        mUpdateCall = mApiService.updateUser(Auth.getInstance().getToken(getContext()), fileToUpload, data);
+
+        mUpdateCall.enqueue(new Callback<UserDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        Auth.getInstance().updateProfile(response.body().getPerson());
+                        Toast.makeText(getContext(), R.string.successful_update_profile, Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UserDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    Log.e(TAG, "onFailure: Request Failed");
+
+                    runOnUiThread(() -> {
+                        showProgress(false);
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        });
     }
 
     /**

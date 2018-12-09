@@ -75,6 +75,12 @@ public interface AppApiService {
     @GET("product/categories")
     Call<CategoryListDataWrapper> getCategories(@Header("Authorization") String token);
 
+    @Headers({"Accept: application/json"})
+    @PUT("user/me")
+    @Multipart
+    Call<UserDataWrapper> updateUser(@Header("Authorization") String token, @Part MultipartBody.Part file, @PartMap Map<String, RequestBody> params);
+
+
     // ---------------- not done
     @Headers({"Accept: application/json"})
     @GET("branches")

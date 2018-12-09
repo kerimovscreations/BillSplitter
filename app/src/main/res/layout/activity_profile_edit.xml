@@ -231,4 +231,6 @@
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </LinearLayout>
+
+    <include layout="@layout/layout_progress" />
 </android.support.design.widget.CoordinatorLayout>

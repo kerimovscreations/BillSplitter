@@ -37,10 +37,12 @@ public class Auth {
     }
 
     public void saveProfile(Context context, Person person) {
-        GlobalApplication.getRealm().executeTransactionAsync(realm -> {
-            LocalProfile profile = realm.createObject(LocalProfile.class);
+        GlobalApplication.getRealm().executeTransaction(realm -> {
+            LocalProfile profile = new LocalProfile();
             profile.setData(person);
-        }, () -> saveToken(context, person.getApiToken()));
+            realm.copyToRealmOrUpdate(profile);
+        });
+        saveToken(context, person.getApiToken());
     }
 
     public void saveToken(Context context, String token) {
@@ -61,5 +63,13 @@ public class Auth {
     public void logout(Context context) {
         GlobalApplication.getRealm().executeTransaction(realm -> realm.deleteAll());
         removeToken(context);
+    }
+
+    public void updateProfile(Person person) {
+        GlobalApplication.getRealm().executeTransaction(realm -> {
+            LocalProfile profile = new LocalProfile();
+            profile.setData(person);
+            realm.copyToRealmOrUpdate(profile);
+        });
     }
 }
