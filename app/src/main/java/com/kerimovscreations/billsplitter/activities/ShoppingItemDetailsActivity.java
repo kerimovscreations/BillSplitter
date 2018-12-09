@@ -293,7 +293,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
         // Buyer
 
-        mBuyer.setText(mShoppingItem.getBuyer() == null ? "Not selected user" : mShoppingItem.getBuyer().getFullName());
+        mBuyer.setText(mShoppingItem.getBuyer() == null ? getString(R.string.select_buyer) : mShoppingItem.getBuyer().getFullName());
 
         // Shared people list
 
@@ -303,48 +303,79 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         mAdapter.setOnItemClickListener(new SharedPeopleListRVAdapter.OnItemClickListener() {
             @Override
             public void onAdd(int position) {
-                GroupMemberPickerBottomSheetDialogFragment fragment = GroupMemberPickerBottomSheetDialogFragment.getInstance(mGroup.getGroupUsers());
-                fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
-                    @Override
-                    public void onSelect(Person person) {
-                        mShoppingItem.getSharedMembers().add(mShoppingItem.getSharedMembers().size() - 1, person);
-                        mAdapter.notifyDataSetChanged();
+                if (mShoppingItem.getSharedMembers().get(position).getId() > 0) {
+
+                } else {
+                    ArrayList<Person> people = new ArrayList<>();
+
+                    boolean hasFoundFlag;
+
+                    for (int i = 0; i < mGroup.getGroupUsers().size(); i++) {
+                        hasFoundFlag = false;
+
+                        for (int j = 0; j < mShoppingItem.getSharedMembers().size() - 1; j++) {
+                            if (mGroup.getGroupUsers().get(i).getId() == mShoppingItem.getSharedMembers().get(j).getId()) {
+                                hasFoundFlag = true;
+                                break;
+                            }
+                        }
+
+                        if (!hasFoundFlag)
+                            people.add(mGroup.getGroupUsers().get(i));
                     }
 
-                    @Override
-                    public void onRemove() {
-                        // not used
-                    }
-                });
+                    GroupMemberPickerBottomSheetDialogFragment fragment = GroupMemberPickerBottomSheetDialogFragment.getInstance(people);
+                    fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
+                        @Override
+                        public void onSelect(Person person) {
+                            mShoppingItem.getSharedMembers().add(mShoppingItem.getSharedMembers().size() - 1, person);
 
-                fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
+                            if (mGroup.getGroupUsers().size() < mShoppingItem.getSharedMembers().size())
+                                mShoppingItem.getSharedMembers().remove(mShoppingItem.getSharedMembers().size() - 1);
+
+                            mAdapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onRemove() {
+                            // not used
+                        }
+                    });
+
+                    fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
+                }
             }
 
             @Override
             public void onDelete(int position) {
+                if (mGroup.getGroupUsers().size() == mShoppingItem.getSharedMembers().size())
+                    mShoppingItem.getSharedMembers().add(new Person(-1, "Placeholder"));
+
                 mShoppingItem.getSharedMembers().remove(position);
                 mAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onSelect(int position) {
-                GroupMemberPickerBottomSheetDialogFragment fragment = GroupMemberPickerBottomSheetDialogFragment.getInstance(mGroup.getGroupUsers());
-                fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
-                    @Override
-                    public void onSelect(Person person) {
-                        mShoppingItem.getSharedMembers().remove(position);
-                        mShoppingItem.getSharedMembers().add(position, person);
-                        mAdapter.notifyDataSetChanged();
-                    }
+                if(mShoppingItem.getSharedMembers().get(position).getId() == -1){
+                    GroupMemberPickerBottomSheetDialogFragment fragment = GroupMemberPickerBottomSheetDialogFragment.getInstance(mGroup.getGroupUsers());
+                    fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
+                        @Override
+                        public void onSelect(Person person) {
+                            mShoppingItem.getSharedMembers().remove(position);
+                            mShoppingItem.getSharedMembers().add(position, person);
+                            mAdapter.notifyDataSetChanged();
+                        }
 
-                    @Override
-                    public void onRemove() {
-                        mShoppingItem.getSharedMembers().remove(position);
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
+                        @Override
+                        public void onRemove() {
+                            mShoppingItem.getSharedMembers().remove(position);
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    });
 
-                fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
+                    fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
+                }
             }
         });
 
@@ -506,7 +537,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         data.put("categoryId", String.valueOf(mSelectedCategory.getId()));
         data.put("barCode", "");
         data.put("price", mPrice.getText().toString().split(" ")[0]);
-        data.put("buyer", mShoppingItem.getBuyer() == null ? "Not selected user" : String.valueOf(mShoppingItem.getBuyer().getId()));
+        data.put("buyer", mShoppingItem.getBuyer() == null ? getString(R.string.select_buyer) : String.valueOf(mShoppingItem.getBuyer().getId()));
         data.put("date", mDate.getText().toString());
 
         for (int i = 0; i < mShoppingItem.getSharedMembers().size() - 1; i++) {

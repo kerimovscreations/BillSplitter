@@ -18,7 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kerimovscreations.billsplitter.R;
-import com.kerimovscreations.billsplitter.adapters.SharedPeopleListRVAdapter;
+import com.kerimovscreations.billsplitter.adapters.GroupMembersListRVAdapter;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.fragments.dialogs.InviteMemberBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;
@@ -30,17 +30,13 @@ import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
-import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -76,7 +72,7 @@ public class GroupFormActivity extends BaseActivity {
 
     Group mGroup;
 
-    SharedPeopleListRVAdapter mAdapter;
+    GroupMembersListRVAdapter mAdapter;
 
     private Currency mSelectedCurrency;
     AppApiService mApiService;
@@ -160,8 +156,8 @@ public class GroupFormActivity extends BaseActivity {
 
         // fake last item
         mGroup.getGroupUsers().add(new Person(-1, "Placeholder"));
-        mAdapter = new SharedPeopleListRVAdapter(getContext(), mGroup.getGroupUsers(), true);
-        mAdapter.setOnItemClickListener(new SharedPeopleListRVAdapter.OnItemClickListener() {
+        mAdapter = new GroupMembersListRVAdapter(getContext(), mGroup.getGroupUsers(), true);
+        mAdapter.setOnItemClickListener(new GroupMembersListRVAdapter.OnItemClickListener() {
             @Override
             public void onAdd(int position) {
                 if (mGroup.getGroupUsers().get(position).getId() > 0) {
@@ -171,7 +167,14 @@ public class GroupFormActivity extends BaseActivity {
                     fragment.setClickListener(new InviteMemberBottomSheetDialogFragment.OnClickListener() {
                         @Override
                         public void onSend(String email) {
+                            for (Person person : mGroup.getGroupUsers()) {
+                                if (email.equals(person.getEmail())) {
+                                    return;
+                                }
+                            }
+
                             mGroup.getGroupUsers().add(mGroup.getGroupUsers().size() - 1, new Person(1, email, email));
+
                             mAdapter.notifyDataSetChanged();
                         }
                     });
@@ -378,8 +381,8 @@ public class GroupFormActivity extends BaseActivity {
 
                             realm.where(LocalGroupMember.class).equalTo("groupId", localGroup.getId()).findAll().deleteAllFromRealm();
 
-                            for (Person member : mGroup.getGroupUsers()) {
-                                realm.copyToRealmOrUpdate(new LocalGroupMember(member, localGroup.getId()));
+                            for (int i = 0; i < mGroup.getGroupUsers().size() - 1; i++) {
+                                realm.copyToRealm(new LocalGroupMember(mGroup.getGroupUsers().get(i), localGroup.getId()));
                             }
                         });
                         Toast.makeText(getContext(), R.string.successful_update_group, Toast.LENGTH_SHORT).show();

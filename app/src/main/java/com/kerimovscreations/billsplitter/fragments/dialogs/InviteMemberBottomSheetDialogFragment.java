@@ -67,7 +67,7 @@ public class InviteMemberBottomSheetDialogFragment extends BottomSheetDialogFrag
 
     @OnClick(R.id.send_btn_layout)
     void onSend() {
-        if (mListener != null) {
+        if (mListener != null && !Objects.requireNonNull(mEmailInput.getText()).toString().isEmpty()) {
             mListener.onSend(Objects.requireNonNull(mEmailInput.getText()).toString().trim());
             dismiss();
         }
