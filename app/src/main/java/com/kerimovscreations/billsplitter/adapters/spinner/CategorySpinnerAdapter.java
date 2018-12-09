@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -39,7 +40,7 @@ public class CategorySpinnerAdapter extends ArrayAdapter<Category> {
         txtTitle.setText(rowItem.getTitle());
 
         CardView colorIc = mView.findViewById(R.id.color_ic);
-        colorIc.setCardBackgroundColor(Color.parseColor(rowItem.getHexColor()));
+        colorIc.setCardBackgroundColor(Color.parseColor("#" + rowItem.getHexColor()));
 
         return mView;
     }
@@ -53,7 +54,7 @@ public class CategorySpinnerAdapter extends ArrayAdapter<Category> {
         TextView txtTitle = rowView.findViewById(R.id.title);
         txtTitle.setText(rowItem.getTitle());
         CardView colorIc = rowView.findViewById(R.id.color_ic);
-        colorIc.setCardBackgroundColor(Color.parseColor(rowItem.getHexColor()));
+        colorIc.setCardBackgroundColor(Color.parseColor("#" + rowItem.getHexColor()));
 
         return rowView;
     }

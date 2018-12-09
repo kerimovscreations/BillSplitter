@@ -4,9 +4,11 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class Product extends RealmObject {
 
+    @PrimaryKey
     @SerializedName("Id")
     @Expose
     private int id;
@@ -41,5 +43,9 @@ public class Product extends RealmObject {
 
     public String getBarCode() {
         return barCode;
+    }
+
+    public Category getCategory() {
+        return category;
     }
 }

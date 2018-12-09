@@ -1,5 +1,6 @@
 package com.kerimovscreations.billsplitter.interfaces;
 
+import com.kerimovscreations.billsplitter.wrappers.CategoryListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.CurrencyListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.GroupListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemListDataWrapper;
@@ -64,6 +65,15 @@ public interface AppApiService {
     @Headers({"Accept: application/json"})
     @GET("purchase/{group_id}")
     Call<ShoppingItemListDataWrapper> getShoppingItems(@Header("Authorization") String token, @Path("group_id") int groupId, @Query("page") int pageNumber);
+
+    @Headers({"Accept: application/json"})
+    @POST("product")
+    @FormUrlEncoded
+    Call<SimpleDataWrapper> createPurchase(@Header("Authorization") String token, @FieldMap HashMap<String, String> params);
+
+    @Headers({"Accept: application/json"})
+    @GET("product/categories")
+    Call<CategoryListDataWrapper> getCategories(@Header("Authorization") String token);
 
     // ---------------- not done
     @Headers({"Accept: application/json"})

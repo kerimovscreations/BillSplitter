@@ -4,9 +4,11 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class Category extends RealmObject {
 
+    @PrimaryKey
     @SerializedName("Id")
     @Expose
     private int id;
@@ -20,11 +22,6 @@ public class Category extends RealmObject {
     private String hexColor;
 
     public Category() {
-    }
-
-    public Category(String title, String hexColor) {
-        this.title = title;
-        this.hexColor = hexColor;
     }
 
     public String getTitle() {
@@ -41,5 +38,13 @@ public class Category extends RealmObject {
 
     public void setHexColor(String hexColor) {
         this.hexColor = hexColor;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

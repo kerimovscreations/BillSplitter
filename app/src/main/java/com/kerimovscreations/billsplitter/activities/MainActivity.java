@@ -27,16 +27,17 @@ import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.fragments.dialogs.GroupEditBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.fragments.dialogs.MenuBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;
+import com.kerimovscreations.billsplitter.models.Category;
 import com.kerimovscreations.billsplitter.models.Currency;
 import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.LocalGroup;
 import com.kerimovscreations.billsplitter.models.LocalGroupMember;
 import com.kerimovscreations.billsplitter.models.LocalProfile;
-import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.models.Timeline;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
+import com.kerimovscreations.billsplitter.wrappers.CategoryListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.CurrencyListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.GroupListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemListDataWrapper;
@@ -189,6 +190,10 @@ public class MainActivity extends BaseActivity {
 
         if (GlobalApplication.getRealm().where(Currency.class).count() == 0) {
             getCurrencies();
+        }
+
+        if (GlobalApplication.getRealm().where(Category.class).count() == 0) {
+            getCategories();
         }
 
         getData();
@@ -561,6 +566,48 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    private void getCategories() {
+        Call<CategoryListDataWrapper> call = mApiService.getCategories(Auth.getInstance().getToken(getContext()));
+
+        call.enqueue(new Callback<CategoryListDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<CategoryListDataWrapper> call, @NonNull Response<CategoryListDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    getRealm().executeTransaction(realm -> {
+                        realm.delete(Category.class);
+                        realm.copyToRealm(response.body().getList());
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CategoryListDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
     /**
      * Navigation
      */
@@ -568,6 +615,7 @@ public class MainActivity extends BaseActivity {
     void toShoppingItemDetails(ShoppingItem item) {
         Intent intent = new Intent(getContext(), ShoppingItemDetailsActivity.class);
         intent.putExtra(ShoppingItemDetailsActivity.INTENT_ITEM, item);
+        intent.putExtra(ShoppingItemDetailsActivity.INTENT_GROUP_ID, mSelectedGroup.getId());
         startActivityForResult(intent, SHOPPING_ITEM_EDIT_REQUEST);
     }
 

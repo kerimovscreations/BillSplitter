@@ -6,6 +6,8 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
+
 public class Group implements Serializable {
 
     @SerializedName("Id")
@@ -64,5 +66,11 @@ public class Group implements Serializable {
 
     public void setGroupUsers(ArrayList<Person> groupUsers) {
         this.groupUsers = groupUsers;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return this.title;
     }
 }

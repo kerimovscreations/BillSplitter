@@ -45,8 +45,10 @@ public class GroupMemberPickerBottomSheetDialogFragment extends BottomSheetDialo
         mListener = listener;
     }
 
-    public static GroupMemberPickerBottomSheetDialogFragment getInstance() {
-        return new GroupMemberPickerBottomSheetDialogFragment();
+    public static GroupMemberPickerBottomSheetDialogFragment getInstance(ArrayList<Person> list) {
+        GroupMemberPickerBottomSheetDialogFragment fragment= new GroupMemberPickerBottomSheetDialogFragment();
+        fragment.mList.addAll(list);
+        return fragment;
     }
 
     @Override
@@ -65,11 +67,6 @@ public class GroupMemberPickerBottomSheetDialogFragment extends BottomSheetDialo
     }
 
     void initVars() {
-
-        mList.add(new Person(0, "User 1", "user1@gmail.com"));
-        mList.add(new Person(1, "User 2", "user2@gmail.com"));
-        mList.add(new Person(2, "User 3", "user3@gmail.com"));
-
         mAdapter = new GroupMembersRVAdapter(getContext(), mList);
         mAdapter.setOnItemClickListener(position -> {
             if (mListener != null) {

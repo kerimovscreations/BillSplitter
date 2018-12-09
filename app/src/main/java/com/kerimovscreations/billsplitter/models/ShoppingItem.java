@@ -32,9 +32,17 @@ public class ShoppingItem extends RealmObject implements Serializable {
     @Expose
     private String date;
 
+    @SerializedName("Buyer")
+    @Expose
+    private Person buyer;
+
     @SerializedName("PurchaseMembers")
     @Expose
-    private RealmList<Person> sharedMembers;
+    private RealmList<Person> sharedMembers = new RealmList<>();
+
+    public ShoppingItem() {
+
+    }
 
     private boolean isHeader = false;
 
@@ -96,5 +104,13 @@ public class ShoppingItem extends RealmObject implements Serializable {
 
     public void toggleComplete() {
         this.isComplete = !this.isComplete;
+    }
+
+    public Person getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(Person buyer) {
+        this.buyer = buyer;
     }
 }
