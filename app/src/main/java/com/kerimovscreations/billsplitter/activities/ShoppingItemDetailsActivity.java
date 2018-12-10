@@ -132,8 +132,8 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     private Group mGroup;
     private Category mSelectedCategory;
-    private Call<SimpleDataWrapper> mCreateItemCall;
-    private Call<SimpleDataWrapper> mUpdateItemCall;
+    private Call<ShoppingItemDataWrapper> mCreateItemCall;
+    private Call<ShoppingItemDataWrapper> mUpdateItemCall;
     private Call<ShoppingItemDataWrapper> mSearchItemCall;
 
     AppApiService mApiService;
@@ -164,6 +164,12 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
+        if(mResultBarCode != null && !mResultBarCode.isEmpty()){
+            GlobalApplication.getRealm().executeTransaction(realm -> mShoppingItem.getProduct().setBarCode(mResultBarCode));
+            updateBarCodeText();
+            mResultBarCode = "";
+        }
+
         if (mShouldOpenQRSearch) {
             mShouldOpenQRSearch = false;
             onQRScan();
@@ -190,9 +196,12 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         if (mCreateItemCall != null && !mCreateItemCall.isExecuted())
             mCreateItemCall.cancel();
 
-        GlobalApplication.getRealm().executeTransaction(realm -> {
-            mShoppingItem.getSharedMembers().where().equalTo("id", -1).findAll().deleteAllFromRealm();
-        });
+        if(mShoppingItem.getId() > 0){
+            GlobalApplication.getRealm().executeTransaction(realm -> {
+                mShoppingItem.getSharedMembers().where().equalTo("id", -1).findAll().deleteAllFromRealm();
+            });
+        }
+
         super.onDestroy();
     }
 
@@ -655,14 +664,17 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
         mCreateItemCall = mApiService.createPurchase(Auth.getInstance().getToken(getContext()), data);
 
-        mCreateItemCall.enqueue(new Callback<SimpleDataWrapper>() {
+        mCreateItemCall.enqueue(new Callback<ShoppingItemDataWrapper>() {
             @Override
-            public void onResponse(@NonNull Call<SimpleDataWrapper> call, @NonNull Response<SimpleDataWrapper> response) {
+            public void onResponse(@NonNull Call<ShoppingItemDataWrapper> call, @NonNull Response<ShoppingItemDataWrapper> response) {
                 runOnUiThread(() -> showProgress(false));
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
+                        GlobalApplication.getRealm().executeTransaction(realm -> realm.copyToRealmOrUpdate(response.body().getShoppingItem()));
                         Toast.makeText(getContext(), R.string.successful_create_shopping_item, Toast.LENGTH_SHORT).show();
+                        Intent returnIntent = new Intent();
+                        setResult(Activity.RESULT_OK,returnIntent);
                         finish();
                     });
                 } else {
@@ -684,7 +696,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<SimpleDataWrapper> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<ShoppingItemDataWrapper> call, @NonNull Throwable t) {
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {
@@ -722,15 +734,17 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
         mUpdateItemCall = mApiService.updateShoppingItem(Auth.getInstance().getToken(getContext()), mShoppingItem.getId(), data);
 
-        mUpdateItemCall.enqueue(new Callback<SimpleDataWrapper>() {
+        mUpdateItemCall.enqueue(new Callback<ShoppingItemDataWrapper>() {
             @Override
-            public void onResponse(@NonNull Call<SimpleDataWrapper> call, @NonNull Response<SimpleDataWrapper> response) {
+            public void onResponse(@NonNull Call<ShoppingItemDataWrapper> call, @NonNull Response<ShoppingItemDataWrapper> response) {
                 runOnUiThread(() -> showProgress(false));
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
-
+                        GlobalApplication.getRealm().executeTransaction(realm -> realm.copyToRealmOrUpdate(response.body().getShoppingItem()));
                         Toast.makeText(getContext(), R.string.successful_update_shopping_item, Toast.LENGTH_SHORT).show();
+                        Intent returnIntent = new Intent();
+                        setResult(Activity.RESULT_OK,returnIntent);
                         finish();
                     });
                 } else {
@@ -752,7 +766,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<SimpleDataWrapper> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<ShoppingItemDataWrapper> call, @NonNull Throwable t) {
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {
@@ -780,6 +794,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
                         mShoppingItem = response.body().getShoppingItem();
+                        mShoppingItem.setId(0); // not to be accessible in onDestroy delegate
                         setupData();
                     });
                 } else {
@@ -832,6 +847,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         }
     }
 
+    private String mResultBarCode;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -839,12 +855,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         if (requestCode == REQUEST_BAR_CODE_READ) {
             if (resultCode == Activity.RESULT_OK) {
                 if (data != null) {
-                    GlobalApplication.getRealm().executeTransactionAsync(realm -> mShoppingItem.getProduct().setBarCode(data.getStringExtra(BarScannerActivity.BAR_CODE)), new Realm.Transaction.OnSuccess() {
-                        @Override
-                        public void onSuccess() {
-                            updateBarCodeText();
-                        }
-                    });
+                    mResultBarCode = data.getStringExtra(BarScannerActivity.BAR_CODE);
 //                    Toast.makeText(getContext(), data.getStringExtra(BarScannerActivity.BAR_CODE), Toast.LENGTH_SHORT).show();
                 }
             }

@@ -1,5 +1,6 @@
 package com.kerimovscreations.billsplitter.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -50,6 +51,7 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -298,6 +300,32 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    void loadLocalShoppingList() {
+        RealmResults<ShoppingItem> realmResults = GlobalApplication.getRealm().where(ShoppingItem.class).findAll();
+
+        mCompletedShoppingList.clear();
+        mActiveShoppingList.clear();
+
+        for (ShoppingItem shoppingItem : realmResults) {
+            if (shoppingItem.isComplete()) {
+                mCompletedShoppingList.add(shoppingItem);
+            } else {
+                mActiveShoppingList.add(shoppingItem);
+            }
+        }
+
+        mGroupContent.setVisibility(View.VISIBLE);
+        mAddItemBtn.setVisibility(View.VISIBLE);
+        mEmptyContentPlaceholder.setVisibility(View.GONE);
+        mEmptyListPlaceholder.setVisibility(View.GONE);
+
+        mActiveShoppingListTitle.setVisibility(mActiveShoppingList.size() == 0 ? View.GONE : View.VISIBLE);
+        mCompletedListLayout.setVisibility(mCompletedShoppingList.size() == 0 ? View.GONE : View.VISIBLE);
+
+        mActiveShoppingListAdapter.notifyDataSetChanged();
+        mCompletedShoppingListAdapter.notifyDataSetChanged();
+    }
+
     /**
      * Click handlers
      */
@@ -391,8 +419,6 @@ public class MainActivity extends BaseActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
                         getRealm().executeTransaction(realm -> {
-//                            realm.delete(LocalGroup.class);
-//                            realm.delete(LocalGroupMember.class);
                             for (Group tempGroup : response.body().getList()) {
                                 realm.copyToRealmOrUpdate(new LocalGroup(tempGroup));
 
@@ -463,6 +489,7 @@ public class MainActivity extends BaseActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
                         getRealm().executeTransaction(realm -> {
+                            realm.where(ShoppingItem.class).equalTo("groupId", mSelectedGroup.getId()).findAll().deleteAllFromRealm();
                             realm.where(LocalGroupMember.class).equalTo("groupId", mSelectedGroup.getId()).findAll().deleteAllFromRealm();
                             Objects.requireNonNull(realm.where(LocalGroup.class).equalTo("id", mSelectedGroup.getId()).findFirst()).deleteFromRealm();
                             mLocalGroups.addAll(getRealm().where(LocalGroup.class).findAll());
@@ -532,6 +559,8 @@ public class MainActivity extends BaseActivity {
                             mEmptyContentPlaceholder.setVisibility(View.GONE);
                             mEmptyListPlaceholder.setVisibility(View.VISIBLE);
                         } else {
+                            for (int i = 0; i < response.body().getList().size(); i++)
+                                response.body().getList().get(i).setGroupId(mSelectedGroup.getId());
 
                             GlobalApplication.getRealm().executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(response.body().getList()),
                                     () -> {
@@ -674,7 +703,8 @@ public class MainActivity extends BaseActivity {
 
         switch (requestCode) {
             case SHOPPING_ITEM_EDIT_REQUEST:
-                // TODO: Update UI
+                if (resultCode == Activity.RESULT_OK)
+                    loadLocalShoppingList();
                 break;
             default:
                 break;
