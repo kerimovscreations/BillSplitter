@@ -41,6 +41,10 @@ public interface AppApiService {
     Call<UserDataWrapper> login(@FieldMap HashMap<String, String> params);
 
     @Headers({"Accept: application/json"})
+    @GET("user/me")
+    Call<UserDataWrapper> getProfile(@Header("Authorization") String token);
+
+    @Headers({"Accept: application/json"})
     @POST("user/google")
     @FormUrlEncoded
     Call<UserDataWrapper> googleRegister(@Field("token") String token);
@@ -84,44 +88,4 @@ public interface AppApiService {
     @PUT("user/me")
     @Multipart
     Call<UserDataWrapper> updateUser(@Header("Authorization") String token, @Part MultipartBody.Part file, @PartMap Map<String, RequestBody> params);
-
-
-    // ---------------- not done
-    @Headers({"Accept: application/json"})
-    @GET("branches")
-    Call<SimpleDataWrapper> getBranches(
-            @Header("Authorization") String api_token,
-            @Query("business_category_id") String categoryID,
-            @Query("language") String language,
-            @Query("page") int page,
-            @Query("q") String q,
-            @Query("latitude") Double latitude,
-            @Query("longitude") Double longitude
-    );
-
-    @Headers({"Accept: application/json"})
-    @GET("branches/{branch_id}/reviews")
-    Call<SimpleDataWrapper> getBranchReviews(@Header("Authorization") String api_token, @Path("branch_id") String branchID, @Query("page") int page);
-
-    @Headers({"Accept: application/json"})
-    @POST("branches/{branch_id}/reviews")
-    @FormUrlEncoded
-    Call<SimpleDataWrapper> writeReview(@Header("Authorization") String api_token, @FieldMap HashMap<String, String> params, @Path("branch_id") String branchID);
-
-    @Headers({"Accept: application/json"})
-    @POST("me/update")
-    @Multipart
-    Call<SimpleDataWrapper> updateUserData(@Header("Authorization") String api_token, @Part MultipartBody.Part file, @PartMap HashMap<String, RequestBody> params);
-
-    @Headers({"Accept: application/json"})
-    @GET("notifications")
-    Call<SimpleDataWrapper> getNotifications(
-            @Header("Authorization") String api_token,
-            @Query("page") int page,
-            @Query("language") String language);
-
-    @Headers({"Accept: application/json"})
-    @POST("tracking")
-    @FormUrlEncoded
-    Call<SimpleDataWrapper> tracking(@Header("Authorization") String api_token, @FieldMap HashMap<String, Double> params);
 }

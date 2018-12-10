@@ -122,7 +122,6 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     SharedPeopleListRVAdapter mAdapter;
 
-    private String mSelectedDate;
     private Calendar myCalendar;
 
     boolean mShouldOpenQRSearch = false;
@@ -144,8 +143,9 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
-            mSelectedDate = sdf.format(myCalendar.getTime());
-            mDate.setText(mSelectedDate);
+            String selectedDate = sdf.format(myCalendar.getTime());
+            mShoppingItem.setDate(selectedDate);
+            updateDateText();
         }
     };
 
@@ -231,7 +231,9 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
         Date myDate = new Date();
 
-        mDate.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(myDate));
+        mShoppingItem.setDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(myDate));
+
+        updateDateText();
 
         // Shopping group
 
@@ -249,6 +251,19 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         mGroupSpinner.setAdapter(dataAdapter);
+
+        mGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                mGroup = shoppingGroups.get(i);
+                updatePriceText();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         // Category spinner
 
@@ -289,7 +304,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
         // Price
 
-        mPrice.setText(String.format(Locale.getDefault(), "%.2f %s", mShoppingItem.getPrice(), mGroup.getCurrency().getName()));
+        updatePriceText();
 
         // Buyer
 
@@ -357,7 +372,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
             @Override
             public void onSelect(int position) {
-                if(mShoppingItem.getSharedMembers().get(position).getId() == -1){
+                if (mShoppingItem.getSharedMembers().get(position).getId() == -1) {
                     GroupMemberPickerBottomSheetDialogFragment fragment = GroupMemberPickerBottomSheetDialogFragment.getInstance(mGroup.getGroupUsers());
                     fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
                         @Override
@@ -421,7 +436,8 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         fragment.setClickListener(new PricePickerBottomSheetDialogFragment.OnClickListener() {
             @Override
             public void onSubmit(Float price) {
-                mPrice.setText(String.format(Locale.getDefault(), "%.2f %s", price, mGroup.getCurrency().getName()));
+                mShoppingItem.setPrice(price);
+                updatePriceText();
             }
         });
 
@@ -487,6 +503,14 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         }
     }
 
+    void updatePriceText() {
+        mPrice.setText(String.format(Locale.getDefault(), "%.2f %s", mShoppingItem.getPrice(), mGroup.getCurrency().getName()));
+    }
+
+    void updateDateText() {
+        mDate.setText(mShoppingItem.getDate());
+    }
+
     boolean isFormValid() {
         if (mTitle.getText().length() == 0) {
             Snackbar snackbar = Snackbar.make(mCoordinatorLayout, R.string.prompt_fill_inputs, Snackbar.LENGTH_LONG);
@@ -534,11 +558,15 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         HashMap<String, String> data = new HashMap<>();
 
         data.put("name", mTitle.getText().toString());
+        data.put("groupId", String.valueOf(mGroup.getId()));
         data.put("categoryId", String.valueOf(mSelectedCategory.getId()));
         data.put("barCode", "");
-        data.put("price", mPrice.getText().toString().split(" ")[0]);
-        data.put("paidById", mShoppingItem.getBuyer() == null ? getString(R.string.select_buyer) : String.valueOf(mShoppingItem.getBuyer().getId()));
-        data.put("date", mDate.getText().toString());
+        data.put("price", String.valueOf(mShoppingItem.getPrice()));
+        data.put("date", mShoppingItem.getDate());
+
+        if (mShoppingItem.getBuyer() != null) {
+            data.put("paidById", String.valueOf(mShoppingItem.getBuyer().getId()));
+        }
 
         for (int i = 0; i < mShoppingItem.getSharedMembers().size() - 1; i++) {
             data.put("shares[" + i + "]", String.valueOf(mShoppingItem.getSharedMembers().get(i).getId()));
