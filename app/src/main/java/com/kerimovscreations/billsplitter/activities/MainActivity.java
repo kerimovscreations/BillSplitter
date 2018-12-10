@@ -70,6 +70,9 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
 
+    @BindView(R.id.statistics_layout)
+    View mStatisticsLayout;
+
     @BindView(R.id.pie_chart)
     PieChart mPieChart;
 
@@ -219,13 +222,20 @@ public class MainActivity extends BaseActivity {
 
     void setupContent() {
 
-        setupPieChart();
+        setupStatistics();
 
         setupActiveList();
         setupCompletedList();
     }
 
-    void setupPieChart() {
+    void setupStatistics() {
+        if (mStatistics.size() == 0) {
+            mStatisticsLayout.setVisibility(View.GONE);
+            return;
+        } else {
+            mStatisticsLayout.setVisibility(View.VISIBLE);
+        }
+
         List<PieEntry> data = new ArrayList<>();
         int[] colors = new int[mStatistics.size()];
 
@@ -330,7 +340,7 @@ public class MainActivity extends BaseActivity {
      * Click handlers
      */
 
-    @OnClick(R.id.completed_list_layout)
+    @OnClick(R.id.completed_list_header)
     void onCompletedLayout(View view) {
         mIsCompletedListOpen = !mIsCompletedListOpen;
         updateCompletedListVisibility();
@@ -664,6 +674,7 @@ public class MainActivity extends BaseActivity {
             }
         });
     }
+
     private void getStatistics() {
         showProgress(true);
 
@@ -679,7 +690,7 @@ public class MainActivity extends BaseActivity {
                     runOnUiThread(() -> {
                         mStatistics.clear();
                         mStatistics.addAll(response.body().getList());
-                        setupPieChart();
+                        setupStatistics();
                     });
                 } else {
                     if (response.errorBody() != null) {
