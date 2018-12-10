@@ -30,17 +30,15 @@ public class ShoppingItem extends RealmObject implements Serializable {
     @Expose
     private String date;
 
-    @SerializedName("Buyer")
+    @SerializedName("PaidByUser")
     @Expose
-    private GroupMember buyer;
-
-    @SerializedName("BarCode")
-    @Expose
-    private String barCode;
+    private Person buyer;
 
     @SerializedName("PurchaseMembers")
     @Expose
     private RealmList<GroupMember> sharedMembers = new RealmList<>();
+
+    private int groupId;
 
     public ShoppingItem() {
 
@@ -55,6 +53,7 @@ public class ShoppingItem extends RealmObject implements Serializable {
         this.buyer = item.buyer;
         this.sharedMembers = item.sharedMembers;
         this.isHeader = item.isHeader;
+        this.groupId = item.groupId;
     }
 
     private boolean isHeader = false;
@@ -119,19 +118,19 @@ public class ShoppingItem extends RealmObject implements Serializable {
         this.isComplete = !this.isComplete;
     }
 
-    public GroupMember getBuyer() {
+    public Person getBuyer() {
         return buyer;
     }
 
-    public void setBuyer(GroupMember buyer) {
+    public void setBuyer(Person buyer) {
         this.buyer = buyer;
     }
 
-    public String getBarCode() {
-        return barCode;
+    public int getGroupId() {
+        return groupId;
     }
 
-    public void setBarCode(String barCode) {
-        this.barCode = barCode;
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
     }
 }

@@ -532,23 +532,31 @@ public class MainActivity extends BaseActivity {
                             mEmptyContentPlaceholder.setVisibility(View.GONE);
                             mEmptyListPlaceholder.setVisibility(View.VISIBLE);
                         } else {
-                            GlobalApplication.getRealm().executeTransaction(realm -> realm.copyToRealmOrUpdate(response.body().getList()));
+                            GlobalApplication.getRealm().where(ShoppingItem.class).equalTo("groupId", mSelectedGroup.getId()).findAll().deleteAllFromRealm();
 
-                            for (ShoppingItem shoppingItem : response.body().getList()) {
-                                if (shoppingItem.isComplete()) {
-                                    mCompletedShoppingList.add(shoppingItem);
-                                } else {
-                                    mActiveShoppingList.add(shoppingItem);
+                            GlobalApplication.getRealm().executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(response.body().getList()), () -> {
+                                mCompletedShoppingList.clear();
+                                mActiveShoppingList.clear();
+
+                                for (ShoppingItem shoppingItem : response.body().getList()) {
+                                    if (shoppingItem.isComplete()) {
+                                        mCompletedShoppingList.add(shoppingItem);
+                                    } else {
+                                        mActiveShoppingList.add(shoppingItem);
+                                    }
                                 }
-                            }
 
-                            mGroupContent.setVisibility(View.VISIBLE);
-                            mAddItemBtn.setVisibility(View.VISIBLE);
-                            mEmptyContentPlaceholder.setVisibility(View.GONE);
-                            mEmptyListPlaceholder.setVisibility(View.GONE);
+                                mGroupContent.setVisibility(View.VISIBLE);
+                                mAddItemBtn.setVisibility(View.VISIBLE);
+                                mEmptyContentPlaceholder.setVisibility(View.GONE);
+                                mEmptyListPlaceholder.setVisibility(View.GONE);
 
-                            mActiveShoppingListTitle.setVisibility(mActiveShoppingList.size() == 0 ? View.GONE : View.VISIBLE);
-                            mCompletedListLayout.setVisibility(mCompletedShoppingList.size() == 0 ? View.GONE : View.VISIBLE);
+                                mActiveShoppingListTitle.setVisibility(mActiveShoppingList.size() == 0 ? View.GONE : View.VISIBLE);
+                                mCompletedListLayout.setVisibility(mCompletedShoppingList.size() == 0 ? View.GONE : View.VISIBLE);
+
+                                mActiveShoppingListAdapter.notifyDataSetChanged();
+                                mCompletedShoppingListAdapter.notifyDataSetChanged();
+                            });
                         }
                     });
                 } else {

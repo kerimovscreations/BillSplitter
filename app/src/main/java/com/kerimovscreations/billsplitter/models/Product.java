@@ -34,14 +34,6 @@ public class Product extends RealmObject implements Serializable {
     public Product() {
     }
 
-    public Product(int id, String name, int groupId, String barCode, Category category) {
-        this.id = id;
-        this.name = name;
-        this.groupId = groupId;
-        this.barCode = barCode;
-        this.category = category;
-    }
-
     public int getId() {
         return id;
     }
@@ -60,5 +52,25 @@ public class Product extends RealmObject implements Serializable {
 
     public Category getCategory() {
         return category;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public void setBarCode(String barCode) {
+        this.barCode = barCode;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }

@@ -32,6 +32,13 @@ public class Person extends RealmObject implements Serializable {
     public Person() {
     }
 
+    public Person(GroupMember groupMember) {
+        this.id = groupMember.getId();
+        this.fullName = groupMember.getFullName();
+        this.email = groupMember.getEmail();
+        this.picture = groupMember.getPicture();
+    }
+
     public Person(LocalProfile localProfile) {
         this.id = localProfile.getId();
         this.fullName = localProfile.getFullName();
