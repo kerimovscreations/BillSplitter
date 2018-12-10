@@ -24,7 +24,7 @@ public class Group implements Serializable {
 
     @SerializedName("GroupsUsers")
     @Expose
-    private ArrayList<Person> groupUsers = new ArrayList<>();
+    private ArrayList<GroupMember> groupUsers = new ArrayList<>();
 
     public Group() {
     }
@@ -60,11 +60,11 @@ public class Group implements Serializable {
         this.currency = currency;
     }
 
-    public ArrayList<Person> getGroupUsers() {
+    public ArrayList<GroupMember> getGroupUsers() {
         return groupUsers;
     }
 
-    public void setGroupUsers(ArrayList<Person> groupUsers) {
+    public void setGroupUsers(ArrayList<GroupMember> groupUsers) {
         this.groupUsers = groupUsers;
     }
 

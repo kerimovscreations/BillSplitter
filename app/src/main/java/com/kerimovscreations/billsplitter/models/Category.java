@@ -24,6 +24,12 @@ public class Category extends RealmObject {
     public Category() {
     }
 
+    public Category(int id, String title, String hexColor) {
+        this.id = id;
+        this.title = title;
+        this.hexColor = hexColor;
+    }
+
     public String getTitle() {
         return title;
     }

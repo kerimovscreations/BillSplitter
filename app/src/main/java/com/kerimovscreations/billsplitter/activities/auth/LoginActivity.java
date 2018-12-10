@@ -21,8 +21,12 @@ import com.kerimovscreations.billsplitter.activities.MainActivity;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;
+import com.kerimovscreations.billsplitter.models.Category;
+import com.kerimovscreations.billsplitter.models.Currency;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
+import com.kerimovscreations.billsplitter.wrappers.CategoryListDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.CurrencyListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
 
 import java.io.File;
@@ -31,6 +35,7 @@ import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.realm.Realm;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -157,6 +162,23 @@ public class LoginActivity extends BaseActivity {
         googleLogin(account.getIdToken());
     }
 
+    int mCheckBaseDataCount = 0;
+
+    void loadBaseData() {
+        mCheckBaseDataCount = 2;
+
+        getCurrencies();
+        getCategories();
+    }
+
+    void checkLoadingBaseData() {
+        mCheckBaseDataCount--;
+
+        if(mCheckBaseDataCount == 0) {
+            toMain();
+        }
+    }
+
     /**
      * UI
      */
@@ -201,15 +223,16 @@ public class LoginActivity extends BaseActivity {
         mLoginCall.enqueue(new Callback<UserDataWrapper>() {
             @Override
             public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
-                runOnUiThread(() -> showProgress(false));
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
                         Auth.getInstance().saveProfile(getContext(), response.body().getPerson(), false);
-                        Toast.makeText(getContext(), R.string.successful_login, Toast.LENGTH_SHORT).show();
-                        toMain();
+//                        Toast.makeText(getContext(), R.string.successful_login, Toast.LENGTH_SHORT).show();
+                        loadBaseData();
                     });
                 } else {
+                    runOnUiThread(() -> showProgress(false));
+
                     if (response.errorBody() != null) {
                         try {
                             String errorString = response.errorBody().string();
@@ -251,15 +274,15 @@ public class LoginActivity extends BaseActivity {
         mGoogleLoginCall.enqueue(new retrofit2.Callback<UserDataWrapper>() {
             @Override
             public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
-                runOnUiThread(() -> showProgress(false));
-
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
                         Auth.getInstance().saveProfile(getContext(), response.body().getPerson(), true);
-                        Toast.makeText(getContext(), R.string.successful_login, Toast.LENGTH_SHORT).show();
-                        toMain();
+//                        Toast.makeText(getContext(), R.string.successful_login, Toast.LENGTH_SHORT).show();
+                        loadBaseData();
                     });
                 } else {
+                    runOnUiThread(() -> showProgress(false));
+
                     if (response.errorBody() != null) {
                         try {
                             String errorString = response.errorBody().string();
@@ -293,6 +316,89 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
+    private void getCurrencies() {
+        Call<CurrencyListDataWrapper> call = mApiService.getCurrencies(Auth.getInstance().getToken(getContext()), "", 1);
+
+        call.enqueue(new Callback<CurrencyListDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<CurrencyListDataWrapper> call, @NonNull Response<CurrencyListDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    getRealm().executeTransactionAsync(realm -> {
+                        realm.delete(Currency.class);
+                        realm.copyToRealm(response.body().getList());
+                    }, () -> checkLoadingBaseData());
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CurrencyListDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+    private void getCategories() {
+        Call<CategoryListDataWrapper> call = mApiService.getCategories(Auth.getInstance().getToken(getContext()));
+
+        call.enqueue(new Callback<CategoryListDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<CategoryListDataWrapper> call, @NonNull Response<CategoryListDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    getRealm().executeTransactionAsync(realm -> {
+                        realm.delete(Category.class);
+                        realm.copyToRealm(response.body().getList());
+                    }, () -> checkLoadingBaseData());
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CategoryListDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
     /**
      * Navigation
      */

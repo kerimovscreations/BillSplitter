@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kerimovscreations.billsplitter.R;
+import com.kerimovscreations.billsplitter.models.GroupMember;
 import com.kerimovscreations.billsplitter.models.Person;
 
 import java.util.List;
@@ -19,11 +20,11 @@ import butterknife.ButterKnife;
 public class GroupMembersRVAdapter extends RecyclerView.Adapter<GroupMembersRVAdapter.ViewHolder> {
 
     private GroupMembersRVAdapter.OnItemClickListener mListener;
-    private List<Person> mList;
+    private List<GroupMember> mList;
     private Context mContext;
     private int mSelectedIndex = 0;
 
-    public GroupMembersRVAdapter(Context context, List<Person> list) {
+    public GroupMembersRVAdapter(Context context, List<GroupMember> list) {
         mList = list;
         mContext = context;
     }
@@ -52,7 +53,7 @@ public class GroupMembersRVAdapter extends RecyclerView.Adapter<GroupMembersRVAd
 
     @Override
     public void onBindViewHolder(@NonNull GroupMembersRVAdapter.ViewHolder viewHolder, int position) {
-        Person bItem = mList.get(position);
+        GroupMember bItem = mList.get(position);
 
         viewHolder.name.setText(bItem.getFullName());
         viewHolder.email.setText(bItem.getEmail());

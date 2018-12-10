@@ -20,6 +20,7 @@ import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;
 import com.kerimovscreations.billsplitter.models.LocalProfile;
+import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
 import com.kerimovscreations.billsplitter.utils.CommonMethods;
@@ -258,7 +259,11 @@ public class ProfileEditActivity extends BaseActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
-                        Auth.getInstance().updateProfile(response.body().getPerson());
+                        Person person = response.body().getPerson();
+                        LocalProfile profile = new LocalProfile(person);
+                        profile.setSocialLogin(mLocalProfile.isSocialLogin());
+
+                        Auth.getInstance().updateProfile(profile);
                         Toast.makeText(getContext(), R.string.successful_update_profile, Toast.LENGTH_SHORT).show();
                         finish();
                     });

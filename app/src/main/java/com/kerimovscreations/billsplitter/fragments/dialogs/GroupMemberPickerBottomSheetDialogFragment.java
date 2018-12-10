@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.adapters.GroupMembersRVAdapter;
+import com.kerimovscreations.billsplitter.models.GroupMember;
 import com.kerimovscreations.billsplitter.models.Person;
 
 import java.util.ArrayList;
@@ -29,14 +30,14 @@ public class GroupMemberPickerBottomSheetDialogFragment extends BottomSheetDialo
     RecyclerView mRVList;
 
     GroupMembersRVAdapter mAdapter;
-    ArrayList<Person> mList = new ArrayList<>();
+    ArrayList<GroupMember> mList = new ArrayList<>();
 
     boolean mLogoutBtnVisible = false;
 
     private OnClickListener mListener;
 
     public interface OnClickListener {
-        void onSelect(Person person);
+        void onSelect(GroupMember person);
 
         void onRemove();
     }
@@ -45,7 +46,7 @@ public class GroupMemberPickerBottomSheetDialogFragment extends BottomSheetDialo
         mListener = listener;
     }
 
-    public static GroupMemberPickerBottomSheetDialogFragment getInstance(ArrayList<Person> list) {
+    public static GroupMemberPickerBottomSheetDialogFragment getInstance(ArrayList<GroupMember> list) {
         GroupMemberPickerBottomSheetDialogFragment fragment= new GroupMemberPickerBottomSheetDialogFragment();
         fragment.mList.addAll(list);
         return fragment;

@@ -14,6 +14,9 @@ public class LocalProfile extends RealmObject {
     private boolean isSocialLogin = false;
     private int lastSelectedGroupId = -1;
 
+    public LocalProfile() {
+    }
+
     public int getId() {
         return id;
     }
@@ -46,7 +49,7 @@ public class LocalProfile extends RealmObject {
         this.picture = picture;
     }
 
-    public void setData(Person person) {
+    public LocalProfile(Person person) {
         this.id = person.getId();
         this.fullName = person.getFullName();
         this.email = person.getEmail();

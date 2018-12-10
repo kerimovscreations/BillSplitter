@@ -7,9 +7,9 @@ import java.io.Serializable;
 
 import io.realm.RealmObject;
 
-public class Person extends RealmObject implements Serializable {
+public class GroupMember extends RealmObject implements Serializable {
 
-    @SerializedName("Id")
+    @SerializedName("UserId")
     @Expose
     private int id;
 
@@ -25,26 +25,15 @@ public class Person extends RealmObject implements Serializable {
     @Expose
     private String email;
 
-    @SerializedName("ApiToken")
-    @Expose
-    private String apiToken;
-
-    public Person() {
+    public GroupMember() {
     }
 
-    public Person(LocalProfile localProfile) {
-        this.id = localProfile.getId();
-        this.fullName = localProfile.getFullName();
-        this.email = localProfile.getEmail();
-        this.picture = localProfile.getPicture();
-    }
-
-    public Person(int id, String fullName) {
+    public GroupMember(int id, String fullName) {
         this.id = id;
         this.fullName = fullName;
     }
 
-    public Person(int id, String fullName, String email) {
+    public GroupMember(int id, String fullName, String email) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
@@ -80,13 +69,5 @@ public class Person extends RealmObject implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getApiToken() {
-        return apiToken;
-    }
-
-    public void setApiToken(String apiToken) {
-        this.apiToken = apiToken;
     }
 }

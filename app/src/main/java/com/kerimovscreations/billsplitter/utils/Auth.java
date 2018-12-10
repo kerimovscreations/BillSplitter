@@ -38,8 +38,7 @@ public class Auth {
 
     public void saveProfile(Context context, Person person, boolean isSocialLogin) {
         GlobalApplication.getRealm().executeTransaction(realm -> {
-            LocalProfile profile = new LocalProfile();
-            profile.setData(person);
+            LocalProfile profile = new LocalProfile(person);
             profile.setSocialLogin(isSocialLogin);
             realm.copyToRealmOrUpdate(profile);
         });
@@ -66,10 +65,8 @@ public class Auth {
         removeToken(context);
     }
 
-    public void updateProfile(Person person) {
-        GlobalApplication.getRealm().executeTransaction(realm -> {
-            LocalProfile profile = new LocalProfile();
-            profile.setData(person);
+    public void updateProfile(LocalProfile profile) {
+        GlobalApplication.getRealm().executeTransaction(realm -> { ;
             realm.copyToRealmOrUpdate(profile);
         });
     }

@@ -24,6 +24,7 @@ import com.kerimovscreations.billsplitter.fragments.dialogs.InviteMemberBottomSh
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;
 import com.kerimovscreations.billsplitter.models.Currency;
 import com.kerimovscreations.billsplitter.models.Group;
+import com.kerimovscreations.billsplitter.models.GroupMember;
 import com.kerimovscreations.billsplitter.models.LocalGroup;
 import com.kerimovscreations.billsplitter.models.LocalGroupMember;
 import com.kerimovscreations.billsplitter.models.Person;
@@ -144,7 +145,7 @@ public class GroupFormActivity extends BaseActivity {
                     .equalTo("groupId", mGroup.getId())
                     .findAll();
             for (LocalGroupMember localGroupMember : members) {
-                mGroup.getGroupUsers().add(localGroupMember.getPerson());
+                mGroup.getGroupUsers().add(localGroupMember.getMember());
             }
 
             mTitle.setText(mGroup.getTitle());
@@ -155,7 +156,7 @@ public class GroupFormActivity extends BaseActivity {
         // Shared people list
 
         // fake last item
-        mGroup.getGroupUsers().add(new Person(-1, "Placeholder"));
+        mGroup.getGroupUsers().add(new GroupMember(-1, "Placeholder"));
         mAdapter = new GroupMembersListRVAdapter(getContext(), mGroup.getGroupUsers(), true);
         mAdapter.setOnItemClickListener(new GroupMembersListRVAdapter.OnItemClickListener() {
             @Override
@@ -167,13 +168,13 @@ public class GroupFormActivity extends BaseActivity {
                     fragment.setClickListener(new InviteMemberBottomSheetDialogFragment.OnClickListener() {
                         @Override
                         public void onSend(String email) {
-                            for (Person person : mGroup.getGroupUsers()) {
+                            for (GroupMember person : mGroup.getGroupUsers()) {
                                 if (email.equals(person.getEmail())) {
                                     return;
                                 }
                             }
 
-                            mGroup.getGroupUsers().add(mGroup.getGroupUsers().size() - 1, new Person(1, email, email));
+                            mGroup.getGroupUsers().add(mGroup.getGroupUsers().size() - 1, new GroupMember(1, email, email));
 
                             mAdapter.notifyDataSetChanged();
                         }

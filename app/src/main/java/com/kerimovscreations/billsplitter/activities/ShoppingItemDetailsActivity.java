@@ -38,6 +38,7 @@ import com.kerimovscreations.billsplitter.fragments.dialogs.PricePickerBottomShe
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;
 import com.kerimovscreations.billsplitter.models.Category;
 import com.kerimovscreations.billsplitter.models.Group;
+import com.kerimovscreations.billsplitter.models.GroupMember;
 import com.kerimovscreations.billsplitter.models.LocalGroup;
 import com.kerimovscreations.billsplitter.models.LocalGroupMember;
 import com.kerimovscreations.billsplitter.models.Person;
@@ -202,7 +203,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                 .equalTo("groupId", mGroup.getId())
                 .findAll();
         for (LocalGroupMember localGroupMember : members) {
-            mGroup.getGroupUsers().add(localGroupMember.getPerson());
+            mGroup.getGroupUsers().add(localGroupMember.getMember());
         }
 
         mApiService = GlobalApplication.getRetrofit().create(AppApiService.class);
@@ -256,6 +257,15 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 mGroup = shoppingGroups.get(i);
+
+                RealmResults<LocalGroupMember> members = GlobalApplication.getRealm()
+                        .where(LocalGroupMember.class)
+                        .equalTo("groupId", mGroup.getId())
+                        .findAll();
+                for (LocalGroupMember localGroupMember : members) {
+                    mGroup.getGroupUsers().add(localGroupMember.getMember());
+                }
+
                 updatePriceText();
             }
 
@@ -313,7 +323,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         // Shared people list
 
         // fake user
-        mShoppingItem.getSharedMembers().add(new Person(-1, "Placeholder"));
+        mShoppingItem.getSharedMembers().add(new GroupMember(-1, "Placeholder"));
         mAdapter = new SharedPeopleListRVAdapter(getContext(), mShoppingItem.getSharedMembers(), true);
         mAdapter.setOnItemClickListener(new SharedPeopleListRVAdapter.OnItemClickListener() {
             @Override
@@ -321,7 +331,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                 if (mShoppingItem.getSharedMembers().get(position).getId() > 0) {
 
                 } else {
-                    ArrayList<Person> people = new ArrayList<>();
+                    ArrayList<GroupMember> people = new ArrayList<>();
 
                     boolean hasFoundFlag;
 
@@ -342,7 +352,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                     GroupMemberPickerBottomSheetDialogFragment fragment = GroupMemberPickerBottomSheetDialogFragment.getInstance(people);
                     fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
                         @Override
-                        public void onSelect(Person person) {
+                        public void onSelect(GroupMember person) {
                             mShoppingItem.getSharedMembers().add(mShoppingItem.getSharedMembers().size() - 1, person);
 
                             if (mGroup.getGroupUsers().size() < mShoppingItem.getSharedMembers().size())
@@ -364,7 +374,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
             @Override
             public void onDelete(int position) {
                 if (mGroup.getGroupUsers().size() == mShoppingItem.getSharedMembers().size())
-                    mShoppingItem.getSharedMembers().add(new Person(-1, "Placeholder"));
+                    mShoppingItem.getSharedMembers().add(new  GroupMember(-1, "Placeholder"));
 
                 mShoppingItem.getSharedMembers().remove(position);
                 mAdapter.notifyDataSetChanged();
@@ -376,7 +386,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                     GroupMemberPickerBottomSheetDialogFragment fragment = GroupMemberPickerBottomSheetDialogFragment.getInstance(mGroup.getGroupUsers());
                     fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
                         @Override
-                        public void onSelect(Person person) {
+                        public void onSelect(GroupMember person) {
                             mShoppingItem.getSharedMembers().remove(position);
                             mShoppingItem.getSharedMembers().add(position, person);
                             mAdapter.notifyDataSetChanged();
@@ -461,7 +471,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         GroupMemberPickerBottomSheetDialogFragment fragment = GroupMemberPickerBottomSheetDialogFragment.getInstance(mGroup.getGroupUsers());
         fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
             @Override
-            public void onSelect(Person person) {
+            public void onSelect(GroupMember person) {
                 mShoppingItem.setBuyer(person);
                 mBuyer.setText(person.getFullName());
             }

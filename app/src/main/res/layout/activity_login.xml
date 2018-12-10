@@ -36,6 +36,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
+                    <!-- Dummy item to prevent Edit text from receiving focus -->
+                    <LinearLayout
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:layout_width="0px"
+                        android:layout_height="0px"/>
+
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/phone_layout"
                         android:layout_width="match_parent"
@@ -48,7 +55,9 @@
                             android:fontFamily="@font/noto_sans"
                             android:hint="@string/email"
                             android:inputType="textEmailAddress"
-                            android:textSize="18sp" />
+                            android:textSize="18sp"
+                            android:nextFocusUp="@id/email_input"
+                            android:nextFocusLeft="@id/email_input"/>
                     </android.support.design.widget.TextInputLayout>
                 </LinearLayout>
 

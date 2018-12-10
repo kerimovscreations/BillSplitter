@@ -33,6 +33,8 @@ import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.LocalGroup;
 import com.kerimovscreations.billsplitter.models.LocalGroupMember;
 import com.kerimovscreations.billsplitter.models.LocalProfile;
+import com.kerimovscreations.billsplitter.models.Person;
+import com.kerimovscreations.billsplitter.models.Product;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.models.Timeline;
 import com.kerimovscreations.billsplitter.utils.Auth;
@@ -51,6 +53,8 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.realm.RealmList;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -189,14 +193,6 @@ public class MainActivity extends BaseActivity {
         }
 
         getGroups();
-
-        if (GlobalApplication.getRealm().where(Currency.class).count() == 0) {
-            getCurrencies();
-        }
-
-        if (GlobalApplication.getRealm().where(Category.class).count() == 0) {
-            getCategories();
-        }
 
         getData();
     }
@@ -426,10 +422,10 @@ public class MainActivity extends BaseActivity {
                                     break;
                                 }
                             }
+                        }
 
-                            if (mSelectedGroup != null) {
-                                getGroupItems();
-                            }
+                        if (mSelectedGroup != null) {
+                            getGroupItems();
                         }
                     });
                 } else {
@@ -489,10 +485,10 @@ public class MainActivity extends BaseActivity {
                                     break;
                                 }
                             }
+                        }
 
-                            if (mSelectedGroup != null) {
-                                getGroupItems();
-                            }
+                        if (mSelectedGroup != null) {
+                            getGroupItems();
                         }
                     });
                 } else {
@@ -580,90 +576,6 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onFailure(@NonNull Call<ShoppingItemListDataWrapper> call, @NonNull Throwable t) {
-                t.printStackTrace();
-
-                if (!call.isCanceled()) {
-                    runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
-                }
-            }
-        });
-    }
-
-    private void getCurrencies() {
-        Call<CurrencyListDataWrapper> call = mApiService.getCurrencies(Auth.getInstance().getToken(getContext()), "", 1);
-
-        call.enqueue(new Callback<CurrencyListDataWrapper>() {
-            @Override
-            public void onResponse(@NonNull Call<CurrencyListDataWrapper> call, @NonNull Response<CurrencyListDataWrapper> response) {
-                runOnUiThread(() -> showProgress(false));
-
-                if (response.isSuccessful() && response.body() != null) {
-                    getRealm().executeTransaction(realm -> {
-                        realm.delete(Currency.class);
-                        realm.copyToRealm(response.body().getList());
-                    });
-                } else {
-                    if (response.errorBody() != null) {
-                        try {
-                            String errorString = response.errorBody().string();
-                            Log.d(TAG, errorString);
-
-                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
-                    }
-                    Log.d(TAG, response.raw().toString());
-                    Log.e(TAG, "onResponse: Request Failed");
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<CurrencyListDataWrapper> call, @NonNull Throwable t) {
-                t.printStackTrace();
-
-                if (!call.isCanceled()) {
-                    runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
-                }
-            }
-        });
-    }
-
-    private void getCategories() {
-        Call<CategoryListDataWrapper> call = mApiService.getCategories(Auth.getInstance().getToken(getContext()));
-
-        call.enqueue(new Callback<CategoryListDataWrapper>() {
-            @Override
-            public void onResponse(@NonNull Call<CategoryListDataWrapper> call, @NonNull Response<CategoryListDataWrapper> response) {
-                runOnUiThread(() -> showProgress(false));
-
-                if (response.isSuccessful() && response.body() != null) {
-                    getRealm().executeTransaction(realm -> {
-                        realm.delete(Category.class);
-                        realm.copyToRealm(response.body().getList());
-                    });
-                } else {
-                    if (response.errorBody() != null) {
-                        try {
-                            String errorString = response.errorBody().string();
-                            Log.d(TAG, errorString);
-
-                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
-                    }
-                    Log.d(TAG, response.raw().toString());
-                    Log.e(TAG, "onResponse: Request Failed");
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<CategoryListDataWrapper> call, @NonNull Throwable t) {
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {

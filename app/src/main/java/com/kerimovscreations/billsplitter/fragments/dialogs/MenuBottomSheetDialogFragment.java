@@ -114,7 +114,7 @@ public class MenuBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
             members = mRealm.where(LocalGroupMember.class).equalTo("groupId", localGroup.getId()).findAll();
             for (LocalGroupMember localGroupMember : members) {
-                tempGroup.getGroupUsers().add(localGroupMember.getPerson());
+                tempGroup.getGroupUsers().add(localGroupMember.getMember());
             }
 
             mList.add(tempGroup);

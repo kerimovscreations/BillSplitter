@@ -8,17 +8,18 @@ public class LocalGroupMember extends RealmObject {
     @PrimaryKey
     private String id;
 
-    private Person person;
+    private GroupMember groupMember;
     private int groupId;
 
     public LocalGroupMember() {
     }
 
-    public LocalGroupMember(Person person, int groupId) {
-        this.person = person;
+    public LocalGroupMember(GroupMember member, int groupId) {
+        this.groupMember = member;
         this.groupId = groupId;
-        this.id = groupId + "_" + person.getId();
+        this.id = groupId + "_" + member.getId();
     }
+
 
     public String getId() {
         return id;
@@ -28,12 +29,12 @@ public class LocalGroupMember extends RealmObject {
         this.id = id;
     }
 
-    public Person getPerson() {
-        return person;
+    public GroupMember getMember() {
+        return groupMember;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setMember(GroupMember member) {
+        this.groupMember = member;
     }
 
     public int getGroupId() {

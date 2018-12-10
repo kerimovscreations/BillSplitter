@@ -29,6 +29,17 @@ public class Product extends RealmObject {
     @Expose
     private Category category;
 
+    public Product() {
+    }
+
+    public Product(int id, String name, int groupId, String barCode, Category category) {
+        this.id = id;
+        this.name = name;
+        this.groupId = groupId;
+        this.barCode = barCode;
+        this.category = category;
+    }
+
     public int getId() {
         return id;
     }
