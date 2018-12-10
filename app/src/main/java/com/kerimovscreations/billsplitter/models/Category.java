@@ -21,6 +21,10 @@ public class Category extends RealmObject {
     @Expose
     private String hexColor;
 
+    @SerializedName("AmountSpent")
+    @Expose
+    private float amountSpent;
+
     public Category() {
     }
 
@@ -52,5 +56,13 @@ public class Category extends RealmObject {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public float getAmountSpent() {
+        return amountSpent;
+    }
+
+    public void setAmountSpent(float amountSpent) {
+        this.amountSpent = amountSpent;
     }
 }

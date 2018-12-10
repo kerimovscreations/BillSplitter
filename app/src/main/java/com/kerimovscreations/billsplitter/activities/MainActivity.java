@@ -1,6 +1,7 @@
 package com.kerimovscreations.billsplitter.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.fragments.dialogs.GroupEditBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.fragments.dialogs.MenuBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;
+import com.kerimovscreations.billsplitter.models.Category;
 import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.LocalGroup;
 import com.kerimovscreations.billsplitter.models.LocalGroupMember;
@@ -38,6 +40,7 @@ import com.kerimovscreations.billsplitter.utils.BaseActivity;
 import com.kerimovscreations.billsplitter.wrappers.GroupListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.StatisticsDataWrapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -111,6 +114,8 @@ public class MainActivity extends BaseActivity {
     private LocalProfile mLocalProfile;
     private ArrayList<LocalGroup> mLocalGroups = new ArrayList<>();
     private LocalGroup mSelectedGroup;
+
+    private ArrayList<Category> mStatistics = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,6 +201,7 @@ public class MainActivity extends BaseActivity {
             mEmptyContentPlaceholder.setVisibility(View.GONE);
             mEmptyListPlaceholder.setVisibility(View.GONE);
             getGroupItems();
+            getStatistics();
         } else {
             showProgress(false);
         }
@@ -219,20 +225,15 @@ public class MainActivity extends BaseActivity {
 
     void setupPieChart() {
         List<PieEntry> data = new ArrayList<>();
-        data.add(new PieEntry(100, "Apple"));
-        data.add(new PieEntry(200, "Pears"));
-        data.add(new PieEntry(120, "Grapes"));
-        data.add(new PieEntry(210, "Banana"));
-        data.add(new PieEntry(300, "Oranges"));
+        int[] colors = new int[mStatistics.size()];
+
+        for(int i = 0; i < mStatistics.size(); i++) {
+            data.add(new PieEntry(mStatistics.get(i).getAmountSpent(), mStatistics.get(i).getTitle()));
+            colors[i] = Color.parseColor("#" + mStatistics.get(i).getHexColor());
+        }
 
         PieDataSet dataSet = new PieDataSet(data, "");
-        dataSet.setColors(new int[]{
-                R.color.colorRed,
-                R.color.colorBlue,
-                R.color.colorAccent,
-                R.color.colorPink,
-                R.color.colorGreen
-        }, getContext());
+        dataSet.setColors(colors);
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.colorWhite));
 
         PieData pieData = new PieData();
@@ -314,7 +315,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onGroup(Group group) {
                 mSelectedGroup = new LocalGroup(group);
-                getGroupItems();
+                getData();
                 mMenuBottomDialogFragment.dismiss();
             }
 
@@ -416,7 +417,7 @@ public class MainActivity extends BaseActivity {
                             }
 
                             if (mSelectedGroup != null) {
-                                getGroupItems();
+                                getData();
                             }
                         }
                     });
@@ -480,7 +481,7 @@ public class MainActivity extends BaseActivity {
                         }
 
                         if (mSelectedGroup != null) {
-                            getGroupItems();
+                            getData();
                         }
                     });
                 } else {
@@ -570,6 +571,52 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onFailure(@NonNull Call<ShoppingItemListDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+    private void getStatistics() {
+        showProgress(true);
+
+        Call<StatisticsDataWrapper> statisticsCall = mApiService.getStatistics(Auth.getInstance().getToken(getContext()),
+                mSelectedGroup.getId());
+
+        statisticsCall.enqueue(new Callback<StatisticsDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<StatisticsDataWrapper> call, @NonNull Response<StatisticsDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        mStatistics.clear();
+                        mStatistics.addAll(response.body().getList());
+                        setupPieChart();
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<StatisticsDataWrapper> call, @NonNull Throwable t) {
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {

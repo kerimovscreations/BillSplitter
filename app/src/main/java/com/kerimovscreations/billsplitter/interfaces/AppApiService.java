@@ -6,6 +6,7 @@ import com.kerimovscreations.billsplitter.wrappers.GroupListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.StatisticsDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
 
 import java.util.HashMap;
@@ -44,6 +45,11 @@ public interface AppApiService {
     @Headers({"Accept: application/json"})
     @GET("user/me")
     Call<UserDataWrapper> getProfile(@Header("Authorization") String token);
+
+    @Headers({"Accept: application/json"})
+    @PUT("user/me")
+    @Multipart
+    Call<UserDataWrapper> updateUser(@Header("Authorization") String token, @Part MultipartBody.Part file, @PartMap Map<String, RequestBody> params);
 
     @Headers({"Accept: application/json"})
     @POST("user/google")
@@ -95,7 +101,7 @@ public interface AppApiService {
     Call<CategoryListDataWrapper> getCategories(@Header("Authorization") String token);
 
     @Headers({"Accept: application/json"})
-    @PUT("user/me")
-    @Multipart
-    Call<UserDataWrapper> updateUser(@Header("Authorization") String token, @Part MultipartBody.Part file, @PartMap Map<String, RequestBody> params);
+    @GET("purchase/{group_id}/statistics")
+    Call<StatisticsDataWrapper> getStatistics(@Header("Authorization") String token, @Path("group_id") int groupId);
+
 }
