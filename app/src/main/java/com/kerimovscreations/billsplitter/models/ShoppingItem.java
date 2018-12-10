@@ -46,6 +46,12 @@ public class ShoppingItem extends RealmObject implements Serializable {
 
     }
 
+    public ShoppingItem(int id, String date) {
+        this.id = id;
+        this.date = date;
+        this.isHeader = true;
+    }
+
     public ShoppingItem(ShoppingItem item) {
         this.id = item.id;
         this.isComplete = item.isComplete;

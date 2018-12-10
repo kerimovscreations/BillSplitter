@@ -72,7 +72,7 @@ public class ShoppingListRVAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         switch (viewHolder.getItemViewType()) {
             case TYPE_HEADER:
                 ViewHolderHeader viewHolder1 = (ViewHolderHeader) viewHolder;
-                viewHolder1.title.setText(bItem.getDate());
+                viewHolder1.title.setText(bItem.getDate().split("T")[0]);
                 break;
             case TYPE_ITEM:
                 ViewHolderItem viewHolder2 = (ViewHolderItem) viewHolder;

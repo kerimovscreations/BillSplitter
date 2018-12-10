@@ -324,6 +324,8 @@ public class MainActivity extends BaseActivity {
             }
         }
 
+        formatShoppingLists();
+
         mGroupContent.setVisibility(View.VISIBLE);
         mAddItemBtn.setVisibility(View.VISIBLE);
         mEmptyContentPlaceholder.setVisibility(View.GONE);
@@ -334,6 +336,34 @@ public class MainActivity extends BaseActivity {
 
         mActiveShoppingListAdapter.notifyDataSetChanged();
         mCompletedShoppingListAdapter.notifyDataSetChanged();
+    }
+
+    void formatShoppingLists() {
+        // Active
+        String tempDate = mActiveShoppingList.get(0).getDate();
+
+        mActiveShoppingList.add(0, new ShoppingItem(-1, tempDate));
+
+        for (int i = 0; i < mActiveShoppingList.size() - 1; i++) {
+            if (!tempDate.equals(mActiveShoppingList.get(i + 1).getDate())) {
+                tempDate = mActiveShoppingList.get(i + 1).getDate();
+                mActiveShoppingList.add(i + 1
+                        , new ShoppingItem(-1, tempDate));
+            }
+        }
+
+        // Completed
+        tempDate = mCompletedShoppingList.get(0).getDate();
+
+        mCompletedShoppingList.add(0, new ShoppingItem(-1, tempDate));
+
+        for (int i = 0; i < mCompletedShoppingList.size() - 1; i++) {
+            if (!tempDate.equals(mCompletedShoppingList.get(i + 1).getDate())) {
+                tempDate = mCompletedShoppingList.get(i + 1).getDate();
+                mCompletedShoppingList.add(i + 1
+                        , new ShoppingItem(-1, tempDate));
+            }
+        }
     }
 
     /**
@@ -585,6 +615,8 @@ public class MainActivity extends BaseActivity {
                                                 mActiveShoppingList.add(shoppingItem);
                                             }
                                         }
+
+                                        formatShoppingLists();
 
                                         mGroupContent.setVisibility(View.VISIBLE);
                                         mAddItemBtn.setVisibility(View.VISIBLE);
