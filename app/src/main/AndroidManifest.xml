@@ -17,10 +17,6 @@
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="2847eb52578de4703d57dd6a61e7aa5b69c3ed4c" />
-
         <activity
             android:name=".activities.MainActivity"
             android:screenOrientation="portrait"
