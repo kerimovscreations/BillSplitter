@@ -3,6 +3,7 @@ package com.kerimovscreations.billsplitter.interfaces;
 import com.kerimovscreations.billsplitter.wrappers.CategoryListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.CurrencyListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.GroupListDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.ShoppingItemDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
@@ -85,6 +86,9 @@ public interface AppApiService {
     @FormUrlEncoded
     Call<SimpleDataWrapper> updateShoppingItem(@Header("Authorization") String token, @Path("item_id") int itemId, @FieldMap HashMap<String, String> params);
 
+    @Headers({"Accept: application/json"})
+    @GET("product")
+    Call<ShoppingItemDataWrapper> searchProduct(@Header("Authorization") String token, @Query("groupId") int groupId, @Query("barCode") String barCode);
 
     @Headers({"Accept: application/json"})
     @GET("product/categories")

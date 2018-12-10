@@ -45,6 +45,7 @@ import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
+import com.kerimovscreations.billsplitter.wrappers.ShoppingItemDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
 
 import java.io.IOException;
@@ -133,6 +134,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
     private Category mSelectedCategory;
     private Call<SimpleDataWrapper> mCreateItemCall;
     private Call<SimpleDataWrapper> mUpdateItemCall;
+    private Call<ShoppingItemDataWrapper> mSearchItemCall;
 
     AppApiService mApiService;
 
@@ -717,7 +719,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
-                        Toast.makeText(getContext(), R.string.successful_create_shopping_item, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.successful_update_shopping_item, Toast.LENGTH_SHORT).show();
                         finish();
                     });
                 } else {
@@ -740,6 +742,55 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
             @Override
             public void onFailure(@NonNull Call<SimpleDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    Log.e(TAG, "onFailure: Request Failed");
+
+                    runOnUiThread(() -> {
+                        showProgress(false);
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        });
+    }
+
+    private void searchProduct(String barCode) {
+        showProgress(true);
+
+        mSearchItemCall = mApiService.searchProduct(Auth.getInstance().getToken(getContext()), mGroup.getId(), barCode);
+
+        mSearchItemCall.enqueue(new Callback<ShoppingItemDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<ShoppingItemDataWrapper> call, @NonNull Response<ShoppingItemDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        mShoppingItem = response.body().getShoppingItem();
+                        setupData();
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ShoppingItemDataWrapper> call, @NonNull Throwable t) {
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {
@@ -785,6 +836,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         } else if (requestCode == REQUEST_BAR_CODE_SEARCH) {
             if (resultCode == Activity.RESULT_OK) {
                 if (data != null) {
+                    searchProduct(data.getStringExtra(BarScannerActivity.BAR_CODE));
 //                    Toast.makeText(getContext(), data.getStringExtra(BarScannerActivity.BAR_CODE), Toast.LENGTH_SHORT).show();
                 }
             }
