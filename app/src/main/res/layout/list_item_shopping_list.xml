@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -24,22 +25,30 @@
             android:padding="@dimen/medium_margin"
             android:src="@drawable/ic_check_off" />
 
-        <TextView
-            android:id="@+id/category"
+        <android.support.v7.widget.CardView
+            android:id="@+id/category_card"
             android:layout_width="wrap_content"
             android:layout_height="28dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/medium_margin"
-            android:background="@drawable/bg_category_dairy"
-            android:fontFamily="@font/noto_sans_bold"
-            android:gravity="center"
-            android:paddingStart="@dimen/normal_margin"
-            android:paddingEnd="@dimen/normal_margin"
-            android:text="Dairy"
-            android:textColor="@color/colorWhite"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            app:cardBackgroundColor="@color/colorGreen"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp">
+
+            <TextView
+                android:id="@+id/category"
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:fontFamily="@font/noto_sans_bold"
+                android:gravity="center"
+                android:paddingStart="@dimen/normal_margin"
+                android:paddingEnd="@dimen/normal_margin"
+                android:text="Dairy"
+                android:textColor="@color/colorWhite"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </android.support.v7.widget.CardView>
 
         <TextView
             android:id="@+id/title"
@@ -47,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/medium_margin"
-            android:layout_toStartOf="@id/category"
+            android:layout_toStartOf="@id/category_card"
             android:layout_toEndOf="@id/checkbox"
             android:ellipsize="end"
             android:fontFamily="@font/noto_sans"

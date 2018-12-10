@@ -25,6 +25,8 @@ public class PricePickerBottomSheetDialogFragment extends BottomSheetDialogFragm
     
     private OnClickListener mListener;
 
+    private float initialPrice;
+
     public interface OnClickListener {
         void onSubmit(Float price);
     }
@@ -33,8 +35,10 @@ public class PricePickerBottomSheetDialogFragment extends BottomSheetDialogFragm
         mListener = listener;
     }
 
-    public static PricePickerBottomSheetDialogFragment getInstance() {
-        return new PricePickerBottomSheetDialogFragment();
+    public static PricePickerBottomSheetDialogFragment getInstance(float price) {
+        PricePickerBottomSheetDialogFragment fragment = new PricePickerBottomSheetDialogFragment();
+        fragment.initialPrice = price;
+        return fragment;
     }
 
     @Override
@@ -53,6 +57,7 @@ public class PricePickerBottomSheetDialogFragment extends BottomSheetDialogFragm
     }
 
     void initVars() {
+        mPrice.setText(String.valueOf(initialPrice));
     }
 
     /**

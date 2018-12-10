@@ -27,20 +27,14 @@ import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.fragments.dialogs.GroupEditBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.fragments.dialogs.MenuBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;
-import com.kerimovscreations.billsplitter.models.Category;
-import com.kerimovscreations.billsplitter.models.Currency;
 import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.LocalGroup;
 import com.kerimovscreations.billsplitter.models.LocalGroupMember;
 import com.kerimovscreations.billsplitter.models.LocalProfile;
-import com.kerimovscreations.billsplitter.models.Person;
-import com.kerimovscreations.billsplitter.models.Product;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.models.Timeline;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
-import com.kerimovscreations.billsplitter.wrappers.CategoryListDataWrapper;
-import com.kerimovscreations.billsplitter.wrappers.CurrencyListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.GroupListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
@@ -53,8 +47,6 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.realm.RealmList;
-import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -422,10 +414,10 @@ public class MainActivity extends BaseActivity {
                                     break;
                                 }
                             }
-                        }
 
-                        if (mSelectedGroup != null) {
-                            getGroupItems();
+                            if (mSelectedGroup != null) {
+                                getGroupItems();
+                            }
                         }
                     });
                 } else {
@@ -539,11 +531,13 @@ public class MainActivity extends BaseActivity {
                             mEmptyContentPlaceholder.setVisibility(View.GONE);
                             mEmptyListPlaceholder.setVisibility(View.VISIBLE);
                         } else {
+                            GlobalApplication.getRealm().executeTransaction(realm -> realm.copyToRealmOrUpdate(response.body().getList()));
+
                             for (ShoppingItem shoppingItem : response.body().getList()) {
                                 if (shoppingItem.isComplete()) {
-                                    mActiveShoppingList.add(shoppingItem);
-                                } else {
                                     mCompletedShoppingList.add(shoppingItem);
+                                } else {
+                                    mActiveShoppingList.add(shoppingItem);
                                 }
                             }
 
@@ -591,7 +585,9 @@ public class MainActivity extends BaseActivity {
 
     void toShoppingItemDetails(ShoppingItem item) {
         Intent intent = new Intent(getContext(), ShoppingItemDetailsActivity.class);
-        intent.putExtra(ShoppingItemDetailsActivity.INTENT_ITEM, item);
+        if(item != null){
+            intent.putExtra(ShoppingItemDetailsActivity.INTENT_ITEM_ID, item.getId());
+        }
         intent.putExtra(ShoppingItemDetailsActivity.INTENT_GROUP_ID, mSelectedGroup.getId());
         startActivityForResult(intent, SHOPPING_ITEM_EDIT_REQUEST);
     }

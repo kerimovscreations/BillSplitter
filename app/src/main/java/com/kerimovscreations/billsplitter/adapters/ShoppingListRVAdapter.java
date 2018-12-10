@@ -1,9 +1,11 @@
 package com.kerimovscreations.billsplitter.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,6 +87,10 @@ public class ShoppingListRVAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 viewHolder2.checkbox.setImageDrawable(ResourcesCompat.getDrawable(getContext().getResources(),
                         bItem.isComplete() ? R.drawable.ic_check_on : R.drawable.ic_check_off,
                         null));
+
+                viewHolder2.category.setText(bItem.getProduct().getCategory().getTitle());
+                viewHolder2.categoryCard.setCardBackgroundColor(Color.parseColor("#" + bItem.getProduct().getCategory().getHexColor()));
+
                 break;
         }
     }
@@ -103,6 +109,10 @@ public class ShoppingListRVAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public class ViewHolderItem extends RecyclerView.ViewHolder {
         @BindView(R.id.title)
         TextView title;
+        @BindView(R.id.category)
+        TextView category;
+        @BindView(R.id.category_card)
+        CardView categoryCard;
         @BindView(R.id.checkbox)
         ImageView checkbox;
         @BindView(R.id.layout)

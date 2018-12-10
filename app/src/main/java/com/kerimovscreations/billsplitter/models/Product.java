@@ -3,10 +3,12 @@ package com.kerimovscreations.billsplitter.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Product extends RealmObject {
+public class Product extends RealmObject implements Serializable {
 
     @PrimaryKey
     @SerializedName("Id")

@@ -188,6 +188,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/normal_margin"
+                            android:layout_centerVertical="true"
+                            android:gravity="center"
                             android:layout_toEndOf="@id/qr_code_ic"
                             android:fontFamily="@font/noto_sans"
                             android:text="Not provided"

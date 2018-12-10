@@ -4,8 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -28,13 +26,17 @@ public class ShoppingItem extends RealmObject implements Serializable {
     @Expose
     private Product product;
 
-    @SerializedName("CreatedAt")
+    @SerializedName("Date")
     @Expose
     private String date;
 
     @SerializedName("Buyer")
     @Expose
     private GroupMember buyer;
+
+    @SerializedName("BarCode")
+    @Expose
+    private String barCode;
 
     @SerializedName("PurchaseMembers")
     @Expose
@@ -44,22 +46,15 @@ public class ShoppingItem extends RealmObject implements Serializable {
 
     }
 
-    public ShoppingItem(int id,
-                        boolean isComplete,
-                        float price,
-                        Product product,
-                        String date,
-                        GroupMember buyer,
-                        RealmList<GroupMember> sharedMembers,
-                        boolean isHeader) {
-        this.id = id;
-        this.isComplete = isComplete;
-        this.price = price;
-        this.product = product;
-        this.date = date;
-        this.buyer = buyer;
-        this.sharedMembers = sharedMembers;
-        this.isHeader = isHeader;
+    public ShoppingItem(ShoppingItem item) {
+        this.id = item.id;
+        this.isComplete = item.isComplete;
+        this.price = item.price;
+        this.product = item.product;
+        this.date = item.date;
+        this.buyer = item.buyer;
+        this.sharedMembers = item.sharedMembers;
+        this.isHeader = item.isHeader;
     }
 
     private boolean isHeader = false;
@@ -130,5 +125,13 @@ public class ShoppingItem extends RealmObject implements Serializable {
 
     public void setBuyer(GroupMember buyer) {
         this.buyer = buyer;
+    }
+
+    public String getBarCode() {
+        return barCode;
+    }
+
+    public void setBarCode(String barCode) {
+        this.barCode = barCode;
     }
 }

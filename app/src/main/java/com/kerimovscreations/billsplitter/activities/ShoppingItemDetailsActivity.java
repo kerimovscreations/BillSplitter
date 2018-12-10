@@ -59,6 +59,7 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.realm.Realm;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -67,9 +68,9 @@ import retrofit2.Response;
 public class ShoppingItemDetailsActivity extends BaseActivity {
 
     public static final String INTENT_GROUP_ID = "GROUP_ID";
+    public static final String INTENT_ITEM_ID = "ITEM_ID";
     private final String TAG = "SHOPPING_FORM";
 
-    public static final String INTENT_ITEM = "ITEM";
     public static final int REQUEST_BAR_CODE_READ = 4;
     public static final int REQUEST_BAR_CODE_SEARCH = 5;
     public static final int PERMISSION_REQUEST_CAMERA = 6;
@@ -131,6 +132,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
     private Group mGroup;
     private Category mSelectedCategory;
     private Call<SimpleDataWrapper> mCreateItemCall;
+    private Call<SimpleDataWrapper> mUpdateItemCall;
 
     AppApiService mApiService;
 
@@ -169,34 +171,51 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         }
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        if (mCreateGroupCall != null && !mCreateGroupCall.isExecuted()) {
-//            showProgress(false);
-//            mCreateGroupCall.cancel();
-//            mCreateGroupCall = null;
-//            return;
-//        }
-//
-//        super.onBackPressed();
-//    }
-//
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//
-//        if (mCreateGroupCall != null && !mCreateGroupCall.isExecuted())
-//            mCreateGroupCall.cancel();
-//    }
+    @Override
+    public void onBackPressed() {
+        if (mCreateItemCall != null && !mCreateItemCall.isExecuted()) {
+            showProgress(false);
+            mCreateItemCall.cancel();
+            mCreateItemCall = null;
+            return;
+        }
+
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+
+
+        if (mCreateItemCall != null && !mCreateItemCall.isExecuted())
+            mCreateItemCall.cancel();
+
+        GlobalApplication.getRealm().executeTransaction(realm -> {
+            mShoppingItem.getSharedMembers().where().equalTo("id", -1).findAll().deleteAllFromRealm();
+        });
+        super.onDestroy();
+    }
 
     @Override
     public void initVars() {
         super.initVars();
 
-        mShoppingItem = (ShoppingItem) getIntent().getSerializableExtra(INTENT_ITEM);
+        int itemId = getIntent().getIntExtra(INTENT_ITEM_ID, 0);
+
+        if (itemId != 0)
+            mShoppingItem = new ShoppingItem(Objects.requireNonNull(GlobalApplication
+                    .getRealm()
+                    .where(ShoppingItem.class)
+                    .equalTo("id", itemId)
+                    .findFirst()));
+
         int groupId = getIntent().getIntExtra(INTENT_GROUP_ID, 0);
 
-        mGroup = new Group(Objects.requireNonNull(GlobalApplication.getRealm().where(LocalGroup.class).equalTo("id", groupId).findFirst()));
+        mGroup = new Group(Objects.requireNonNull(GlobalApplication
+                .getRealm()
+                .where(LocalGroup.class)
+                .equalTo("id", groupId)
+                .findFirst()));
 
         RealmResults<LocalGroupMember> members = GlobalApplication.getRealm()
                 .where(LocalGroupMember.class)
@@ -223,16 +242,27 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
             mQRCodeLayout.setVisibility(View.GONE);
             mQRSearchBtn.setVisibility(View.VISIBLE);
         } else {
-            mActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_delete, null));
+            mActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_check_black_24dp, null));
+            mActionBtn.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorGreen), android.graphics.PorterDuff.Mode.SRC_IN);
+            // TODO: Delete btn
+//            mActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_delete, null));
             mQRCodeLayout.setVisibility(View.VISIBLE);
             mQRSearchBtn.setVisibility(View.GONE);
         }
 
+        // title
+
+        mTitle.setText(mShoppingItem.getProduct().getName());
+
         // Date
 
-        Date myDate = new Date();
+        if (mShoppingItem.getDate() == null || mShoppingItem.getDate().isEmpty()) {
+            Date myDate = new Date();
 
-        mShoppingItem.setDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(myDate));
+            GlobalApplication.getRealm().executeTransaction(realm -> mShoppingItem.setDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(myDate)));
+        } else {
+            GlobalApplication.getRealm().executeTransaction(realm -> mShoppingItem.setDate(mShoppingItem.getDate().split("T")[0]));
+        }
 
         updateDateText();
 
@@ -274,6 +304,13 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
             }
         });
+
+        for (int i = 0; i < shoppingGroups.size(); i++) {
+            if (mGroup.getId() == shoppingGroups.get(i).getId()) {
+                mGroupSpinner.setSelection(i);
+                break;
+            }
+        }
 
         // Category spinner
 
@@ -323,7 +360,11 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         // Shared people list
 
         // fake user
-        mShoppingItem.getSharedMembers().add(new GroupMember(-1, "Placeholder"));
+        if (mShoppingItem.getSharedMembers().size() < mGroup.getGroupUsers().size()) {
+            GlobalApplication.getRealm().executeTransaction(realm ->
+                    mShoppingItem.getSharedMembers().add(new GroupMember(-1, "Placeholder")));
+        }
+
         mAdapter = new SharedPeopleListRVAdapter(getContext(), mShoppingItem.getSharedMembers(), true);
         mAdapter.setOnItemClickListener(new SharedPeopleListRVAdapter.OnItemClickListener() {
             @Override
@@ -353,10 +394,12 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                     fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
                         @Override
                         public void onSelect(GroupMember person) {
-                            mShoppingItem.getSharedMembers().add(mShoppingItem.getSharedMembers().size() - 1, person);
+                            GlobalApplication.getRealm().executeTransaction(realm ->
+                                    mShoppingItem.getSharedMembers().add(mShoppingItem.getSharedMembers().size() - 1, person));
 
                             if (mGroup.getGroupUsers().size() < mShoppingItem.getSharedMembers().size())
-                                mShoppingItem.getSharedMembers().remove(mShoppingItem.getSharedMembers().size() - 1);
+                                GlobalApplication.getRealm().executeTransaction(realm ->
+                                        mShoppingItem.getSharedMembers().remove(mShoppingItem.getSharedMembers().size() - 1));
 
                             mAdapter.notifyDataSetChanged();
                         }
@@ -374,9 +417,10 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
             @Override
             public void onDelete(int position) {
                 if (mGroup.getGroupUsers().size() == mShoppingItem.getSharedMembers().size())
-                    mShoppingItem.getSharedMembers().add(new  GroupMember(-1, "Placeholder"));
-
-                mShoppingItem.getSharedMembers().remove(position);
+                    GlobalApplication.getRealm().executeTransaction(realm -> {
+                        mShoppingItem.getSharedMembers().add(new GroupMember(-1, "Placeholder"));
+                        mShoppingItem.getSharedMembers().remove(position);
+                    });
                 mAdapter.notifyDataSetChanged();
             }
 
@@ -387,14 +431,17 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                     fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
                         @Override
                         public void onSelect(GroupMember person) {
-                            mShoppingItem.getSharedMembers().remove(position);
-                            mShoppingItem.getSharedMembers().add(position, person);
+                            GlobalApplication.getRealm().executeTransaction(realm -> {
+                                mShoppingItem.getSharedMembers().remove(position);
+                                mShoppingItem.getSharedMembers().add(position, person);
+                            });
+
                             mAdapter.notifyDataSetChanged();
                         }
 
                         @Override
                         public void onRemove() {
-                            mShoppingItem.getSharedMembers().remove(position);
+                            GlobalApplication.getRealm().executeTransaction(realm -> mShoppingItem.getSharedMembers().remove(position));
                             mAdapter.notifyDataSetChanged();
                         }
                     });
@@ -419,14 +466,18 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     @OnClick(R.id.action_btn)
     void onAction(View view) {
-        if (mShoppingItem.getId() == 0) {
-            if (!isFormValid()) {
-                return;
-            }
+        if (!isFormValid()) {
+            return;
+        }
 
+        if (mShoppingItem.getId() == 0) {
             createItem();
         } else {
-            promptDeleteDialog();
+            // TODO: Delete option
+//            promptDeleteDialog();
+
+
+            updateItem();
         }
     }
 
@@ -442,13 +493,12 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     @OnClick(R.id.price_layout)
     void onPrice(View view) {
-        PricePickerBottomSheetDialogFragment fragment = PricePickerBottomSheetDialogFragment.getInstance();
-        fragment.setClickListener(new PricePickerBottomSheetDialogFragment.OnClickListener() {
-            @Override
-            public void onSubmit(Float price) {
+        PricePickerBottomSheetDialogFragment fragment = PricePickerBottomSheetDialogFragment.getInstance(mShoppingItem.getPrice());
+        fragment.setClickListener(price -> {
+            GlobalApplication.getRealm().executeTransaction(realm -> {
                 mShoppingItem.setPrice(price);
-                updatePriceText();
-            }
+            });
+            updatePriceText();
         });
 
         fragment.show(getSupportFragmentManager(), "PRICE_TAG");
@@ -472,13 +522,15 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         fragment.setClickListener(new GroupMemberPickerBottomSheetDialogFragment.OnClickListener() {
             @Override
             public void onSelect(GroupMember person) {
-                mShoppingItem.setBuyer(person);
+                GlobalApplication.getRealm().executeTransaction(realm -> mShoppingItem.setBuyer(person));
                 mBuyer.setText(person.getFullName());
             }
 
             @Override
             public void onRemove() {
-                mShoppingItem.setBuyer(null);
+                GlobalApplication.getRealm().executeTransaction(realm -> {
+                    mShoppingItem.setBuyer(null);
+                });
                 mBuyer.setText("");
             }
         });
@@ -521,6 +573,16 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         mDate.setText(mShoppingItem.getDate());
     }
 
+    void updateBarCodeText() {
+        if(mShoppingItem.getBarCode() != null && !mShoppingItem.getBarCode().isEmpty()){
+            mQRCode.setText(getString(R.string.provided));
+            mQRCodeActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_check_black_24dp, null));
+        } else {
+            mQRCode.setText(getString(R.string.not_provided));
+            mQRCodeActionBtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_plus, null));
+        }
+    }
+
     boolean isFormValid() {
         if (mTitle.getText().length() == 0) {
             Snackbar snackbar = Snackbar.make(mCoordinatorLayout, R.string.prompt_fill_inputs, Snackbar.LENGTH_LONG);
@@ -533,11 +595,8 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
     void promptDeleteDialog() {
         DeleteItemBottomSheetDialogFragment fragment = DeleteItemBottomSheetDialogFragment.getInstance();
-        fragment.setClickListener(new DeleteItemBottomSheetDialogFragment.OnClickListener() {
-            @Override
-            public void onDelete() {
-                // TODO: API Integration
-            }
+        fragment.setClickListener(() -> {
+            // TODO: API Integration
         });
 
         fragment.show(getSupportFragmentManager(), "MORE_TAG");
@@ -570,7 +629,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         data.put("name", mTitle.getText().toString());
         data.put("groupId", String.valueOf(mGroup.getId()));
         data.put("categoryId", String.valueOf(mSelectedCategory.getId()));
-        data.put("barCode", "");
+        data.put("barCode", mShoppingItem.getBarCode());
         data.put("price", String.valueOf(mShoppingItem.getPrice()));
         data.put("date", mShoppingItem.getDate());
 
@@ -585,6 +644,73 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         mCreateItemCall = mApiService.createPurchase(Auth.getInstance().getToken(getContext()), data);
 
         mCreateItemCall.enqueue(new Callback<SimpleDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<SimpleDataWrapper> call, @NonNull Response<SimpleDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(getContext(), R.string.successful_create_shopping_item, Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SimpleDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    Log.e(TAG, "onFailure: Request Failed");
+
+                    runOnUiThread(() -> {
+                        showProgress(false);
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        });
+    }
+
+    private void updateItem() {
+        showProgress(true);
+
+        HashMap<String, String> data = new HashMap<>();
+
+        data.put("name", mTitle.getText().toString());
+        data.put("groupId", String.valueOf(mGroup.getId()));
+        data.put("categoryId", String.valueOf(mSelectedCategory.getId()));
+        data.put("barCode", "");
+        data.put("price", String.valueOf(mShoppingItem.getPrice()));
+        data.put("date", mShoppingItem.getDate());
+
+        if (mShoppingItem.getBuyer() != null) {
+            data.put("paidById", String.valueOf(mShoppingItem.getBuyer().getId()));
+        }
+
+        for (int i = 0; i < mShoppingItem.getSharedMembers().size(); i++) {
+            if (mShoppingItem.getSharedMembers().get(i).getId() != -1)
+                data.put("shares[" + i + "]", String.valueOf(mShoppingItem.getSharedMembers().get(i).getId()));
+        }
+
+        mUpdateItemCall = mApiService.updateShoppingItem(Auth.getInstance().getToken(getContext()), mShoppingItem.getId(), data);
+
+        mUpdateItemCall.enqueue(new Callback<SimpleDataWrapper>() {
             @Override
             public void onResponse(@NonNull Call<SimpleDataWrapper> call, @NonNull Response<SimpleDataWrapper> response) {
                 runOnUiThread(() -> showProgress(false));
@@ -651,7 +777,8 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         if (requestCode == REQUEST_BAR_CODE_READ) {
             if (resultCode == Activity.RESULT_OK) {
                 if (data != null) {
-                    mQRCode.setText(data.getStringExtra(BarScannerActivity.BAR_CODE));
+                    GlobalApplication.getRealm().executeTransaction(realm -> mShoppingItem.setBarCode(data.getStringExtra(BarScannerActivity.BAR_CODE)));
+                    updateBarCodeText();
 //                    Toast.makeText(getContext(), data.getStringExtra(BarScannerActivity.BAR_CODE), Toast.LENGTH_SHORT).show();
                 }
             }

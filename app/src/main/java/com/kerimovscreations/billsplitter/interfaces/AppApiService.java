@@ -81,6 +81,12 @@ public interface AppApiService {
     Call<SimpleDataWrapper> createPurchase(@Header("Authorization") String token, @FieldMap HashMap<String, String> params);
 
     @Headers({"Accept: application/json"})
+    @PUT("product/{item_id}")
+    @FormUrlEncoded
+    Call<SimpleDataWrapper> updateShoppingItem(@Header("Authorization") String token, @Path("item_id") int itemId, @FieldMap HashMap<String, String> params);
+
+
+    @Headers({"Accept: application/json"})
     @GET("product/categories")
     Call<CategoryListDataWrapper> getCategories(@Header("Authorization") String token);
 
