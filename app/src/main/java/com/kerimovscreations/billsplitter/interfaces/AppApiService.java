@@ -85,7 +85,11 @@ public interface AppApiService {
     @Headers({"Accept: application/json"})
     @POST("product")
     @FormUrlEncoded
-    Call<ShoppingItemDataWrapper> createPurchase(@Header("Authorization") String token, @FieldMap HashMap<String, String> params);
+    Call<ShoppingItemDataWrapper> createShoppingItem(@Header("Authorization") String token, @FieldMap HashMap<String, String> params);
+
+    @Headers({"Accept: application/json"})
+    @POST("purchase/{group_id}/hide_completed")
+    Call<SimpleDataWrapper> hideCompletedShoppingItems(@Header("Authorization") String token, @Path("group_id") int groupId);
 
     @Headers({"Accept: application/json"})
     @PUT("product/{item_id}")

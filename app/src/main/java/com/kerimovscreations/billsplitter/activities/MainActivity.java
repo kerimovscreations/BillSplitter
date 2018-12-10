@@ -385,7 +385,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onDeleteItems() {
-                // TODO: API Integration
+                deleteCompletedItems();
             }
         });
 
@@ -492,6 +492,7 @@ public class MainActivity extends BaseActivity {
                             realm.where(ShoppingItem.class).equalTo("groupId", mSelectedGroup.getId()).findAll().deleteAllFromRealm();
                             realm.where(LocalGroupMember.class).equalTo("groupId", mSelectedGroup.getId()).findAll().deleteAllFromRealm();
                             Objects.requireNonNull(realm.where(LocalGroup.class).equalTo("id", mSelectedGroup.getId()).findFirst()).deleteFromRealm();
+                            mLocalGroups.clear();
                             mLocalGroups.addAll(getRealm().where(LocalGroup.class).findAll());
                             mSelectedGroup = null;
                         });
@@ -617,6 +618,52 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    private void deleteCompletedItems() {
+        showProgress(true);
+
+        Call<SimpleDataWrapper> deleteCall = mApiService.hideCompletedShoppingItems(Auth.getInstance().getToken(getContext()), mSelectedGroup.getId());
+
+        deleteCall.enqueue(new Callback<SimpleDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<SimpleDataWrapper> call, @NonNull Response<SimpleDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        getRealm().executeTransaction(realm -> {
+                            realm.where(ShoppingItem.class).equalTo("groupId", mSelectedGroup.getId()).equalTo("isComplete", true).findAll().deleteAllFromRealm();
+                        });
+
+                        loadLocalShoppingList();
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SimpleDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
     private void getStatistics() {
         showProgress(true);
 

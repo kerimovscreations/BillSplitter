@@ -662,7 +662,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
             data.put("shares[" + i + "]", String.valueOf(mShoppingItem.getSharedMembers().get(i).getId()));
         }
 
-        mCreateItemCall = mApiService.createPurchase(Auth.getInstance().getToken(getContext()), data);
+        mCreateItemCall = mApiService.createShoppingItem(Auth.getInstance().getToken(getContext()), data);
 
         mCreateItemCall.enqueue(new Callback<ShoppingItemDataWrapper>() {
             @Override
