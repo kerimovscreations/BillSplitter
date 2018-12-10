@@ -205,7 +205,7 @@ public class LoginActivity extends BaseActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
-                        Auth.getInstance().saveProfile(getContext(), response.body().getPerson());
+                        Auth.getInstance().saveProfile(getContext(), response.body().getPerson(), false);
                         Toast.makeText(getContext(), R.string.successful_login, Toast.LENGTH_SHORT).show();
                         toMain();
                     });
@@ -255,7 +255,7 @@ public class LoginActivity extends BaseActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
-                        Auth.getInstance().saveProfile(getContext(), response.body().getPerson());
+                        Auth.getInstance().saveProfile(getContext(), response.body().getPerson(), true);
                         Toast.makeText(getContext(), R.string.successful_login, Toast.LENGTH_SHORT).show();
                         toMain();
                     });

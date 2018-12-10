@@ -68,6 +68,8 @@ public class ProfileEditActivity extends BaseActivity {
     ImageView mPasswordChangeIc;
     @BindView(R.id.password_change_inputs)
     View mPasswordChangeInputsLayout;
+    @BindView(R.id.password_change_layout)
+    View mPasswordChangeLayout;
 
     Uri mSelectedAvatarUri;
     boolean mIsPasswordChangeLayoutVisible = false;
@@ -123,6 +125,14 @@ public class ProfileEditActivity extends BaseActivity {
 
         mNameInput.setText(mLocalProfile.getFullName());
         mEmailInput.setText(mLocalProfile.getEmail());
+
+        if (mLocalProfile.isSocialLogin()) {
+            mEmailInput.setEnabled(false);
+            mPasswordChangeLayout.setVisibility(View.GONE);
+        } else {
+            mEmailInput.setEnabled(true);
+            mPasswordChangeLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     /**

@@ -36,10 +36,11 @@ public class Auth {
         return "Bearer " + mPrefs.getString(context.getString(R.string.local_preference_token), "");
     }
 
-    public void saveProfile(Context context, Person person) {
+    public void saveProfile(Context context, Person person, boolean isSocialLogin) {
         GlobalApplication.getRealm().executeTransaction(realm -> {
             LocalProfile profile = new LocalProfile();
             profile.setData(person);
+            profile.setSocialLogin(isSocialLogin);
             realm.copyToRealmOrUpdate(profile);
         });
         saveToken(context, person.getApiToken());
