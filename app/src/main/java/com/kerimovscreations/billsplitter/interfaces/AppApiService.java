@@ -13,6 +13,7 @@ import java.util.Map;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
@@ -61,6 +62,10 @@ public interface AppApiService {
     @Headers({"Accept: application/json"})
     @GET("group")
     Call<GroupListDataWrapper> getGroups(@Header("Authorization") String token, @Query("q") String search, @Query("page") int pageNumber);
+
+    @Headers({"Accept: application/json"})
+    @DELETE("group/{group_id}")
+    Call<SimpleDataWrapper> deleteGroup(@Header("Authorization") String token, @Path("group_id") int groupId);
 
     @Headers({"Accept: application/json"})
     @GET("purchase/{group_id}")

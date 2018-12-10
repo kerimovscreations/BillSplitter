@@ -142,7 +142,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
             myCalendar.set(Calendar.YEAR, year);
             myCalendar.set(Calendar.MONTH, monthOfYear);
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
             mSelectedDate = sdf.format(myCalendar.getTime());
             mDate.setText(mSelectedDate);
@@ -231,7 +231,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
         Date myDate = new Date();
 
-        mDate.setText(new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(myDate));
+        mDate.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(myDate));
 
         // Shopping group
 
@@ -537,7 +537,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         data.put("categoryId", String.valueOf(mSelectedCategory.getId()));
         data.put("barCode", "");
         data.put("price", mPrice.getText().toString().split(" ")[0]);
-        data.put("buyer", mShoppingItem.getBuyer() == null ? getString(R.string.select_buyer) : String.valueOf(mShoppingItem.getBuyer().getId()));
+        data.put("paidById", mShoppingItem.getBuyer() == null ? getString(R.string.select_buyer) : String.valueOf(mShoppingItem.getBuyer().getId()));
         data.put("date", mDate.getText().toString());
 
         for (int i = 0; i < mShoppingItem.getSharedMembers().size() - 1; i++) {

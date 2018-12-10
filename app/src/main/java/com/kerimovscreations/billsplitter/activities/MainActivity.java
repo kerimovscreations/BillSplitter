@@ -41,11 +41,13 @@ import com.kerimovscreations.billsplitter.wrappers.CategoryListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.CurrencyListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.GroupListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemListDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -356,7 +358,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onDelete() {
-                // TODO: API Integration
+                deleteGroup();
             }
 
             @Override
@@ -450,6 +452,69 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onFailure(@NonNull Call<GroupListDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+    private void deleteGroup() {
+        showProgress(true);
+
+        Call<SimpleDataWrapper> deleteCall = mApiService.deleteGroup(Auth.getInstance().getToken(getContext()), mSelectedGroup.getId());
+
+        deleteCall.enqueue(new Callback<SimpleDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<SimpleDataWrapper> call, @NonNull Response<SimpleDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        getRealm().executeTransaction(realm -> {
+                            realm.where(LocalGroupMember.class).equalTo("groupId", mSelectedGroup.getId()).findAll().deleteAllFromRealm();
+                            Objects.requireNonNull(realm.where(LocalGroup.class).equalTo("id", mSelectedGroup.getId()).findFirst()).deleteFromRealm();
+                            mLocalGroups.addAll(getRealm().where(LocalGroup.class).findAll());
+                            mSelectedGroup = null;
+                        });
+
+                        if (mSelectedGroup == null && mLocalGroups.size() > 0) {
+                            getRealm().executeTransaction(realm -> mLocalProfile.setLastSelectedGroupId(mLocalGroups.get(0).getId()));
+
+                            for (LocalGroup group : mLocalGroups) {
+                                if (mLocalProfile.getLastSelectedGroupId() == group.getId()) {
+                                    mSelectedGroup = group;
+                                    break;
+                                }
+                            }
+
+                            if (mSelectedGroup != null) {
+                                getGroupItems();
+                            }
+                        }
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SimpleDataWrapper> call, @NonNull Throwable t) {
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {
