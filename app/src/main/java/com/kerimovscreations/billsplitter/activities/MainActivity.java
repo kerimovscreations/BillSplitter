@@ -227,7 +227,7 @@ public class MainActivity extends BaseActivity {
         List<PieEntry> data = new ArrayList<>();
         int[] colors = new int[mStatistics.size()];
 
-        for(int i = 0; i < mStatistics.size(); i++) {
+        for (int i = 0; i < mStatistics.size(); i++) {
             data.add(new PieEntry(mStatistics.get(i).getAmountSpent(), mStatistics.get(i).getTitle()));
             colors[i] = Color.parseColor("#" + mStatistics.get(i).getHexColor());
         }
@@ -532,31 +532,31 @@ public class MainActivity extends BaseActivity {
                             mEmptyContentPlaceholder.setVisibility(View.GONE);
                             mEmptyListPlaceholder.setVisibility(View.VISIBLE);
                         } else {
-                            GlobalApplication.getRealm().where(ShoppingItem.class).equalTo("groupId", mSelectedGroup.getId()).findAll().deleteAllFromRealm();
 
-                            GlobalApplication.getRealm().executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(response.body().getList()), () -> {
-                                mCompletedShoppingList.clear();
-                                mActiveShoppingList.clear();
+                            GlobalApplication.getRealm().executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(response.body().getList()),
+                                    () -> {
+                                        mCompletedShoppingList.clear();
+                                        mActiveShoppingList.clear();
 
-                                for (ShoppingItem shoppingItem : response.body().getList()) {
-                                    if (shoppingItem.isComplete()) {
-                                        mCompletedShoppingList.add(shoppingItem);
-                                    } else {
-                                        mActiveShoppingList.add(shoppingItem);
-                                    }
-                                }
+                                        for (ShoppingItem shoppingItem : response.body().getList()) {
+                                            if (shoppingItem.isComplete()) {
+                                                mCompletedShoppingList.add(shoppingItem);
+                                            } else {
+                                                mActiveShoppingList.add(shoppingItem);
+                                            }
+                                        }
 
-                                mGroupContent.setVisibility(View.VISIBLE);
-                                mAddItemBtn.setVisibility(View.VISIBLE);
-                                mEmptyContentPlaceholder.setVisibility(View.GONE);
-                                mEmptyListPlaceholder.setVisibility(View.GONE);
+                                        mGroupContent.setVisibility(View.VISIBLE);
+                                        mAddItemBtn.setVisibility(View.VISIBLE);
+                                        mEmptyContentPlaceholder.setVisibility(View.GONE);
+                                        mEmptyListPlaceholder.setVisibility(View.GONE);
 
-                                mActiveShoppingListTitle.setVisibility(mActiveShoppingList.size() == 0 ? View.GONE : View.VISIBLE);
-                                mCompletedListLayout.setVisibility(mCompletedShoppingList.size() == 0 ? View.GONE : View.VISIBLE);
+                                        mActiveShoppingListTitle.setVisibility(mActiveShoppingList.size() == 0 ? View.GONE : View.VISIBLE);
+                                        mCompletedListLayout.setVisibility(mCompletedShoppingList.size() == 0 ? View.GONE : View.VISIBLE);
 
-                                mActiveShoppingListAdapter.notifyDataSetChanged();
-                                mCompletedShoppingListAdapter.notifyDataSetChanged();
-                            });
+                                        mActiveShoppingListAdapter.notifyDataSetChanged();
+                                        mCompletedShoppingListAdapter.notifyDataSetChanged();
+                                    });
                         }
                     });
                 } else {
@@ -640,7 +640,7 @@ public class MainActivity extends BaseActivity {
 
     void toShoppingItemDetails(ShoppingItem item) {
         Intent intent = new Intent(getContext(), ShoppingItemDetailsActivity.class);
-        if(item != null){
+        if (item != null) {
             intent.putExtra(ShoppingItemDetailsActivity.INTENT_ITEM_ID, item.getId());
         }
         intent.putExtra(ShoppingItemDetailsActivity.INTENT_GROUP_ID, mSelectedGroup.getId());

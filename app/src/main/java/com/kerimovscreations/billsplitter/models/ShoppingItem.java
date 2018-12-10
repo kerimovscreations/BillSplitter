@@ -7,9 +7,11 @@ import java.io.Serializable;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class ShoppingItem extends RealmObject implements Serializable {
 
+    @PrimaryKey
     @SerializedName("Id")
     @Expose
     private int id;
