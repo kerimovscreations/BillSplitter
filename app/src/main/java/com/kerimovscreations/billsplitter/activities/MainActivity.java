@@ -302,7 +302,9 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onCheckClick(int position) {
-
+                mCompletedShoppingList.get(position).toggleComplete();
+                updateCompleteStatus(mCompletedShoppingList.get(position));
+                mCompletedShoppingListAdapter.notifyDataSetChanged();
             }
         });
 
