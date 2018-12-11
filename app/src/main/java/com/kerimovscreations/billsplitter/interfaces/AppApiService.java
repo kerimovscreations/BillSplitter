@@ -2,6 +2,7 @@ package com.kerimovscreations.billsplitter.interfaces;
 
 import com.kerimovscreations.billsplitter.wrappers.CategoryListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.CurrencyListDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.GroupDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.GroupListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemListDataWrapper;
@@ -63,12 +64,12 @@ public interface AppApiService {
     @Headers({"Accept: application/json"})
     @POST("group")
     @FormUrlEncoded
-    Call<SimpleDataWrapper> createGroup(@Header("Authorization") String token, @FieldMap HashMap<String, String> params);
+    Call<GroupDataWrapper> createGroup(@Header("Authorization") String token, @FieldMap HashMap<String, String> params);
 
     @Headers({"Accept: application/json"})
     @PUT("group/{group_id}")
     @FormUrlEncoded
-    Call<SimpleDataWrapper> updateGroup(@Header("Authorization") String token, @Path("group_id") int groupId, @FieldMap HashMap<String, String> params);
+    Call<GroupDataWrapper> updateGroup(@Header("Authorization") String token, @Path("group_id") int groupId, @FieldMap HashMap<String, String> params);
 
     @Headers({"Accept: application/json"})
     @GET("group")

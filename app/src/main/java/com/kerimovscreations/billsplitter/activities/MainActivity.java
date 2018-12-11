@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -64,7 +65,8 @@ public class MainActivity extends BaseActivity {
 
     private static final int SHOPPING_ITEM_EDIT_REQUEST = 1;
     private static final int GROUP_CREATE_REQUEST = 2;
-    private static final int EDIT_PROFILE_REQUEST = 3;
+    private static final int GROUP_EDIT_REQUEST = 3;
+    private static final int EDIT_PROFILE_REQUEST = 4;
 
     @BindView(R.id.rvTimeline)
     RecyclerView mRVTimeline;
@@ -74,6 +76,9 @@ public class MainActivity extends BaseActivity {
 
     @BindView(R.id.statistics_layout)
     View mStatisticsLayout;
+
+    @BindView(R.id.group_title)
+    TextView mGroupTitle;
 
     @BindView(R.id.pie_chart)
     PieChart mPieChart;
@@ -177,6 +182,8 @@ public class MainActivity extends BaseActivity {
                     }
                 }
 
+                mGroupTitle.setText(mSelectedGroup.getTitle());
+
                 mGroupContent.setVisibility(View.VISIBLE);
                 mAddItemBtn.setVisibility(View.VISIBLE);
                 mEmptyContentPlaceholder.setVisibility(View.GONE);
@@ -194,6 +201,7 @@ public class MainActivity extends BaseActivity {
                     break;
                 }
             }
+            mGroupTitle.setText(mSelectedGroup.getTitle());
         }
 
         getGroups();
@@ -396,6 +404,7 @@ public class MainActivity extends BaseActivity {
                 GlobalApplication.getRealm().executeTransaction(realm ->
                         mLocalProfile.setLastSelectedGroupId(group.getId()));
                 mSelectedGroup = new LocalGroup(group);
+                mGroupTitle.setText(mSelectedGroup.getTitle());
                 getData();
                 mMenuBottomDialogFragment.dismiss();
             }
@@ -472,6 +481,8 @@ public class MainActivity extends BaseActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
                         getRealm().executeTransaction(realm -> {
+                            realm.where(LocalGroup.class).findAll().deleteAllFromRealm();
+
                             for (Group tempGroup : response.body().getList()) {
                                 realm.copyToRealmOrUpdate(new LocalGroup(tempGroup));
 
@@ -481,9 +492,18 @@ public class MainActivity extends BaseActivity {
                                     realm.copyToRealm(new LocalGroupMember(tempGroup.getGroupUsers().get(i), tempGroup.getId()));
                                 }
                             }
-                            mLocalGroups.clear();
-                            mLocalGroups.addAll(getRealm().where(LocalGroup.class).findAll());
                         });
+
+                        mLocalGroups.clear();
+                        mLocalGroups.addAll(getRealm().where(LocalGroup.class).findAll());
+
+                        for (LocalGroup group : mLocalGroups) {
+                            if (mLocalProfile.getLastSelectedGroupId() == group.getId()) {
+                                mSelectedGroup = group;
+                                mGroupTitle.setText(mSelectedGroup.getTitle());
+                                break;
+                            }
+                        }
 
                         if (mSelectedGroup == null && mLocalGroups.size() > 0) {
                             getRealm().executeTransaction(realm -> mLocalProfile.setLastSelectedGroupId(mLocalGroups.get(0).getId()));
@@ -494,6 +514,8 @@ public class MainActivity extends BaseActivity {
                                     break;
                                 }
                             }
+
+                            mGroupTitle.setText(mSelectedGroup.getTitle());
 
                             if (mSelectedGroup != null) {
                                 getData();
@@ -560,6 +582,8 @@ public class MainActivity extends BaseActivity {
                                 }
                             }
                         }
+
+                        mGroupTitle.setText(mSelectedGroup.getTitle());
 
                         if (mSelectedGroup != null) {
                             getData();
@@ -848,14 +872,17 @@ public class MainActivity extends BaseActivity {
 
     void toGroupForm(Group group) {
         Intent intent = new Intent(getContext(), GroupFormActivity.class);
-        if (group != null)
+        if (group != null) {
             intent.putExtra(GroupFormActivity.INTENT_ITEM_ID, group.getId());
-        startActivityForResult(intent, GROUP_CREATE_REQUEST);
+            startActivityForResult(intent, GROUP_EDIT_REQUEST);
+        } else {
+            startActivityForResult(intent, GROUP_CREATE_REQUEST);
+        }
     }
 
     void toProfileEdit() {
         Intent intent = new Intent(getContext(), ProfileEditActivity.class);
-        startActivityForResult(intent, GROUP_CREATE_REQUEST);
+        startActivityForResult(intent, EDIT_PROFILE_REQUEST);
     }
 
     void toLogin() {
@@ -875,6 +902,55 @@ public class MainActivity extends BaseActivity {
             case SHOPPING_ITEM_EDIT_REQUEST:
                 if (resultCode == Activity.RESULT_OK)
                     loadLocalShoppingList();
+                break;
+            case GROUP_CREATE_REQUEST:
+                mLocalGroups.clear();
+                mLocalGroups.addAll(getRealm().where(LocalGroup.class).findAll());
+
+                for (LocalGroup group : mLocalGroups) {
+                    if (mLocalProfile.getLastSelectedGroupId() == group.getId()) {
+                        mSelectedGroup = group;
+                        mGroupTitle.setText(mSelectedGroup.getTitle());
+                        break;
+                    }
+                }
+
+                if (mSelectedGroup == null && mLocalGroups.size() > 0) {
+                    getRealm().executeTransaction(realm -> mLocalProfile.setLastSelectedGroupId(mLocalGroups.get(0).getId()));
+
+                    for (LocalGroup group : mLocalGroups) {
+                        if (mLocalProfile.getLastSelectedGroupId() == group.getId()) {
+                            mSelectedGroup = group;
+                            break;
+                        }
+                    }
+
+                    mGroupTitle.setText(mSelectedGroup.getTitle());
+
+                    if (mSelectedGroup != null) {
+                        getData();
+                    }
+                }
+
+                break;
+            case GROUP_EDIT_REQUEST:
+                if (resultCode == Activity.RESULT_OK) {
+                    Log.e("MAIN", "EDIT GROUP RESULT");
+                    if (mLocalProfile.getLastSelectedGroupId() < 0 && mLocalGroups.size() > 0) {
+                        getRealm().executeTransaction(realm -> mLocalProfile.setLastSelectedGroupId(mLocalGroups.get(0).getId()));
+                    }
+
+                    for (LocalGroup group : mLocalGroups) {
+                        if (mLocalProfile.getLastSelectedGroupId() == group.getId()) {
+                            mSelectedGroup = group;
+                            mGroupTitle.setText(mSelectedGroup.getTitle());
+                            break;
+                        }
+                    }
+                }
+                break;
+            case EDIT_PROFILE_REQUEST:
+                // no need update ui
                 break;
             default:
                 break;

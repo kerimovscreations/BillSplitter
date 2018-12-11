@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kerimovscreations.billsplitter.R;
+import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.models.GroupMember;
+import com.kerimovscreations.billsplitter.models.LocalProfile;
 import com.kerimovscreations.billsplitter.models.Person;
 
 import java.util.List;
@@ -25,11 +27,13 @@ public class GroupMembersListRVAdapter extends RecyclerView.Adapter<RecyclerView
     private List<GroupMember> mList;
     private Context mContext;
     private boolean mIsEditMode;
+    private LocalProfile mLocalProfile;
 
     public GroupMembersListRVAdapter(Context context, List<GroupMember> list, boolean isEditMode) {
         mList = list;
         mContext = context;
         mIsEditMode = isEditMode;
+        mLocalProfile = GlobalApplication.getRealm().where(LocalProfile.class).findFirst();
     }
 
     public boolean isEditMode() {
@@ -77,6 +81,7 @@ public class GroupMembersListRVAdapter extends RecyclerView.Adapter<RecyclerView
             case TYPE_FULL:
                 GroupMembersListRVAdapter.ViewHolderFull viewHolder2 = (GroupMembersListRVAdapter.ViewHolderFull) viewHolder;
                 viewHolder2.title.setText(bItem.getFullName());
+                viewHolder2.deleteBtn.setVisibility(isEditMode() && bItem.getId() != mLocalProfile.getId() ? View.VISIBLE : View.GONE);
                 break;
         }
     }
@@ -136,7 +141,6 @@ public class GroupMembersListRVAdapter extends RecyclerView.Adapter<RecyclerView
                 }
             });
 
-            deleteBtn.setVisibility(isEditMode() ? View.VISIBLE : View.GONE);
             deleteBtn.setOnClickListener(view -> {
                 if (mListener != null) {
                     int position = getAdapterPosition();

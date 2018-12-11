@@ -1,5 +1,7 @@
 package com.kerimovscreations.billsplitter.activities;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -27,10 +29,9 @@ import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.GroupMember;
 import com.kerimovscreations.billsplitter.models.LocalGroup;
 import com.kerimovscreations.billsplitter.models.LocalGroupMember;
-import com.kerimovscreations.billsplitter.models.Person;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
-import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.GroupDataWrapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,8 +79,8 @@ public class GroupFormActivity extends BaseActivity {
     private Currency mSelectedCurrency;
     AppApiService mApiService;
 
-    Call<SimpleDataWrapper> mCreateGroupCall;
-    Call<SimpleDataWrapper> mUpdateGroupCall;
+    Call<GroupDataWrapper> mCreateGroupCall;
+    Call<GroupDataWrapper> mUpdateGroupCall;
 
     private ArrayList<Currency> mCurrencies;
 
@@ -165,19 +166,16 @@ public class GroupFormActivity extends BaseActivity {
 
                 } else {
                     InviteMemberBottomSheetDialogFragment fragment = InviteMemberBottomSheetDialogFragment.getInstance();
-                    fragment.setClickListener(new InviteMemberBottomSheetDialogFragment.OnClickListener() {
-                        @Override
-                        public void onSend(String email) {
-                            for (GroupMember person : mGroup.getGroupUsers()) {
-                                if (email.equals(person.getEmail())) {
-                                    return;
-                                }
+                    fragment.setClickListener(email -> {
+                        for (GroupMember person : mGroup.getGroupUsers()) {
+                            if (email.equals(person.getEmail())) {
+                                return;
                             }
-
-                            mGroup.getGroupUsers().add(mGroup.getGroupUsers().size() - 1, new GroupMember(1, email, email));
-
-                            mAdapter.notifyDataSetChanged();
                         }
+
+                        mGroup.getGroupUsers().add(mGroup.getGroupUsers().size() - 1, new GroupMember(1, email, email));
+
+                        mAdapter.notifyDataSetChanged();
                     });
 
                     fragment.show(getSupportFragmentManager(), "MEMBER_TAG");
@@ -297,25 +295,25 @@ public class GroupFormActivity extends BaseActivity {
 
         mCreateGroupCall = mApiService.createGroup(Auth.getInstance().getToken(getContext()), data);
 
-        mCreateGroupCall.enqueue(new Callback<SimpleDataWrapper>() {
+        mCreateGroupCall.enqueue(new Callback<GroupDataWrapper>() {
             @Override
-            public void onResponse(@NonNull Call<SimpleDataWrapper> call, @NonNull Response<SimpleDataWrapper> response) {
+            public void onResponse(@NonNull Call<GroupDataWrapper> call, @NonNull Response<GroupDataWrapper> response) {
                 runOnUiThread(() -> showProgress(false));
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
                         GlobalApplication.getRealm().executeTransaction(realm -> {
-                            LocalGroup localGroup = new LocalGroup(mGroup);
-                            realm.copyToRealmOrUpdate(localGroup);
+                            LocalGroup localGroup = new LocalGroup(response.body().getGroup());
+                            realm.copyFromRealm(localGroup);
 
-                            realm.where(LocalGroupMember.class).equalTo("groupId", localGroup.getId()).findAll().deleteAllFromRealm();
-
-                            for (int i = 0; i < mGroup.getGroupUsers().size() - 1; i++) {
+                            for (int i = 0; i < response.body().getGroup().getGroupUsers().size(); i++) {
                                 realm.copyToRealm(new LocalGroupMember(mGroup.getGroupUsers().get(i), localGroup.getId()));
                             }
                         });
 
                         Toast.makeText(getContext(), R.string.successful_create_group, Toast.LENGTH_SHORT).show();
+                        Intent returnIntent = new Intent();
+                        setResult(Activity.RESULT_OK,returnIntent);
                         finish();
                     });
                 } else {
@@ -337,7 +335,7 @@ public class GroupFormActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<SimpleDataWrapper> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<GroupDataWrapper> call, @NonNull Throwable t) {
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {
@@ -369,24 +367,26 @@ public class GroupFormActivity extends BaseActivity {
 
         mUpdateGroupCall = mApiService.updateGroup(Auth.getInstance().getToken(getContext()), mGroup.getId(), data);
 
-        mUpdateGroupCall.enqueue(new Callback<SimpleDataWrapper>() {
+        mUpdateGroupCall.enqueue(new Callback<GroupDataWrapper>() {
             @Override
-            public void onResponse(@NonNull Call<SimpleDataWrapper> call, @NonNull Response<SimpleDataWrapper> response) {
+            public void onResponse(@NonNull Call<GroupDataWrapper> call, @NonNull Response<GroupDataWrapper> response) {
                 runOnUiThread(() -> showProgress(false));
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
                         GlobalApplication.getRealm().executeTransaction(realm -> {
-                            LocalGroup localGroup = new LocalGroup(mGroup);
+                            LocalGroup localGroup = new LocalGroup(response.body().getGroup());
                             realm.copyToRealmOrUpdate(localGroup);
 
                             realm.where(LocalGroupMember.class).equalTo("groupId", localGroup.getId()).findAll().deleteAllFromRealm();
 
-                            for (int i = 0; i < mGroup.getGroupUsers().size() - 1; i++) {
+                            for (int i = 0; i < response.body().getGroup().getGroupUsers().size(); i++) {
                                 realm.copyToRealm(new LocalGroupMember(mGroup.getGroupUsers().get(i), localGroup.getId()));
                             }
                         });
                         Toast.makeText(getContext(), R.string.successful_update_group, Toast.LENGTH_SHORT).show();
+                        Intent returnIntent = new Intent();
+                        setResult(Activity.RESULT_OK,returnIntent);
                         finish();
                     });
                 } else {
@@ -408,7 +408,7 @@ public class GroupFormActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<SimpleDataWrapper> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<GroupDataWrapper> call, @NonNull Throwable t) {
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {
