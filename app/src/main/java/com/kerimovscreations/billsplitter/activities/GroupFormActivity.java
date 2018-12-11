@@ -304,16 +304,16 @@ public class GroupFormActivity extends BaseActivity {
                     runOnUiThread(() -> {
                         GlobalApplication.getRealm().executeTransaction(realm -> {
                             LocalGroup localGroup = new LocalGroup(response.body().getGroup());
-                            realm.copyFromRealm(localGroup);
+                            realm.copyToRealmOrUpdate(localGroup);
 
                             for (int i = 0; i < response.body().getGroup().getGroupUsers().size(); i++) {
-                                realm.copyToRealm(new LocalGroupMember(mGroup.getGroupUsers().get(i), localGroup.getId()));
+                                realm.copyToRealmOrUpdate(new LocalGroupMember(response.body().getGroup().getGroupUsers().get(i), localGroup.getId()));
                             }
                         });
 
                         Toast.makeText(getContext(), R.string.successful_create_group, Toast.LENGTH_SHORT).show();
                         Intent returnIntent = new Intent();
-                        setResult(Activity.RESULT_OK,returnIntent);
+                        setResult(Activity.RESULT_OK, returnIntent);
                         finish();
                     });
                 } else {
@@ -386,7 +386,7 @@ public class GroupFormActivity extends BaseActivity {
                         });
                         Toast.makeText(getContext(), R.string.successful_update_group, Toast.LENGTH_SHORT).show();
                         Intent returnIntent = new Intent();
-                        setResult(Activity.RESULT_OK,returnIntent);
+                        setResult(Activity.RESULT_OK, returnIntent);
                         finish();
                     });
                 } else {
