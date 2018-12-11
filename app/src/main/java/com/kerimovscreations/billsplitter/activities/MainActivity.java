@@ -339,29 +339,36 @@ public class MainActivity extends BaseActivity {
     }
 
     void formatShoppingLists() {
+        String tempDate;
+
         // Active
-        String tempDate = mActiveShoppingList.get(0).getDate();
 
-        mActiveShoppingList.add(0, new ShoppingItem(-1, tempDate));
+        if(mActiveShoppingList.size() > 0 ) {
+            tempDate = mActiveShoppingList.get(0).getDate();
 
-        for (int i = 0; i < mActiveShoppingList.size() - 1; i++) {
-            if (!tempDate.equals(mActiveShoppingList.get(i + 1).getDate())) {
-                tempDate = mActiveShoppingList.get(i + 1).getDate();
-                mActiveShoppingList.add(i + 1
-                        , new ShoppingItem(-1, tempDate));
+            mActiveShoppingList.add(0, new ShoppingItem(-1, tempDate));
+
+            for (int i = 0; i < mActiveShoppingList.size() - 1; i++) {
+                if (!tempDate.equals(mActiveShoppingList.get(i + 1).getDate())) {
+                    tempDate = mActiveShoppingList.get(i + 1).getDate();
+                    mActiveShoppingList.add(i + 1
+                            , new ShoppingItem(-1, tempDate));
+                }
             }
         }
 
         // Completed
-        tempDate = mCompletedShoppingList.get(0).getDate();
+        if(mCompletedShoppingList.size() > 0) {
+            tempDate = mCompletedShoppingList.get(0).getDate();
 
-        mCompletedShoppingList.add(0, new ShoppingItem(-1, tempDate));
+            mCompletedShoppingList.add(0, new ShoppingItem(-1, tempDate));
 
-        for (int i = 0; i < mCompletedShoppingList.size() - 1; i++) {
-            if (!tempDate.equals(mCompletedShoppingList.get(i + 1).getDate())) {
-                tempDate = mCompletedShoppingList.get(i + 1).getDate();
-                mCompletedShoppingList.add(i + 1
-                        , new ShoppingItem(-1, tempDate));
+            for (int i = 0; i < mCompletedShoppingList.size() - 1; i++) {
+                if (!tempDate.equals(mCompletedShoppingList.get(i + 1).getDate())) {
+                    tempDate = mCompletedShoppingList.get(i + 1).getDate();
+                    mCompletedShoppingList.add(i + 1
+                            , new ShoppingItem(-1, tempDate));
+                }
             }
         }
     }
