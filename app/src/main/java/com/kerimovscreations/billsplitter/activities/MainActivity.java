@@ -343,7 +343,7 @@ public class MainActivity extends BaseActivity {
 
         // Active
 
-        if(mActiveShoppingList.size() > 0 ) {
+        if (mActiveShoppingList.size() > 0) {
             tempDate = mActiveShoppingList.get(0).getDate();
 
             mActiveShoppingList.add(0, new ShoppingItem(-1, tempDate));
@@ -358,7 +358,7 @@ public class MainActivity extends BaseActivity {
         }
 
         // Completed
-        if(mCompletedShoppingList.size() > 0) {
+        if (mCompletedShoppingList.size() > 0) {
             tempDate = mCompletedShoppingList.get(0).getDate();
 
             mCompletedShoppingList.add(0, new ShoppingItem(-1, tempDate));
@@ -389,6 +389,8 @@ public class MainActivity extends BaseActivity {
         mMenuBottomDialogFragment.setClickListener(new MenuBottomSheetDialogFragment.OnClickListener() {
             @Override
             public void onGroup(Group group) {
+                GlobalApplication.getRealm().executeTransaction(realm ->
+                        mLocalProfile.setLastSelectedGroupId(group.getId()));
                 mSelectedGroup = new LocalGroup(group);
                 getData();
                 mMenuBottomDialogFragment.dismiss();
