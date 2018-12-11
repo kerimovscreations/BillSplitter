@@ -722,6 +722,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         data.put("barCode", mShoppingItem.getProduct().getBarCode());
         data.put("price", String.valueOf(mShoppingItem.getPrice()));
         data.put("date", mShoppingItem.getDate());
+        data.put("isComplete", String.valueOf(mShoppingItem.isComplete()));
 
         if (mShoppingItem.getBuyer() != null) {
             data.put("paidById", String.valueOf(mShoppingItem.getBuyer().getId()));

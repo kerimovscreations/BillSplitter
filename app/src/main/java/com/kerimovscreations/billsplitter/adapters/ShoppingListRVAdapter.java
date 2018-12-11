@@ -136,8 +136,6 @@ public class ShoppingListRVAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         mListener.onCheckClick(position);
-                        mList.get(position).toggleComplete();
-                        notifyDataSetChanged();
                     }
                 }
             });

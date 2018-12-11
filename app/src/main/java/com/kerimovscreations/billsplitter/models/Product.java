@@ -47,7 +47,10 @@ public class Product extends RealmObject implements Serializable {
     }
 
     public String getBarCode() {
-        return barCode;
+        if (barCode == null)
+            return "";
+        else
+            return barCode;
     }
 
     public Category getCategory() {

@@ -39,6 +39,7 @@ import com.kerimovscreations.billsplitter.models.Timeline;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
 import com.kerimovscreations.billsplitter.wrappers.GroupListDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.ShoppingItemDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.StatisticsDataWrapper;
@@ -46,6 +47,7 @@ import com.kerimovscreations.billsplitter.wrappers.StatisticsDataWrapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -270,7 +272,9 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onCheckClick(int position) {
-
+                mActiveShoppingList.get(position).toggleComplete();
+                updateCompleteStatus(mActiveShoppingList.get(position));
+                mActiveShoppingListAdapter.notifyDataSetChanged();
             }
         });
 
@@ -664,6 +668,73 @@ public class MainActivity extends BaseActivity {
 
                 if (!call.isCanceled()) {
                     runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+    private void updateCompleteStatus(ShoppingItem shoppingItem) {
+        showProgress(true);
+
+        HashMap<String, String> data = new HashMap<>();
+
+        data.put("name", shoppingItem.getProduct().getName());
+        data.put("groupId", String.valueOf(shoppingItem.getGroupId()));
+        data.put("categoryId", String.valueOf(shoppingItem.getProduct().getCategory().getId()));
+        data.put("barCode", shoppingItem.getProduct().getBarCode());
+        data.put("price", String.valueOf(shoppingItem.getPrice()));
+        data.put("date", shoppingItem.getDate());
+        data.put("isComplete", String.valueOf(shoppingItem.isComplete()));
+
+        if (shoppingItem.getBuyer() != null) {
+            data.put("paidById", String.valueOf(shoppingItem.getBuyer().getId()));
+        }
+
+        for (int i = 0; i < shoppingItem.getSharedMembers().size(); i++) {
+            if (shoppingItem.getSharedMembers().get(i).getId() != -1)
+                data.put("shares[" + i + "]", String.valueOf(shoppingItem.getSharedMembers().get(i).getId()));
+        }
+
+        Call<ShoppingItemDataWrapper> mUpdateItemCall = mApiService.updateShoppingItem(Auth.getInstance().getToken(getContext()), shoppingItem.getId(), data);
+
+        mUpdateItemCall.enqueue(new Callback<ShoppingItemDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<ShoppingItemDataWrapper> call, @NonNull Response<ShoppingItemDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        GlobalApplication.getRealm().executeTransaction(realm -> realm.copyToRealmOrUpdate(response.body().getShoppingItem()));
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ShoppingItemDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    Log.e(TAG, "onFailure: Request Failed");
+
+                    runOnUiThread(() -> {
+                        showProgress(false);
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    });
                 }
             }
         });
