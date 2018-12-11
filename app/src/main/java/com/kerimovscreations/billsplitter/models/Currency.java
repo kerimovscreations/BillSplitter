@@ -27,6 +27,19 @@ public class Currency extends RealmObject implements Serializable {
         return name;
     }
 
+    public Currency() {
+    }
+
+    public Currency(Currency currency) {
+        this.id = currency.id;
+        this.name = currency.name;
+    }
+
+    public Currency(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

@@ -1,7 +1,6 @@
-package com.kerimovscreations.billsplitter.adapters;
+package com.kerimovscreations.billsplitter.adapters.recyclerView;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,21 +9,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kerimovscreations.billsplitter.R;
-import com.kerimovscreations.billsplitter.models.Timeline;
+import com.kerimovscreations.billsplitter.models.GroupMember;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TimelineRVAdapter extends RecyclerView.Adapter<TimelineRVAdapter.ViewHolder> {
+public class GroupMembersRVAdapter extends RecyclerView.Adapter<GroupMembersRVAdapter.ViewHolder> {
 
-    private OnItemClickListener mListener;
-    private List<Timeline> mList;
+    private GroupMembersRVAdapter.OnItemClickListener mListener;
+    private List<GroupMember> mList;
     private Context mContext;
     private int mSelectedIndex = 0;
 
-    public TimelineRVAdapter(Context context, List<Timeline> list) {
+    public GroupMembersRVAdapter(Context context, List<GroupMember> list) {
         mList = list;
         mContext = context;
     }
@@ -37,33 +36,26 @@ public class TimelineRVAdapter extends RecyclerView.Adapter<TimelineRVAdapter.Vi
         return mSelectedIndex;
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
+    public void setOnItemClickListener(GroupMembersRVAdapter.OnItemClickListener listener) {
         mListener = listener;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public GroupMembersRVAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View contactView = inflater.inflate(R.layout.list_item_timeline, parent, false);
+        View contactView = inflater.inflate(R.layout.list_item_group_member, parent, false);
 
-        return new ViewHolder(contactView);
+        return new GroupMembersRVAdapter.ViewHolder(contactView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-        Timeline bItem = mList.get(position);
+    public void onBindViewHolder(@NonNull GroupMembersRVAdapter.ViewHolder viewHolder, int position) {
+        GroupMember bItem = mList.get(position);
 
-        viewHolder.title.setText(bItem.getName());
-
-        if (position == mSelectedIndex) {
-            viewHolder.title.setAlpha(1.0f);
-            viewHolder.title.setTypeface(null, Typeface.BOLD);
-        } else {
-            viewHolder.title.setAlpha(0.5f);
-            viewHolder.title.setTypeface(null, Typeface.NORMAL);
-        }
+        viewHolder.name.setText(bItem.getFullName());
+        viewHolder.email.setText(bItem.getEmail());
     }
 
     @Override
@@ -76,8 +68,10 @@ public class TimelineRVAdapter extends RecyclerView.Adapter<TimelineRVAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.title)
-        TextView title;
+        @BindView(R.id.user_name)
+        TextView name;
+        @BindView(R.id.user_email)
+        TextView email;
         @BindView(R.id.layout)
         View layout;
 

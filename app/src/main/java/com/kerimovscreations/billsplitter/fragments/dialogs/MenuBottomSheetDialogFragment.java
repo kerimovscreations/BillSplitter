@@ -13,13 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kerimovscreations.billsplitter.R;
-import com.kerimovscreations.billsplitter.adapters.GroupListRVAdapter;
+import com.kerimovscreations.billsplitter.adapters.recyclerView.GroupListRVAdapter;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.models.Group;
 import com.kerimovscreations.billsplitter.models.LocalGroup;
 import com.kerimovscreations.billsplitter.models.LocalGroupMember;
 import com.kerimovscreations.billsplitter.models.LocalProfile;
-import com.kerimovscreations.billsplitter.models.Person;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

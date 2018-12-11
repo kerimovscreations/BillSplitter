@@ -10,9 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kerimovscreations.billsplitter.R;
-import com.kerimovscreations.billsplitter.adapters.GroupMembersRVAdapter;
+import com.kerimovscreations.billsplitter.adapters.recyclerView.GroupMembersRVAdapter;
 import com.kerimovscreations.billsplitter.models.GroupMember;
-import com.kerimovscreations.billsplitter.models.Person;
 
 import java.util.ArrayList;
 

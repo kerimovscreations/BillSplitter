@@ -29,7 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kerimovscreations.billsplitter.R;
-import com.kerimovscreations.billsplitter.adapters.SharedPeopleListRVAdapter;
+import com.kerimovscreations.billsplitter.adapters.recyclerView.SharedPeopleListRVAdapter;
 import com.kerimovscreations.billsplitter.adapters.spinner.CategorySpinnerAdapter;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.fragments.dialogs.DeleteItemBottomSheetDialogFragment;
@@ -46,7 +46,6 @@ import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemDataWrapper;
-import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -60,7 +59,6 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.realm.Realm;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;

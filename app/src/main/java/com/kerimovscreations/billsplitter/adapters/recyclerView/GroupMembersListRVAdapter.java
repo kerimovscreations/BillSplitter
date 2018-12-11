@@ -1,4 +1,4 @@
-package com.kerimovscreations.billsplitter.adapters;
+package com.kerimovscreations.billsplitter.adapters.recyclerView;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -12,7 +12,6 @@ import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.models.GroupMember;
 import com.kerimovscreations.billsplitter.models.LocalProfile;
-import com.kerimovscreations.billsplitter.models.Person;
 
 import java.util.List;
 

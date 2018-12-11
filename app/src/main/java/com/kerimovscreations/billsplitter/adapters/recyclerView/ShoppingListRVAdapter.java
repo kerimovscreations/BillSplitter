@@ -1,4 +1,4 @@
-package com.kerimovscreations.billsplitter.adapters;
+package com.kerimovscreations.billsplitter.adapters.recyclerView;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
-import com.kerimovscreations.billsplitter.models.Timeline;
 
 import java.util.List;
 

@@ -75,4 +75,7 @@
     <string name="not_provided">Not provided</string>
     <string name="provided">Code is provided</string>
     <string name="successful_update_shopping_item">Shopping item is updated successfully</string>
+    <string name="cash_flow">Cash flow</string>
+    <string name="balance">Balance</string>
+    <string name="pay">Pay</string>
 </resources>

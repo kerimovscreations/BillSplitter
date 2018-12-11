@@ -134,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:paddingBottom="100dp"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <LinearLayout
                         android:id="@+id/statistics_layout"
@@ -173,6 +173,97 @@
                             android:layout_marginStart="@dimen/medium_margin"
                             android:layout_marginTop="@dimen/medium_margin"
                             android:layout_marginEnd="@dimen/medium_margin" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/normal_margin" />
+
+                        <include layout="@layout/item_divider" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/transactions_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/transactions_list_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/normal_margin"
+                            android:fontFamily="@font/noto_sans_bold"
+                            android:text="@string/cash_flow"
+                            android:textColor="@color/colorDarkText"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+
+                            <LinearLayout
+                                android:id="@+id/transactions_income_layout"
+                                android:layout_width="0dp"
+                                android:layout_height="80dp"
+                                android:layout_weight="1"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:background="?attr/selectableItemBackground"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/transactions_income_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/noto_sans_bold"
+                                    android:text="45.80 HUF"
+                                    android:textColor="@color/colorGreen"
+                                    android:textSize="16sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:src="@drawable/ic_income"
+                                    android:tint="@color/colorGreen" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="80dp"
+                                android:background="@drawable/bg_divider_gray" />
+
+                            <LinearLayout
+                                android:id="@+id/transactions_outcome_layout"
+                                android:layout_width="0dp"
+                                android:layout_height="80dp"
+                                android:layout_weight="1"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:background="?attr/selectableItemBackground"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/transactions_outcome_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/noto_sans_bold"
+                                    android:text="45.80 HUF"
+                                    android:textColor="@color/colorRed"
+                                    android:textSize="16sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:src="@drawable/ic_outcome"
+                                    android:tint="@color/colorRed" />
+                            </LinearLayout>
+                        </LinearLayout>
 
                         <View
                             android:layout_width="match_parent"

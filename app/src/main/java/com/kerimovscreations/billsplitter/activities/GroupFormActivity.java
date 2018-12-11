@@ -20,7 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kerimovscreations.billsplitter.R;
-import com.kerimovscreations.billsplitter.adapters.GroupMembersListRVAdapter;
+import com.kerimovscreations.billsplitter.adapters.recyclerView.GroupMembersListRVAdapter;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.fragments.dialogs.InviteMemberBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;

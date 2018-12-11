@@ -1,4 +1,4 @@
-package com.kerimovscreations.billsplitter.adapters;
+package com.kerimovscreations.billsplitter.adapters.recyclerView;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

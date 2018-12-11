@@ -24,8 +24,8 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.activities.auth.LoginActivity;
-import com.kerimovscreations.billsplitter.adapters.ShoppingListRVAdapter;
-import com.kerimovscreations.billsplitter.adapters.TimelineRVAdapter;
+import com.kerimovscreations.billsplitter.adapters.recyclerView.ShoppingListRVAdapter;
+import com.kerimovscreations.billsplitter.adapters.recyclerView.TimelineRVAdapter;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
 import com.kerimovscreations.billsplitter.fragments.dialogs.GroupEditBottomSheetDialogFragment;
 import com.kerimovscreations.billsplitter.fragments.dialogs.MenuBottomSheetDialogFragment;
@@ -67,6 +67,7 @@ public class MainActivity extends BaseActivity {
     private static final int GROUP_CREATE_REQUEST = 2;
     private static final int GROUP_EDIT_REQUEST = 3;
     private static final int EDIT_PROFILE_REQUEST = 4;
+    private static final int TRANSACTION_UPDATE_REQUEST = 5;
 
     @BindView(R.id.rvTimeline)
     RecyclerView mRVTimeline;
@@ -109,6 +110,21 @@ public class MainActivity extends BaseActivity {
 
     @BindView(R.id.empty_list_placeholder)
     View mEmptyListPlaceholder;
+
+    @BindView(R.id.transactions_layout)
+    View mTransactionsLayout;
+
+    @BindView(R.id.transactions_income_layout)
+    View mTransactionsIncomeLayout;
+
+    @BindView(R.id.transactions_income_text)
+    TextView mTransactionsIncomeText;
+
+    @BindView(R.id.transactions_outcome_layout)
+    View mTransactionsOutcomeLayout;
+
+    @BindView(R.id.transactions_outcome_text)
+    TextView mTransactionsOutcomeText;
 
     private TimelineRVAdapter mTimelineAdapter;
     private ShoppingListRVAdapter mActiveShoppingListAdapter;
@@ -464,6 +480,16 @@ public class MainActivity extends BaseActivity {
     @OnClick(R.id.create_group_btn)
     void onCreateGroup() {
         toGroupForm(new Group(mSelectedGroup));
+    }
+
+    @OnClick(R.id.transactions_income_layout)
+    void onIncome(View view) {
+        toIncome();
+    }
+
+    @OnClick(R.id.transactions_outcome_layout)
+    void onOutcome(View view) {
+        toOutcome();
     }
 
     /**
@@ -892,6 +918,15 @@ public class MainActivity extends BaseActivity {
         startActivity(new Intent(getContext(), LoginActivity.class));
     }
 
+    void toIncome() {
+        Intent intent = new Intent(getContext(), TransactionListActivity.class);
+        startActivityForResult(intent, TRANSACTION_UPDATE_REQUEST);
+    }
+
+    void toOutcome() {
+
+    }
+
     /**
      * Permission and results
      */
@@ -953,6 +988,9 @@ public class MainActivity extends BaseActivity {
                 break;
             case EDIT_PROFILE_REQUEST:
                 // no need update ui
+                break;
+            case TRANSACTION_UPDATE_REQUEST:
+                // TODO: Update ui
                 break;
             default:
                 break;
