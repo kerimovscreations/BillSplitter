@@ -3,6 +3,8 @@
     <string name="base_url" translatable="false">https://billsplitter.org/api/</string>
     <string name="local_preference" translatable="false">LocalPreferenceBillSplitter</string>
     <string name="local_preference_token" translatable="false">LocalPreferenceToken</string>
+    <string name="facebook_app_id" translatable="false">504826793369359</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb504826793369359</string>
 
     <string name="terms_conditions"><![CDATA[Terms & Conditions]]></string>
     <string name="sign_in">Sign in</string>
@@ -78,4 +80,6 @@
     <string name="cash_flow">Cash flow</string>
     <string name="balance">Balance</string>
     <string name="pay">Pay</string>
+    <string name="provide_email">Provide email</string>
+    <string name="not_valid_email">Not valid email</string>
 </resources>

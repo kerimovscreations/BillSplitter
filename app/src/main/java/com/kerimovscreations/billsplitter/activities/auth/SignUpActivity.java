@@ -184,15 +184,15 @@ public class SignUpActivity extends BaseActivity {
     }
 
     private boolean isPasswordsValid() {
-        if (!CommonMethods.isValidPasswordLength(mPasswordInput.getText().toString()) ||
-                !CommonMethods.isValidPasswordLength(mPasswordConfirmInput.getText().toString())) {
+        if (!CommonMethods.getInstance().isValidPasswordLength(mPasswordInput.getText().toString()) ||
+                !CommonMethods.getInstance().isValidPasswordLength(mPasswordConfirmInput.getText().toString())) {
             Snackbar snackbar = Snackbar.make(mCoordinatorLayout, R.string.prompt_password_length, Snackbar.LENGTH_LONG);
             snackbar.setAction(R.string.okay, view -> snackbar.dismiss());
             snackbar.show();
             return false;
         }
 
-        if (!CommonMethods.isMatchingPasswords(mPasswordInput.getText().toString(), mPasswordConfirmInput.getText().toString())) {
+        if (!CommonMethods.getInstance().isMatchingPasswords(mPasswordInput.getText().toString(), mPasswordConfirmInput.getText().toString())) {
             Snackbar snackbar = Snackbar.make(mCoordinatorLayout, R.string.prompt_passwords_not_match, Snackbar.LENGTH_LONG);
             snackbar.setAction(R.string.okay, view -> snackbar.dismiss());
             snackbar.show();

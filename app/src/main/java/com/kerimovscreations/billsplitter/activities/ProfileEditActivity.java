@@ -201,16 +201,16 @@ public class ProfileEditActivity extends BaseActivity {
             return true;
         }
 
-        if (!CommonMethods.isValidPasswordLength(mCurrentPasswordInput.getText().toString()) ||
-                !CommonMethods.isValidPasswordLength(mNewPasswordInput.getText().toString()) ||
-                !CommonMethods.isValidPasswordLength(mConfirmNewPasswordInput.getText().toString())) {
+        if (!CommonMethods.getInstance().isValidPasswordLength(mCurrentPasswordInput.getText().toString()) ||
+                !CommonMethods.getInstance().isValidPasswordLength(mNewPasswordInput.getText().toString()) ||
+                !CommonMethods.getInstance().isValidPasswordLength(mConfirmNewPasswordInput.getText().toString())) {
             Snackbar snackbar = Snackbar.make(mCoordinatorLayout, R.string.prompt_password_length, Snackbar.LENGTH_LONG);
             snackbar.setAction(R.string.okay, view -> snackbar.dismiss());
             snackbar.show();
             return false;
         }
 
-        if (!CommonMethods.isMatchingPasswords(mNewPasswordInput.getText().toString(), mConfirmNewPasswordInput.getText().toString())) {
+        if (!CommonMethods.getInstance().isMatchingPasswords(mNewPasswordInput.getText().toString(), mConfirmNewPasswordInput.getText().toString())) {
             Snackbar snackbar = Snackbar.make(mCoordinatorLayout, R.string.prompt_passwords_not_match, Snackbar.LENGTH_LONG);
             snackbar.setAction(R.string.okay, view -> snackbar.dismiss());
             snackbar.show();

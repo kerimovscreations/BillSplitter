@@ -7,6 +7,8 @@ import android.content.res.Resources;
 import android.support.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.google.gson.Gson;
 import com.kerimovscreations.billsplitter.R;
 
@@ -57,6 +59,9 @@ public class GlobalApplication extends Application {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build())
                 .build();
+
+        FacebookSdk.sdkInitialize(this);
+        AppEventsLogger.activateApp(this);
 
         super.onCreate();
     }

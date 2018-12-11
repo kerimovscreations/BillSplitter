@@ -1,16 +1,31 @@
 package com.kerimovscreations.billsplitter.activities.auth;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
+import com.facebook.internal.ImageRequest;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -20,6 +35,7 @@ import com.google.android.gms.tasks.Task;
 import com.kerimovscreations.billsplitter.activities.MainActivity;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
+import com.kerimovscreations.billsplitter.fragments.dialogs.FacebookEmailPickerBottomSheet;
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;
 import com.kerimovscreations.billsplitter.models.Category;
 import com.kerimovscreations.billsplitter.models.Currency;
@@ -29,8 +45,15 @@ import com.kerimovscreations.billsplitter.wrappers.CategoryListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.CurrencyListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import butterknife.BindView;
@@ -46,6 +69,7 @@ import retrofit2.Response;
 public class LoginActivity extends BaseActivity {
 
     private final String TAG = "LOGIN";
+    private static final String EMAIL = "email";
 
     private final int REQUEST_GOOGLE_SIGN_IN = 2;
 
@@ -66,6 +90,11 @@ public class LoginActivity extends BaseActivity {
 
     Call<UserDataWrapper> mLoginCall;
     Call<UserDataWrapper> mGoogleLoginCall;
+    Call<UserDataWrapper> mFacebookLoginCall;
+
+    ArrayList<Call> mCalls = new ArrayList<>();
+
+    CallbackManager callbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +106,8 @@ public class LoginActivity extends BaseActivity {
     public void initVars() {
         super.initVars();
 
+        callbackManager = CallbackManager.Factory.create();
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .requestIdToken(getString(R.string.server_client_id))
@@ -84,22 +115,37 @@ public class LoginActivity extends BaseActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         mApiService = GlobalApplication.getRetrofit().create(AppApiService.class);
+
+        // TODO: Remove on production
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("com.kerimovscreations.billsplitter", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md;
+                md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String something = new String(Base64.encode(md.digest(), 0));
+                //String something = new String(Base64.encodeBytes(md.digest()));
+                Log.e("hash key", something);
+            }
+        } catch (PackageManager.NameNotFoundException e1) {
+            Log.e("name not found", e1.toString());
+        } catch (NoSuchAlgorithmException e) {
+            Log.e("no such an algorithm", e.toString());
+        } catch (Exception e) {
+            Log.e("exception", e.toString());
+        }
     }
 
     @Override
     public void onBackPressed() {
-        if (mLoginCall != null && !mLoginCall.isExecuted()) {
-            showProgress(false);
-            mLoginCall.cancel();
-            mLoginCall = null;
-            return;
-        }
 
-        if (mGoogleLoginCall != null && !mGoogleLoginCall.isExecuted()) {
-            showProgress(false);
-            mGoogleLoginCall.cancel();
-            mGoogleLoginCall = null;
-            return;
+        for(Call call : mCalls) {
+            if (call != null && !call.isExecuted()) {
+                showProgress(false);
+                call.cancel();
+                call = null;
+                return;
+            }
         }
 
         super.onBackPressed();
@@ -109,11 +155,10 @@ public class LoginActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (mLoginCall != null && !mLoginCall.isExecuted())
-            mLoginCall.cancel();
-
-        if (mGoogleLoginCall != null && !mGoogleLoginCall.isExecuted())
-            mGoogleLoginCall.cancel();
+        for(Call call : mCalls) {
+            if (call != null && !call.isExecuted())
+                call.cancel();
+        }
     }
 
     /**
@@ -134,9 +179,30 @@ public class LoginActivity extends BaseActivity {
         login();
     }
 
-//    @OnClick(R.id.facebook_btn)
-//    void onFacebookLogin(View view) {
-//    }
+    @OnClick(R.id.facebook_btn)
+    void onFacebookLogin(View view) {
+
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        getFacebookData(loginResult);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // App code
+                        Log.e(TAG, "onCancel");
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        // App code
+                        Log.e(TAG, exception.toString());
+                    }
+                });
+    }
 
     @OnClick(R.id.google_btn)
     void onGoogleLogin(View view) {
@@ -153,6 +219,31 @@ public class LoginActivity extends BaseActivity {
      * Actions
      */
 
+    private void getFacebookData(final LoginResult loginResult) {
+        GraphRequest request = GraphRequest.newMeRequest(
+                loginResult.getAccessToken(),
+                (object, response) -> {
+                    // Application code
+                    try {
+                        Log.i("Response", response.toString());
+
+                        if(response.getJSONObject().has("email1")) {
+                            String email = response.getJSONObject().getString("email");
+                            Log.e(TAG, AccessToken.getCurrentAccessToken().getToken());
+                            completeFbLogin("");
+                        } else {
+                            onEmailPicker();
+                        }
+                    } catch (JSONException e) {
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,email,first_name,last_name");
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+
     void completeLogin(GoogleSignInAccount account) {
         Log.e("GOOGLE", account.getDisplayName());
         Log.e("GOOGLE", account.getEmail());
@@ -160,6 +251,10 @@ public class LoginActivity extends BaseActivity {
         Log.e("GOOGLE", account.getIdToken());
 
         googleLogin(account.getIdToken());
+    }
+
+    void completeFbLogin(String email) {
+        fbLogin(email, AccessToken.getCurrentAccessToken().getToken());
     }
 
     int mCheckBaseDataCount = 0;
@@ -174,7 +269,7 @@ public class LoginActivity extends BaseActivity {
     void checkLoadingBaseData() {
         mCheckBaseDataCount--;
 
-        if(mCheckBaseDataCount == 0) {
+        if (mCheckBaseDataCount == 0) {
             toMain();
         }
     }
@@ -192,6 +287,14 @@ public class LoginActivity extends BaseActivity {
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
+    }
+
+    private void onEmailPicker() {
+        // TODO: Bottom sheet
+
+        FacebookEmailPickerBottomSheet facebookEmailPickerBottomSheet = FacebookEmailPickerBottomSheet.getInstance();
+        facebookEmailPickerBottomSheet.setClickListener(email -> fbLogin(email, AccessToken.getCurrentAccessToken().getToken()));
+        facebookEmailPickerBottomSheet.show(getSupportFragmentManager(), "MEMBER_TAG");
     }
 
     private boolean isFormInputsValid() {
@@ -219,6 +322,8 @@ public class LoginActivity extends BaseActivity {
         data.put("password", mPasswordInput.getText().toString().trim());
 
         mLoginCall = mApiService.login(data);
+
+        mCalls.add(mLoginCall);
 
         mLoginCall.enqueue(new Callback<UserDataWrapper>() {
             @Override
@@ -271,7 +376,61 @@ public class LoginActivity extends BaseActivity {
 
         mGoogleLoginCall = mApiService.googleRegister(token);
 
+        mCalls.add(mGoogleLoginCall);
+
         mGoogleLoginCall.enqueue(new retrofit2.Callback<UserDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        Auth.getInstance().saveProfile(getContext(), response.body().getPerson(), true);
+//                        Toast.makeText(getContext(), R.string.successful_login, Toast.LENGTH_SHORT).show();
+                        loadBaseData();
+                    });
+                } else {
+                    runOnUiThread(() -> showProgress(false));
+
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UserDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    Log.e(TAG, "onFailure: Request Failed");
+
+                    runOnUiThread(() -> {
+                        showProgress(false);
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        });
+    }
+
+    private void fbLogin(String email, String token) {
+        showProgress(true);
+
+        mFacebookLoginCall = mApiService.facebookRegister(token, email);
+
+        mCalls.add(mFacebookLoginCall);
+
+        mFacebookLoginCall.enqueue(new retrofit2.Callback<UserDataWrapper>() {
             @Override
             public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -399,6 +558,7 @@ public class LoginActivity extends BaseActivity {
             }
         });
     }
+
     /**
      * Navigation
      */
@@ -425,6 +585,7 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);

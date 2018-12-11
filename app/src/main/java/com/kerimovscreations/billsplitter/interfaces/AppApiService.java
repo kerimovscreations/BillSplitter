@@ -58,6 +58,11 @@ public interface AppApiService {
     Call<UserDataWrapper> googleRegister(@Field("token") String token);
 
     @Headers({"Accept: application/json"})
+    @POST("user/facebook")
+    @FormUrlEncoded
+    Call<UserDataWrapper> facebookRegister(@Field("token") String token, @Field("email") String email);
+
+    @Headers({"Accept: application/json"})
     @GET("currency")
     Call<CurrencyListDataWrapper> getCurrencies(@Header("Authorization") String token, @Query("q") String search, @Query("page") int pageNumber);
 

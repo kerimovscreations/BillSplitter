@@ -17,7 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class InviteMemberBottomSheetDialogFragment extends BottomSheetDialogFragment {
+public class FacebookEmailPickerBottomSheet extends BottomSheetDialogFragment {
 
     View mView;
 
@@ -26,18 +26,18 @@ public class InviteMemberBottomSheetDialogFragment extends BottomSheetDialogFrag
 
     boolean mLogoutBtnVisible = false;
 
-    private OnClickListener mListener;
+    private FacebookEmailPickerBottomSheet.OnClickListener mListener;
 
     public interface OnClickListener {
         void onSend(String email);
     }
 
-    public void setClickListener(OnClickListener listener) {
+    public void setClickListener(FacebookEmailPickerBottomSheet.OnClickListener listener) {
         mListener = listener;
     }
 
-    public static InviteMemberBottomSheetDialogFragment getInstance() {
-        return new InviteMemberBottomSheetDialogFragment();
+    public static FacebookEmailPickerBottomSheet getInstance() {
+        return new FacebookEmailPickerBottomSheet();
     }
 
     @Override
@@ -47,7 +47,7 @@ public class InviteMemberBottomSheetDialogFragment extends BottomSheetDialogFrag
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.bottom_sheet_dialog_invite_member, container, false);
+        mView = inflater.inflate(R.layout.bottom_sheet_dialog_facebook_email_picker, container, false);
         ButterKnife.bind(this, mView);
 
         initVars();

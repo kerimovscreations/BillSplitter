@@ -181,15 +181,15 @@
                 android:layout_margin="@dimen/normal_margin"
                 android:orientation="horizontal">
 
-                <!--<ImageView-->
-                <!--android:id="@+id/facebook_btn"-->
-                <!--android:layout_width="60dp"-->
-                <!--android:layout_height="60dp"-->
-                <!--android:layout_marginEnd="@dimen/large_margin"-->
-                <!--android:clickable="true"-->
-                <!--android:contentDescription="@string/login_with_facebook_button"-->
-                <!--android:focusable="true"-->
-                <!--android:src="@drawable/ic_facebook_rounded" />-->
+                <ImageView
+                android:id="@+id/facebook_btn"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="@dimen/large_margin"
+                android:clickable="true"
+                android:contentDescription="@string/login_with_facebook_button"
+                android:focusable="true"
+                android:src="@drawable/ic_facebook_rounded" />
 
                 <ImageView
                     android:id="@+id/google_btn"
