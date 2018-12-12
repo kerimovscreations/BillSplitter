@@ -14,6 +14,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -24,17 +31,26 @@ import com.google.gson.Gson;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.activities.MainActivity;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
+import com.kerimovscreations.billsplitter.fragments.dialogs.FacebookEmailPickerBottomSheet;
 import com.kerimovscreations.billsplitter.interfaces.AppApiService;
+import com.kerimovscreations.billsplitter.models.Category;
+import com.kerimovscreations.billsplitter.models.Currency;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
 import com.kerimovscreations.billsplitter.utils.CommonMethods;
+import com.kerimovscreations.billsplitter.wrappers.CategoryListDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.CurrencyListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import org.json.JSONException;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -81,6 +97,11 @@ public class SignUpActivity extends BaseActivity {
 
     Call<UserDataWrapper> mRegisterCall;
     Call<UserDataWrapper> mGoogleLoginCall;
+    Call<UserDataWrapper> mFacebookLoginCall;
+
+    ArrayList<Call> mCalls = new ArrayList<>();
+
+    CallbackManager callbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +112,8 @@ public class SignUpActivity extends BaseActivity {
     @Override
     public void initVars() {
         super.initVars();
+
+        callbackManager = CallbackManager.Factory.create();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -103,18 +126,13 @@ public class SignUpActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        if (mRegisterCall != null && !mRegisterCall.isExecuted()) {
-            showProgress(false);
-            mRegisterCall.cancel();
-            mRegisterCall = null;
-            return;
-        }
 
-        if (mGoogleLoginCall != null && !mGoogleLoginCall.isExecuted()) {
-            showProgress(false);
-            mGoogleLoginCall.cancel();
-            mGoogleLoginCall = null;
-            return;
+        for(Call call : mCalls) {
+            if (call != null && !call.isExecuted()) {
+                showProgress(false);
+                call.cancel();
+                return;
+            }
         }
 
         super.onBackPressed();
@@ -124,11 +142,10 @@ public class SignUpActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (mRegisterCall != null && !mRegisterCall.isExecuted())
-            mRegisterCall.cancel();
-
-        if (mGoogleLoginCall != null && !mGoogleLoginCall.isExecuted())
-            mGoogleLoginCall.cancel();
+        for(Call call : mCalls) {
+            if (call != null && !call.isExecuted())
+                call.cancel();
+        }
     }
 
     /**
@@ -160,6 +177,31 @@ public class SignUpActivity extends BaseActivity {
     @OnClick(R.id.sign_in_text)
     void onSignIn(View view) {
         finish();
+    }
+
+    @OnClick(R.id.facebook_btn)
+    void onFacebookLogin(View view) {
+
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        getFacebookData(loginResult);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // App code
+                        Log.e(TAG, "onCancel");
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        // App code
+                        Log.e(TAG, exception.toString());
+                    }
+                });
     }
 
     @OnClick(R.id.google_btn)
@@ -220,6 +262,35 @@ public class SignUpActivity extends BaseActivity {
      * Actions
      */
 
+    private void getFacebookData(final LoginResult loginResult) {
+        GraphRequest request = GraphRequest.newMeRequest(
+                loginResult.getAccessToken(),
+                (object, response) -> {
+                    // Application code
+                    try {
+                        Log.i("Response", response.toString());
+
+                        if(response.getJSONObject().has("email")) {
+                            String email = response.getJSONObject().getString("email");
+                            Log.e(TAG, AccessToken.getCurrentAccessToken().getToken());
+                            completeFbLogin("");
+                        } else {
+                            onEmailPicker();
+                        }
+                    } catch (JSONException e) {
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,email,first_name,last_name");
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+
+    void completeFbLogin(String email) {
+        fbLogin(email, AccessToken.getCurrentAccessToken().getToken());
+    }
+
     void completeLogin(GoogleSignInAccount account) {
         Log.e("GOOGLE", account.getDisplayName());
         Log.e("GOOGLE", account.getEmail());
@@ -227,6 +298,29 @@ public class SignUpActivity extends BaseActivity {
         Log.e("GOOGLE", account.getIdToken());
 
         googleLogin(account.getIdToken());
+    }
+
+    private void onEmailPicker() {
+        FacebookEmailPickerBottomSheet facebookEmailPickerBottomSheet = FacebookEmailPickerBottomSheet.getInstance();
+        facebookEmailPickerBottomSheet.setClickListener(email -> fbLogin(email, AccessToken.getCurrentAccessToken().getToken()));
+        facebookEmailPickerBottomSheet.show(getSupportFragmentManager(), "MEMBER_TAG");
+    }
+
+    int mCheckBaseDataCount = 0;
+
+    void loadBaseData() {
+        mCheckBaseDataCount = 2;
+
+        getCurrencies();
+        getCategories();
+    }
+
+    void checkLoadingBaseData() {
+        mCheckBaseDataCount--;
+
+        if (mCheckBaseDataCount == 0) {
+            toMain();
+        }
     }
 
     /**
@@ -255,6 +349,8 @@ public class SignUpActivity extends BaseActivity {
 
         mRegisterCall = mApiService.register(fileToUpload, data);
 
+        mCalls.add(mRegisterCall);
+
         mRegisterCall.enqueue(new Callback<UserDataWrapper>() {
             @Override
             public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
@@ -264,7 +360,8 @@ public class SignUpActivity extends BaseActivity {
                     runOnUiThread(() -> {
                         Auth.getInstance().saveProfile(getContext(), response.body().getPerson(), false);
                         Toast.makeText(getContext(), R.string.successful_register, Toast.LENGTH_SHORT).show();
-                        toMain();
+//                        toMain();
+                        loadBaseData();
                     });
                 } else {
                     if (response.errorBody() != null) {
@@ -305,6 +402,8 @@ public class SignUpActivity extends BaseActivity {
 
         mGoogleLoginCall = mApiService.googleRegister(token);
 
+        mCalls.add(mGoogleLoginCall);
+
         mGoogleLoginCall.enqueue(new retrofit2.Callback<UserDataWrapper>() {
             @Override
             public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
@@ -314,7 +413,8 @@ public class SignUpActivity extends BaseActivity {
                     runOnUiThread(() -> {
                         Auth.getInstance().saveProfile(getContext(), response.body().getPerson(), true);
                         Toast.makeText(getContext(), R.string.successful_register, Toast.LENGTH_SHORT).show();
-                        toMain();
+//                        toMain();
+                        loadBaseData();
                     });
                 } else {
                     if (response.errorBody() != null) {
@@ -350,12 +450,149 @@ public class SignUpActivity extends BaseActivity {
         });
     }
 
+    private void fbLogin(String email, String token) {
+        showProgress(true);
+
+        mFacebookLoginCall = mApiService.facebookRegister(token, email);
+
+        mCalls.add(mFacebookLoginCall);
+
+        mFacebookLoginCall.enqueue(new retrofit2.Callback<UserDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<UserDataWrapper> call, @NonNull Response<UserDataWrapper> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        Auth.getInstance().saveProfile(getContext(), response.body().getPerson(), true);
+//                        Toast.makeText(getContext(), R.string.successful_login, Toast.LENGTH_SHORT).show();
+                        loadBaseData();
+                    });
+                } else {
+                    runOnUiThread(() -> showProgress(false));
+
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UserDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    Log.e(TAG, "onFailure: Request Failed");
+
+                    runOnUiThread(() -> {
+                        showProgress(false);
+                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        });
+    }
+
+    private void getCurrencies() {
+        Call<CurrencyListDataWrapper> call = mApiService.getCurrencies(Auth.getInstance().getToken(getContext()), "", 1);
+
+        call.enqueue(new Callback<CurrencyListDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<CurrencyListDataWrapper> call, @NonNull Response<CurrencyListDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    getRealm().executeTransactionAsync(realm -> {
+                        realm.delete(Currency.class);
+                        realm.copyToRealm(response.body().getList());
+                    }, () -> checkLoadingBaseData());
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CurrencyListDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+    private void getCategories() {
+        Call<CategoryListDataWrapper> call = mApiService.getCategories(Auth.getInstance().getToken(getContext()));
+
+        call.enqueue(new Callback<CategoryListDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<CategoryListDataWrapper> call, @NonNull Response<CategoryListDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    getRealm().executeTransactionAsync(realm -> {
+                        realm.delete(Category.class);
+                        realm.copyToRealm(response.body().getList());
+                    }, () -> checkLoadingBaseData());
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CategoryListDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
     /**
      * Results
      */
 
     @Override
     protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {

@@ -66,7 +66,7 @@ dependencies {
     implementation 'me.dm7.barcodescanner:zxing:1.9.8'
 
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.7@aar') {
-        transitive = true;
+        transitive = true
     }
 
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)'

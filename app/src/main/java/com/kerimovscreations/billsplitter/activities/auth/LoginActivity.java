@@ -143,7 +143,6 @@ public class LoginActivity extends BaseActivity {
             if (call != null && !call.isExecuted()) {
                 showProgress(false);
                 call.cancel();
-                call = null;
                 return;
             }
         }
@@ -227,7 +226,7 @@ public class LoginActivity extends BaseActivity {
                     try {
                         Log.i("Response", response.toString());
 
-                        if(response.getJSONObject().has("email1")) {
+                        if(response.getJSONObject().has("email")) {
                             String email = response.getJSONObject().getString("email");
                             Log.e(TAG, AccessToken.getCurrentAccessToken().getToken());
                             completeFbLogin("");
@@ -290,8 +289,6 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void onEmailPicker() {
-        // TODO: Bottom sheet
-
         FacebookEmailPickerBottomSheet facebookEmailPickerBottomSheet = FacebookEmailPickerBottomSheet.getInstance();
         facebookEmailPickerBottomSheet.setClickListener(email -> fbLogin(email, AccessToken.getCurrentAccessToken().getToken()));
         facebookEmailPickerBottomSheet.show(getSupportFragmentManager(), "MEMBER_TAG");
