@@ -174,6 +174,8 @@ public class TransactionListActivity extends BaseActivity {
 
         Call<SimpleDataWrapper> call = mApiService.addTransaction(Auth.getInstance().getToken(getContext()),
                 mType == TransactionListActivity.TYPE_INCOME ? mBundle.getTheyOwe().get(position).getFrom().getId() :
+                        mBundle.getiOwe().get(position).getFrom().getId(),
+                mType == TransactionListActivity.TYPE_INCOME ? mBundle.getTheyOwe().get(position).getTo().getId() :
                         mBundle.getiOwe().get(position).getTo().getId(),
                 amount,
                 mGroupId);

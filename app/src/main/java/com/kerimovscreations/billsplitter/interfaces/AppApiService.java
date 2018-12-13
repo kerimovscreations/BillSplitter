@@ -98,9 +98,11 @@ public interface AppApiService {
     @Headers({"Accept: application/json"})
     @POST("transaction")
     @FormUrlEncoded
-    Call<SimpleDataWrapper> addTransaction(@Header("Authorization") String token, @Field("receiverId") int receiverId,
-                                                        @Field("amount") float amount,
-                                                        @Field("groupId") int groupId);
+    Call<SimpleDataWrapper> addTransaction(@Header("Authorization") String token,
+                                           @Field("payerId") int payerId,
+                                           @Field("receiverId") int receiverId,
+                                           @Field("amount") float amount,
+                                           @Field("groupId") int groupId);
 
     @Headers({"Accept: application/json"})
     @DELETE("group/{group_id}")
