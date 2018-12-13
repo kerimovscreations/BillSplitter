@@ -3,6 +3,7 @@ package com.kerimovscreations.billsplitter.fragments.dialogs;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.kerimovscreations.billsplitter.R;
+import com.kerimovscreations.billsplitter.activities.TransactionListActivity;
 import com.kerimovscreations.billsplitter.models.Transaction;
 
 import java.util.Locale;
@@ -37,6 +39,8 @@ public class BalanceBottomSheedDialogFragment extends BottomSheetDialogFragment 
     @BindView(R.id.result)
     TextView mResult;
 
+    int mType;
+
     private BalanceBottomSheedDialogFragment.OnClickListener mListener;
 
     private Transaction mTransaction;
@@ -49,9 +53,10 @@ public class BalanceBottomSheedDialogFragment extends BottomSheetDialogFragment 
         mListener = listener;
     }
 
-    public static BalanceBottomSheedDialogFragment getInstance(Transaction transaction) {
+    public static BalanceBottomSheedDialogFragment getInstance(Transaction transaction, int type) {
         BalanceBottomSheedDialogFragment fragment = new BalanceBottomSheedDialogFragment();
         fragment.mTransaction = transaction;
+        fragment.mType = type;
         return fragment;
     }
 
@@ -72,6 +77,14 @@ public class BalanceBottomSheedDialogFragment extends BottomSheetDialogFragment 
 
     void initVars() {
         mInitialValue.setText(String.format(Locale.getDefault(), "%.2f %s", mTransaction.getBalance(), mTransaction.getCurrency().getName()));
+        mResult.setText(String.format(Locale.getDefault(), "%.2f %s", mTransaction.getBalance(), mTransaction.getCurrency().getName()));
+
+        if(mType == TransactionListActivity.TYPE_INCOME) {
+            mInitialValue.setTextColor(ContextCompat.getColor(getContext(), R.color.colorGreen));
+        } else {
+            mInitialValue.setTextColor(ContextCompat.getColor(getContext(), R.color.colorRed));
+        }
+
         mInputCurrency.setText(mTransaction.getCurrency().getName());
 
         mInput.addTextChangedListener(new TextWatcher() {

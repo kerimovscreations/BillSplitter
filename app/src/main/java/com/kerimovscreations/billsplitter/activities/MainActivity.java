@@ -58,6 +58,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.OnClick;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -349,16 +350,19 @@ public class MainActivity extends BaseActivity {
     }
 
     void loadLocalShoppingList() {
-        RealmResults<ShoppingItem> realmResults = GlobalApplication.getRealm().where(ShoppingItem.class).findAll();
+        RealmResults<ShoppingItem> realmResults = getRealm()
+                .where(ShoppingItem.class)
+                .sort("date", Sort.DESCENDING)
+                .findAll();
 
         mCompletedShoppingList.clear();
         mActiveShoppingList.clear();
 
         for (ShoppingItem shoppingItem : realmResults) {
             if (shoppingItem.isComplete()) {
-                mCompletedShoppingList.add(shoppingItem);
+                mCompletedShoppingList.add(new ShoppingItem(shoppingItem));
             } else {
-                mActiveShoppingList.add(shoppingItem);
+                mActiveShoppingList.add(new ShoppingItem(shoppingItem));
             }
         }
 
@@ -765,6 +769,8 @@ public class MainActivity extends BaseActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
                         GlobalApplication.getRealm().executeTransaction(realm -> realm.copyToRealmOrUpdate(response.body().getShoppingItem()));
+                        getStatistics();
+                        getTransactions();
                     });
                 } else {
                     if (response.errorBody() != null) {
@@ -906,12 +912,12 @@ public class MainActivity extends BaseActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
-                        mTransactionBundle = response.body().getBunle();
+                        mTransactionBundle = response.body().getBunle().processData(mSelectedGroup);
                         mTransactionsLayout.setVisibility(View.VISIBLE);
 
                         float sum1 = 0;
 
-                        for(Transaction transaction: mTransactionBundle.getTheyOwe()){
+                        for (Transaction transaction : mTransactionBundle.getTheyOwe()) {
                             sum1 += transaction.getBalance();
                         }
 
@@ -919,7 +925,7 @@ public class MainActivity extends BaseActivity {
 
                         float sum2 = 0;
 
-                        for(Transaction transaction: mTransactionBundle.getiOwe()){
+                        for (Transaction transaction : mTransactionBundle.getiOwe()) {
                             sum2 += transaction.getBalance();
                         }
 
@@ -989,11 +995,18 @@ public class MainActivity extends BaseActivity {
 
     void toIncome() {
         Intent intent = new Intent(getContext(), TransactionListActivity.class);
+        intent.putExtra(TransactionListActivity.TYPE, TransactionListActivity.TYPE_INCOME);
+        intent.putExtra(TransactionListActivity.DATA, mTransactionBundle);
+        intent.putExtra(TransactionListActivity.GROUP_ID, mSelectedGroup.getId());
         startActivityForResult(intent, TRANSACTION_UPDATE_REQUEST);
     }
 
     void toOutcome() {
-
+        Intent intent = new Intent(getContext(), TransactionListActivity.class);
+        intent.putExtra(TransactionListActivity.TYPE, TransactionListActivity.TYPE_OUTCOME);
+        intent.putExtra(TransactionListActivity.DATA, mTransactionBundle);
+        intent.putExtra(TransactionListActivity.GROUP_ID, mSelectedGroup.getId());
+        startActivityForResult(intent, TRANSACTION_UPDATE_REQUEST);
     }
 
     /**
@@ -1006,8 +1019,11 @@ public class MainActivity extends BaseActivity {
 
         switch (requestCode) {
             case SHOPPING_ITEM_EDIT_REQUEST:
-                if (resultCode == Activity.RESULT_OK)
+                if (resultCode == Activity.RESULT_OK) {
+                    getStatistics();
                     loadLocalShoppingList();
+                    getTransactions();
+                }
                 break;
             case GROUP_CREATE_REQUEST:
                 mLocalGroups.clear();
@@ -1059,7 +1075,9 @@ public class MainActivity extends BaseActivity {
                 // no need update ui
                 break;
             case TRANSACTION_UPDATE_REQUEST:
-                // TODO: Update ui
+                if (resultCode == Activity.RESULT_OK) {
+                    getTransactions();
+                }
                 break;
             default:
                 break;

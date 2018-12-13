@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kerimovscreations.billsplitter.R;
+import com.kerimovscreations.billsplitter.activities.TransactionListActivity;
 import com.kerimovscreations.billsplitter.models.Transaction;
 import com.squareup.picasso.Picasso;
 
@@ -27,10 +28,12 @@ public class TransactionListRVAdapter extends RecyclerView.Adapter<TransactionLi
     private List<Transaction> mList;
     private Context mContext;
     private int mSelectedIndex = 0;
+    private int mType;
 
-    public TransactionListRVAdapter(Context context, List<Transaction> list) {
+    public TransactionListRVAdapter(Context context, List<Transaction> list, int type) {
         mList = list;
         mContext = context;
+        mType = type;
     }
 
     public Context getContext() {
@@ -39,6 +42,10 @@ public class TransactionListRVAdapter extends RecyclerView.Adapter<TransactionLi
 
     public int getSelectedIndex() {
         return mSelectedIndex;
+    }
+
+    public int getmType() {
+        return mType;
     }
 
     public void setOnItemClickListener(TransactionListRVAdapter.OnItemClickListener listener) {
@@ -59,15 +66,20 @@ public class TransactionListRVAdapter extends RecyclerView.Adapter<TransactionLi
     public void onBindViewHolder(@NonNull TransactionListRVAdapter.ViewHolder viewHolder, int position) {
         Transaction bItem = mList.get(position);
 
-        viewHolder.name.setText(bItem.getFrom().getFullName());
-        viewHolder.email.setText(bItem.getFrom().getEmail());
-        Picasso.get().load(bItem.getFrom().getPicture()).into(viewHolder.avatar);
-        viewHolder.amount.setText(String.format(Locale.getDefault(), "%.2f %s", bItem.getBalance(), bItem.getCurrency().getName()));
+       viewHolder.amount.setText(String.format(Locale.getDefault(), "%.2f %s", bItem.getBalance(), bItem.getCurrency().getName()));
 
-        if(bItem.getBalance() < 0) {
+        if(getmType() == TransactionListActivity.TYPE_OUTCOME) {
+            viewHolder.name.setText(bItem.getTo().getFullName());
+            viewHolder.email.setText(bItem.getTo().getEmail());
+            Picasso.get().load(bItem.getTo().getPicture()).into(viewHolder.avatar);
+
             viewHolder.amount.setTextColor(ContextCompat.getColor(getContext(), R.color.colorRed));
             viewHolder.editIc.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorRed), android.graphics.PorterDuff.Mode.SRC_IN);
         } else {
+            viewHolder.name.setText(bItem.getFrom().getFullName());
+            viewHolder.email.setText(bItem.getFrom().getEmail());
+            Picasso.get().load(bItem.getFrom().getPicture()).into(viewHolder.avatar);
+
             viewHolder.amount.setTextColor(ContextCompat.getColor(getContext(), R.color.colorGreen));
             viewHolder.editIc.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorGreen), android.graphics.PorterDuff.Mode.SRC_IN);
         }

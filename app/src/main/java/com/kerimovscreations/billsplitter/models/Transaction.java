@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
 
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.Objects;
 
 public class Transaction implements Serializable {
@@ -22,14 +23,16 @@ public class Transaction implements Serializable {
 
     private Currency currency;
 
-    public void processIOwe() {
+    void processIOwe(LocalGroup group) {
         this.from = new Person(Objects.requireNonNull(GlobalApplication.getRealm().where(LocalProfile.class).findFirst()));
-        this.to = new Person(Objects.requireNonNull(GlobalApplication.getRealm().where(LocalGroupMember.class).equalTo("id", userId).findFirst()));
+        this.to = new Person(Objects.requireNonNull(GlobalApplication.getRealm().where(LocalGroupMember.class).equalTo("id", String.format(Locale.getDefault(), "%d_%d", group.getId(), userId)).findFirst()));
+        this.currency = new Currency(GlobalApplication.getRealm().where(Currency.class).equalTo("id", group.getCurrency().getId()).findFirst());
     }
 
-    public void processTheyOwe() {
+    void processTheyOwe(LocalGroup group) {
         this.to = new Person(Objects.requireNonNull(GlobalApplication.getRealm().where(LocalProfile.class).findFirst()));
-        this.from = new Person(Objects.requireNonNull(GlobalApplication.getRealm().where(LocalGroupMember.class).equalTo("id", userId).findFirst()));
+        this.from = new Person(Objects.requireNonNull(GlobalApplication.getRealm().where(LocalGroupMember.class).equalTo("id", String.format(Locale.getDefault(), "%d_%d", group.getId(), userId)).findFirst()));
+        this.currency = new Currency(GlobalApplication.getRealm().where(Currency.class).equalTo("id", group.getCurrency().getId()).findFirst());
     }
 
     public Person getFrom() {

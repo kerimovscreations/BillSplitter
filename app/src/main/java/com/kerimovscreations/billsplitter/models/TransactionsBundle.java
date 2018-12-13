@@ -16,14 +16,30 @@ public class TransactionsBundle implements Serializable {
     @Expose
     ArrayList<Transaction> theyOwe;
 
-    void processData() {
-        for(Transaction transaction: iOwe) {
-            transaction.processIOwe();
+    public TransactionsBundle processData(LocalGroup group) {
+        for (int i = 0; i < iOwe.size(); i++) {
+            iOwe.get(i).processIOwe(group);
         }
 
-        for(Transaction transaction: theyOwe) {
-            transaction.processTheyOwe();
+        for (int i = 0; i < theyOwe.size(); i++) {
+            theyOwe.get(i).processTheyOwe(group);
         }
+
+        for (int i = 0; i < iOwe.size(); i++) {
+            for (int j = 0; j < theyOwe.size(); j++) {
+                if (iOwe.get(i).getTo().getId() == theyOwe.get(j).getFrom().getId()) {
+                    if (iOwe.get(i).getBalance() > theyOwe.get(j).getBalance()) {
+                        iOwe.get(i).setBalance(iOwe.get(i).getBalance() - theyOwe.get(j).getBalance());
+                        theyOwe.get(j).setBalance(0);
+                    } else {
+                        theyOwe.get(i).setBalance(theyOwe.get(i).getBalance() - iOwe.get(j).getBalance());
+                        iOwe.get(j).setBalance(0);
+                    }
+                }
+            }
+        }
+
+        return this;
     }
 
     public ArrayList<Transaction> getiOwe() {

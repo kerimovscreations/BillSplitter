@@ -96,6 +96,13 @@ public interface AppApiService {
     Call<TransactionsBundleDataWrapper> getTransactions(@Header("Authorization") String token, @Path("group_id") int groupId);
 
     @Headers({"Accept: application/json"})
+    @POST("transaction")
+    @FormUrlEncoded
+    Call<SimpleDataWrapper> addTransaction(@Header("Authorization") String token, @Field("receiverId") int receiverId,
+                                                        @Field("amount") float amount,
+                                                        @Field("groupId") int groupId);
+
+    @Headers({"Accept: application/json"})
     @DELETE("group/{group_id}")
     Call<SimpleDataWrapper> deleteGroup(@Header("Authorization") String token, @Path("group_id") int groupId);
 

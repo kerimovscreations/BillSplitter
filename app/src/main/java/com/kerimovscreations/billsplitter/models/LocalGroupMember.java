@@ -20,7 +20,6 @@ public class LocalGroupMember extends RealmObject {
         this.id = groupId + "_" + member.getId();
     }
 
-
     public String getId() {
         return id;
     }

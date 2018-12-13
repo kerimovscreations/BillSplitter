@@ -741,6 +741,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     runOnUiThread(() -> {
+                        response.body().getShoppingItem().setGroupId(mGroup.getId());
                         GlobalApplication.getRealm().executeTransaction(realm -> realm.copyToRealmOrUpdate(response.body().getShoppingItem()));
                         Toast.makeText(getContext(), R.string.successful_update_shopping_item, Toast.LENGTH_SHORT).show();
                         Intent returnIntent = new Intent();

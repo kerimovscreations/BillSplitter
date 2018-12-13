@@ -84,4 +84,5 @@
     <string name="not_valid_email">Not valid email</string>
     <string name="check_email">Please, check email inbox for reference code</string>
     <string name="password_reset_success">Your password is resetted successfully, login again please</string>
+    <string name="successful_submitted_transaction">Payment is done successfully</string>
 </resources>
