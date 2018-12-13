@@ -630,7 +630,8 @@ public class SignUpActivity extends BaseActivity {
      */
 
     private void toMain() {
-        finish();
-        startActivity(new Intent(getContext(), MainActivity.class));
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

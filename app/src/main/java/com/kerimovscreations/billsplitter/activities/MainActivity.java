@@ -216,8 +216,6 @@ public class MainActivity extends BaseActivity {
                     }
                 }
 
-                mGroupTitle.setText(mSelectedGroup.getTitle());
-
                 mGroupContent.setVisibility(View.VISIBLE);
                 mAddItemBtn.setVisibility(View.VISIBLE);
                 mEmptyContentPlaceholder.setVisibility(View.GONE);
@@ -235,6 +233,9 @@ public class MainActivity extends BaseActivity {
                     break;
                 }
             }
+        }
+
+        if (mSelectedGroup != null) {
             mGroupTitle.setText(mSelectedGroup.getTitle());
         }
 
@@ -1030,8 +1031,9 @@ public class MainActivity extends BaseActivity {
     }
 
     void toLogin() {
-        finish();
-        startActivity(new Intent(getContext(), LoginActivity.class));
+        Intent intent = new Intent(getContext(), LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     void toIncome() {
