@@ -82,4 +82,6 @@
     <string name="pay">Pay</string>
     <string name="provide_email">Provide email</string>
     <string name="not_valid_email">Not valid email</string>
+    <string name="check_email">Please, check email inbox for reference code</string>
+    <string name="password_reset_success">Your password is resetted successfully, login again please</string>
 </resources>

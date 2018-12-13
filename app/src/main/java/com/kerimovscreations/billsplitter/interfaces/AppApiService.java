@@ -39,6 +39,16 @@ public interface AppApiService {
     Call<UserDataWrapper> register(@Part MultipartBody.Part file, @PartMap Map<String, RequestBody> params);
 
     @Headers({"Accept: application/json"})
+    @POST("user/forgot_password")
+    @FormUrlEncoded
+    Call<SimpleDataWrapper> forgotPassword(@Field("email") String token);
+
+    @Headers({"Accept: application/json"})
+    @POST("user/reset_password")
+    @FormUrlEncoded
+    Call<SimpleDataWrapper> resetPassword(@Field("code") String code, @Field("password") String password);
+
+    @Headers({"Accept: application/json"})
     @POST("user/login")
     @FormUrlEncoded
     Call<UserDataWrapper> login(@FieldMap HashMap<String, String> params);
