@@ -306,6 +306,8 @@ public class MainActivity extends BaseActivity {
         description.setText(getString(R.string.cost_statistics_chart_legend));
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorLightGray));
         mPieChart.setDescription(description);
+        mPieChart.notifyDataSetChanged();
+        mPieChart.invalidate();
     }
 
     void setupActiveList() {
