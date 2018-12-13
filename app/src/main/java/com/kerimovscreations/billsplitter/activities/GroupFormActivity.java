@@ -381,7 +381,7 @@ public class GroupFormActivity extends BaseActivity {
                             realm.where(LocalGroupMember.class).equalTo("groupId", localGroup.getId()).findAll().deleteAllFromRealm();
 
                             for (int i = 0; i < response.body().getGroup().getGroupUsers().size(); i++) {
-                                realm.copyToRealm(new LocalGroupMember(mGroup.getGroupUsers().get(i), localGroup.getId()));
+                                realm.copyToRealmOrUpdate(new LocalGroupMember(mGroup.getGroupUsers().get(i), localGroup.getId()));
                             }
                         });
                         Toast.makeText(getContext(), R.string.successful_update_group, Toast.LENGTH_SHORT).show();
