@@ -173,10 +173,10 @@ public class TransactionListActivity extends BaseActivity {
         showProgress(true);
 
         Call<SimpleDataWrapper> call = mApiService.addTransaction(Auth.getInstance().getToken(getContext()),
-                mType == TransactionListActivity.TYPE_INCOME ? mBundle.getTheyOwe().get(position).getFrom().getId() :
-                        mBundle.getiOwe().get(position).getFrom().getId(),
-                mType == TransactionListActivity.TYPE_INCOME ? mBundle.getTheyOwe().get(position).getTo().getId() :
-                        mBundle.getiOwe().get(position).getTo().getId(),
+                mType == TransactionListActivity.TYPE_INCOME ? mList.get(position).getFrom().getId() :
+                        mList.get(position).getFrom().getId(),
+                mType == TransactionListActivity.TYPE_INCOME ? mList.get(position).getTo().getId() :
+                        mList.get(position).getTo().getId(),
                 amount,
                 mGroupId);
 
