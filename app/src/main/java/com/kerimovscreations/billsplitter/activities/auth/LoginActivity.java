@@ -139,7 +139,7 @@ public class LoginActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
 
-        for(Call call : mCalls) {
+        for (Call call : mCalls) {
             if (call != null && !call.isExecuted()) {
                 showProgress(false);
                 call.cancel();
@@ -154,7 +154,7 @@ public class LoginActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        for(Call call : mCalls) {
+        for (Call call : mCalls) {
             if (call != null && !call.isExecuted())
                 call.cancel();
         }
@@ -222,19 +222,12 @@ public class LoginActivity extends BaseActivity {
         GraphRequest request = GraphRequest.newMeRequest(
                 loginResult.getAccessToken(),
                 (object, response) -> {
-                    // Application code
-                    try {
-                        Log.i("Response", response.toString());
+                    Log.i("Response", response.toString());
 
-                        if(response.getJSONObject().has("email")) {
-                            String email = response.getJSONObject().getString("email");
-                            Log.e(TAG, AccessToken.getCurrentAccessToken().getToken());
-                            completeFbLogin("");
-                        } else {
-                            onEmailPicker();
-                        }
-                    } catch (JSONException e) {
-                        Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show();
+                    if (response.getJSONObject().has("email")) {
+                        completeFbLogin("");
+                    } else {
+                        onEmailPicker();
                     }
                 });
         Bundle parameters = new Bundle();
