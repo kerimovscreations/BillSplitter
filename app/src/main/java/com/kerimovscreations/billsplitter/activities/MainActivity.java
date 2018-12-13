@@ -366,6 +366,7 @@ public class MainActivity extends BaseActivity {
     void loadLocalShoppingList() {
         RealmResults<ShoppingItem> realmResults = getRealm()
                 .where(ShoppingItem.class)
+                .equalTo("groupId", mSelectedGroup.getId())
                 .sort("date", Sort.DESCENDING)
                 .findAll();
 
@@ -1109,6 +1110,8 @@ public class MainActivity extends BaseActivity {
                             break;
                         }
                     }
+
+                    getTransactions();
                 }
                 break;
             case EDIT_PROFILE_REQUEST:
