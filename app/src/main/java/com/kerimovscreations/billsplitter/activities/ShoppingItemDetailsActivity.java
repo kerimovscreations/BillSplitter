@@ -162,7 +162,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        if(mResultBarCode != null && !mResultBarCode.isEmpty()){
+        if (mResultBarCode != null && !mResultBarCode.isEmpty()) {
             GlobalApplication.getRealm().executeTransaction(realm -> mShoppingItem.getProduct().setBarCode(mResultBarCode));
             updateBarCodeText();
             mResultBarCode = "";
@@ -194,7 +194,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
         if (mCreateItemCall != null && !mCreateItemCall.isExecuted())
             mCreateItemCall.cancel();
 
-        if(mShoppingItem.getId() > 0){
+        if (mShoppingItem.getId() > 0) {
             GlobalApplication.getRealm().executeTransaction(realm -> {
                 mShoppingItem.getSharedMembers().where().equalTo("id", -1).findAll().deleteAllFromRealm();
             });
@@ -656,8 +656,9 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
             data.put("paidById", String.valueOf(mShoppingItem.getBuyer().getId()));
         }
 
-        for (int i = 0; i < mShoppingItem.getSharedMembers().size() - 1; i++) {
-            data.put("shares[" + i + "]", String.valueOf(mShoppingItem.getSharedMembers().get(i).getId()));
+        for (int i = 0; i < mShoppingItem.getSharedMembers().size(); i++) {
+            if (mShoppingItem.getSharedMembers().get(i).getId() != -1)
+                data.put("shares[" + i + "]", String.valueOf(mShoppingItem.getSharedMembers().get(i).getId()));
         }
 
         mCreateItemCall = mApiService.createShoppingItem(Auth.getInstance().getToken(getContext()), data);
@@ -672,7 +673,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                         GlobalApplication.getRealm().executeTransaction(realm -> realm.copyToRealmOrUpdate(response.body().getShoppingItem()));
                         Toast.makeText(getContext(), R.string.successful_create_shopping_item, Toast.LENGTH_SHORT).show();
                         Intent returnIntent = new Intent();
-                        setResult(Activity.RESULT_OK,returnIntent);
+                        setResult(Activity.RESULT_OK, returnIntent);
                         finish();
                     });
                 } else {
@@ -743,7 +744,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                         GlobalApplication.getRealm().executeTransaction(realm -> realm.copyToRealmOrUpdate(response.body().getShoppingItem()));
                         Toast.makeText(getContext(), R.string.successful_update_shopping_item, Toast.LENGTH_SHORT).show();
                         Intent returnIntent = new Intent();
-                        setResult(Activity.RESULT_OK,returnIntent);
+                        setResult(Activity.RESULT_OK, returnIntent);
                         finish();
                     });
                 } else {
@@ -847,6 +848,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
     }
 
     private String mResultBarCode;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

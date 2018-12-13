@@ -57,11 +57,6 @@ public class TransactionListActivity extends BaseActivity {
         Person person = new Person(Objects.requireNonNull(getRealm().where(LocalProfile.class).findFirst()));
         RealmResults<Currency> currencies = getRealm().where(Currency.class).findAll();
 
-        mList.add(new Transaction(person, person, 15.50f, new Currency(currencies.get(0))));
-        mList.add(new Transaction(person, person, 59f, new Currency(currencies.get(1))));
-        mList.add(new Transaction(person, person, 40.6f, new Currency(currencies.get(2))));
-        mList.add(new Transaction(person, person, 15.1f, new Currency(currencies.get(0))));
-
         mAdapter.setOnItemClickListener(position -> {
             BalanceBottomSheedDialogFragment fragment = BalanceBottomSheedDialogFragment.getInstance(mList.get(position));
             fragment.setClickListener(amount -> {

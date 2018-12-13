@@ -37,6 +37,8 @@ import com.kerimovscreations.billsplitter.models.LocalGroupMember;
 import com.kerimovscreations.billsplitter.models.LocalProfile;
 import com.kerimovscreations.billsplitter.models.ShoppingItem;
 import com.kerimovscreations.billsplitter.models.Timeline;
+import com.kerimovscreations.billsplitter.models.Transaction;
+import com.kerimovscreations.billsplitter.models.TransactionsBundle;
 import com.kerimovscreations.billsplitter.utils.Auth;
 import com.kerimovscreations.billsplitter.utils.BaseActivity;
 import com.kerimovscreations.billsplitter.wrappers.GroupListDataWrapper;
@@ -44,6 +46,7 @@ import com.kerimovscreations.billsplitter.wrappers.ShoppingItemDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.StatisticsDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.TransactionsBundleDataWrapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -145,6 +148,8 @@ public class MainActivity extends BaseActivity {
 
     private ArrayList<Category> mStatistics = new ArrayList<>();
 
+    private TransactionsBundle mTransactionBundle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -182,6 +187,8 @@ public class MainActivity extends BaseActivity {
         });
         mRVTimeline.setAdapter(mTimelineAdapter);
         mRVTimeline.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        mPieChart.setTouchEnabled(false);
 
         setupContent();
     }
@@ -232,6 +239,7 @@ public class MainActivity extends BaseActivity {
             mEmptyContentPlaceholder.setVisibility(View.GONE);
             mEmptyListPlaceholder.setVisibility(View.GONE);
             getGroupItems();
+            getTransactions();
             getStatistics();
         } else {
             showProgress(false);
@@ -876,6 +884,67 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onFailure(@NonNull Call<StatisticsDataWrapper> call, @NonNull Throwable t) {
+                t.printStackTrace();
+
+                if (!call.isCanceled()) {
+                    runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+    private void getTransactions() {
+        showProgress(true);
+
+        Call<TransactionsBundleDataWrapper> transactionsCall = mApiService.getTransactions(Auth.getInstance().getToken(getContext()),
+                mSelectedGroup.getId());
+
+        transactionsCall.enqueue(new Callback<TransactionsBundleDataWrapper>() {
+            @Override
+            public void onResponse(@NonNull Call<TransactionsBundleDataWrapper> call, @NonNull Response<TransactionsBundleDataWrapper> response) {
+                runOnUiThread(() -> showProgress(false));
+
+                if (response.isSuccessful() && response.body() != null) {
+                    runOnUiThread(() -> {
+                        mTransactionBundle = response.body().getBunle();
+                        mTransactionsLayout.setVisibility(View.VISIBLE);
+
+                        float sum1 = 0;
+
+                        for(Transaction transaction: mTransactionBundle.getTheyOwe()){
+                            sum1 += transaction.getBalance();
+                        }
+
+                        mTransactionsIncomeText.setText(String.format("%s %s", sum1, mSelectedGroup.getCurrency().getName()));
+
+                        float sum2 = 0;
+
+                        for(Transaction transaction: mTransactionBundle.getiOwe()){
+                            sum2 += transaction.getBalance();
+                        }
+
+                        mTransactionsOutcomeText.setText(String.format("%s %s", sum2, mSelectedGroup.getCurrency().getName()));
+                    });
+                } else {
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            Log.d(TAG, errorString);
+
+                            runOnUiThread(() -> Toast.makeText(getContext(), errorString, Toast.LENGTH_SHORT).show());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        runOnUiThread(() -> Toast.makeText(getContext(), R.string.error_occurred, Toast.LENGTH_SHORT).show());
+                    }
+                    Log.d(TAG, response.raw().toString());
+                    Log.e(TAG, "onResponse: Request Failed");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<TransactionsBundleDataWrapper> call, @NonNull Throwable t) {
                 t.printStackTrace();
 
                 if (!call.isCanceled()) {

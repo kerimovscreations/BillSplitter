@@ -1,22 +1,35 @@
 package com.kerimovscreations.billsplitter.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+import com.kerimovscreations.billsplitter.application.GlobalApplication;
+
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Transaction implements Serializable {
 
+    @SerializedName("UserId")
+    @Expose
+    private int userId;
+
     private Person from;
     private Person to;
+
+    @SerializedName("Value")
+    @Expose
     private float balance;
+
     private Currency currency;
 
-    public Transaction() {
+    public void processIOwe() {
+        this.from = new Person(Objects.requireNonNull(GlobalApplication.getRealm().where(LocalProfile.class).findFirst()));
+        this.to = new Person(Objects.requireNonNull(GlobalApplication.getRealm().where(LocalGroupMember.class).equalTo("id", userId).findFirst()));
     }
 
-    public Transaction(Person from, Person to, float balance, Currency currency) {
-        this.from = from;
-        this.to = to;
-        this.balance = balance;
-        this.currency = currency;
+    public void processTheyOwe() {
+        this.to = new Person(Objects.requireNonNull(GlobalApplication.getRealm().where(LocalProfile.class).findFirst()));
+        this.from = new Person(Objects.requireNonNull(GlobalApplication.getRealm().where(LocalGroupMember.class).equalTo("id", userId).findFirst()));
     }
 
     public Person getFrom() {

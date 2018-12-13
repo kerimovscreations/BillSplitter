@@ -8,6 +8,7 @@ import com.kerimovscreations.billsplitter.wrappers.ShoppingItemDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.ShoppingItemListDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.SimpleDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.StatisticsDataWrapper;
+import com.kerimovscreations.billsplitter.wrappers.TransactionsBundleDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.UserDataWrapper;
 
 import java.util.HashMap;
@@ -89,6 +90,10 @@ public interface AppApiService {
     @Headers({"Accept: application/json"})
     @GET("group")
     Call<GroupListDataWrapper> getGroups(@Header("Authorization") String token, @Query("q") String search, @Query("page") int pageNumber);
+
+    @Headers({"Accept: application/json"})
+    @GET("transaction/{group_id}/money")
+    Call<TransactionsBundleDataWrapper> getTransactions(@Header("Authorization") String token, @Path("group_id") int groupId);
 
     @Headers({"Accept: application/json"})
     @DELETE("group/{group_id}")
