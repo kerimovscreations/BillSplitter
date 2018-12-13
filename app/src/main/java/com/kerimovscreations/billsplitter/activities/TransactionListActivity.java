@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kerimovscreations.billsplitter.R;
@@ -57,6 +58,9 @@ public class TransactionListActivity extends BaseActivity {
 
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
+
+    @BindView(R.id.toolbar_title)
+    TextView mToolbarTitle;
 
     @BindView(R.id.rvTransactions)
     RecyclerView mRVTransactions;
@@ -111,6 +115,12 @@ public class TransactionListActivity extends BaseActivity {
         mGroupId = getIntent().getIntExtra(GROUP_ID, 0);
 
         mType = getIntent().getIntExtra(TYPE, TYPE_INCOME);
+
+        if(mType == TYPE_INCOME) {
+            mToolbarTitle.setText(getString(R.string.income));
+        } else {
+            mToolbarTitle.setText(getString(R.string.outcome));
+        }
 
         mBundle = (TransactionsBundle) getIntent().getSerializableExtra(DATA);
 

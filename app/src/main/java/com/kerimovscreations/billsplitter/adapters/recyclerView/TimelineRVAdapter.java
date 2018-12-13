@@ -89,8 +89,8 @@ public class TimelineRVAdapter extends RecyclerView.Adapter<TimelineRVAdapter.Vi
                 if (mListener != null) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
-                        mListener.onItemClick(position);
                         mSelectedIndex = position;
+                        mListener.onItemClick(position);
                         notifyDataSetChanged();
                     }
                 }

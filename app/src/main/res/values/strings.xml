@@ -85,4 +85,13 @@
     <string name="check_email">Please, check email inbox for reference code</string>
     <string name="password_reset_success">Your password is resetted successfully, login again please</string>
     <string name="successful_submitted_transaction">Payment is done successfully</string>
+    <string name="today">Today</string>
+    <string name="week">Week</string>
+    <string name="month">Month</string>
+    <string name="six_month">6 Months</string>
+    <string name="year">Year</string>
+    <string name="cost_statistics_chart_legend">Cost statistics by categories</string>
+    <string name="no_data">No data for this period</string>
+    <string name="income">Income</string>
+    <string name="outcome">Outcome</string>
 </resources>

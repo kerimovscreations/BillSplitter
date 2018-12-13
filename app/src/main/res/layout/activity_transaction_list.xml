@@ -27,6 +27,20 @@
                 android:padding="@dimen/normal_margin"
                 android:src="@drawable/ic_arrow_back_black_24dp"
                 android:tint="@color/colorGray" />
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/back_ic"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/normal_margin"
+                android:fontFamily="@font/noto_sans_bold"
+                android:gravity="center"
+                android:textColor="@color/colorDarkText"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="Group name" />
         </RelativeLayout>
 
         <android.support.v4.widget.SwipeRefreshLayout

@@ -502,7 +502,7 @@ public class ShoppingItemDetailsActivity extends BaseActivity {
                 myCalendar.get(Calendar.YEAR),
                 myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH));
-        datePickerDialog.getDatePicker().setMinDate(myCalendar.getTimeInMillis());
+//        datePickerDialog.getDatePicker().setMinDate(myCalendar.getTimeInMillis());
         datePickerDialog.show();
     }
 

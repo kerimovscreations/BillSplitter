@@ -136,6 +136,6 @@ public interface AppApiService {
 
     @Headers({"Accept: application/json"})
     @GET("purchase/{group_id}/statistics")
-    Call<StatisticsDataWrapper> getStatistics(@Header("Authorization") String token, @Path("group_id") int groupId);
+    Call<StatisticsDataWrapper> getStatistics(@Header("Authorization") String token, @Path("group_id") int groupId, @Query("start") String startDate, @Query("end") String endDate);
 
 }

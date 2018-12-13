@@ -24,6 +24,7 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.kerimovscreations.billsplitter.R;
 import com.kerimovscreations.billsplitter.activities.auth.LoginActivity;
+import com.kerimovscreations.billsplitter.activities.enums.StatisticsPeriod;
 import com.kerimovscreations.billsplitter.adapters.recyclerView.ShoppingListRVAdapter;
 import com.kerimovscreations.billsplitter.adapters.recyclerView.TimelineRVAdapter;
 import com.kerimovscreations.billsplitter.application.GlobalApplication;
@@ -49,10 +50,16 @@ import com.kerimovscreations.billsplitter.wrappers.StatisticsDataWrapper;
 import com.kerimovscreations.billsplitter.wrappers.TransactionsBundleDataWrapper;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -81,6 +88,9 @@ public class MainActivity extends BaseActivity {
 
     @BindView(R.id.statistics_layout)
     View mStatisticsLayout;
+
+    @BindView(R.id.statistics_no_data)
+    View mStatisticsNoData;
 
     @BindView(R.id.group_title)
     TextView mGroupTitle;
@@ -176,15 +186,15 @@ public class MainActivity extends BaseActivity {
 
         mTimeline = new ArrayList<>();
 
-        mTimeline.add(new Timeline(new Date(), new Date(), "Today"));
-        mTimeline.add(new Timeline(new Date(), new Date(), "Week"));
-        mTimeline.add(new Timeline(new Date(), new Date(), "Month"));
-        mTimeline.add(new Timeline(new Date(), new Date(), "6 Months"));
-        mTimeline.add(new Timeline(new Date(), new Date(), "Year"));
+        mTimeline.add(new Timeline(new Date(), new Date(), getString(R.string.today), StatisticsPeriod.DAY));
+        mTimeline.add(new Timeline(new Date(), new Date(), getString(R.string.week), StatisticsPeriod.WEEK));
+        mTimeline.add(new Timeline(new Date(), new Date(), getString(R.string.month), StatisticsPeriod.MONTH));
+        mTimeline.add(new Timeline(new Date(), new Date(), getString(R.string.six_month), StatisticsPeriod.SIX_MONTH));
+        mTimeline.add(new Timeline(new Date(), new Date(), getString(R.string.year), StatisticsPeriod.YEAR));
 
         mTimelineAdapter = new TimelineRVAdapter(getContext(), mTimeline);
         mTimelineAdapter.setOnItemClickListener(position -> {
-
+            getStatistics();
         });
         mRVTimeline.setAdapter(mTimelineAdapter);
         mRVTimeline.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -265,10 +275,14 @@ public class MainActivity extends BaseActivity {
 
     void setupStatistics() {
         if (mStatistics.size() == 0) {
-            mStatisticsLayout.setVisibility(View.GONE);
+            mStatisticsLayout.setVisibility(View.VISIBLE);
+            mPieChart.setVisibility(View.GONE);
+            mStatisticsNoData.setVisibility(View.VISIBLE);
             return;
         } else {
             mStatisticsLayout.setVisibility(View.VISIBLE);
+            mPieChart.setVisibility(View.VISIBLE);
+            mStatisticsNoData.setVisibility(View.GONE);
         }
 
         List<PieEntry> data = new ArrayList<>();
@@ -288,7 +302,7 @@ public class MainActivity extends BaseActivity {
 
         mPieChart.setData(pieData);
         Description description = new Description();
-        description.setText("Cost statistics by categories");
+        description.setText(getString(R.string.cost_statistics_chart_legend));
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorLightGray));
         mPieChart.setDescription(description);
     }
@@ -856,8 +870,34 @@ public class MainActivity extends BaseActivity {
     private void getStatistics() {
         showProgress(true);
 
+        Calendar startCalendar = Calendar.getInstance();
+        Calendar endCalendar = Calendar.getInstance();
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+        switch (mTimeline.get(mTimelineAdapter.getSelectedIndex()).getPeriod()) {
+            case DAY:
+                startCalendar.add(Calendar.DATE, -1);
+                break;
+            case WEEK:
+                startCalendar.add(Calendar.DATE, -7);
+                break;
+            case MONTH:
+                startCalendar.add(Calendar.MONTH, -1);
+                break;
+            case SIX_MONTH:
+                startCalendar.add(Calendar.MONTH, -6);
+                break;
+            case YEAR:
+                startCalendar.add(Calendar.YEAR, -1);
+                break;
+        }
+
+        String startDate = dateFormat.format(startCalendar.getTime());
+        String endDate = dateFormat.format(endCalendar.getTime());
+
         Call<StatisticsDataWrapper> statisticsCall = mApiService.getStatistics(Auth.getInstance().getToken(getContext()),
-                mSelectedGroup.getId());
+                mSelectedGroup.getId(), startDate, endDate);
 
         statisticsCall.enqueue(new Callback<StatisticsDataWrapper>() {
             @Override
