@@ -136,30 +136,6 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-
-        for (Call call : mCalls) {
-            if (call != null && !call.isExecuted()) {
-                showProgress(false);
-                call.cancel();
-                return;
-            }
-        }
-
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        for (Call call : mCalls) {
-            if (call != null && !call.isExecuted())
-                call.cancel();
-        }
-    }
-
     /**
      * Click handlers
      */
